@@ -2,6 +2,7 @@
 import { PATH_DASHBOARD } from '../../../routes/paths';
 // components
 import SvgIconStyle from '../../../components/SvgIconStyle';
+import Iconify from 'src/components/Iconify';
 
 // ----------------------------------------------------------------------
 
@@ -49,7 +50,7 @@ const navConfig = [
       {
         title: 'Usuarios',
         path: PATH_DASHBOARD.user.list,
-        icon: ICONS.user,
+        icon: <Iconify icon={'heroicons:user-circle-20-solid'} width={20} height={20} />,
         children: [
           // { title: 'profile', path: PATH_DASHBOARD.user.profile },
           // { title: 'cards', path: PATH_DASHBOARD.user.cards },
@@ -59,6 +60,16 @@ const navConfig = [
         ],
       },
 
+      // PROVIDER
+      {
+        title: 'Proveedores',
+        path: PATH_DASHBOARD.provider.list,
+        icon: <Iconify icon={'heroicons:building-library-20-solid'} width={20} height={20} />,
+        children: [
+          { title: 'Lista de Proveedores', path: PATH_DASHBOARD.provider.list },
+          { title: 'Nuevo Proveedor', path: PATH_DASHBOARD.provider.new },
+        ],
+      },
       // E-COMMERCE
       // {
       //   title: 'ecommerce',

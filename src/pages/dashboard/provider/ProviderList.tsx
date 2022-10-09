@@ -1,62 +1,49 @@
 import { paramCase } from 'change-case';
-import { useState, useEffect } from 'react';
-import { useNavigate, Link as RouterLink } from 'react-router-dom';
+import { useState } from 'react';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 // @mui
 import {
   Box,
+  Tab,
+  Tabs,
   Card,
   Table,
   Button,
-  Switch,
   Tooltip,
+  Divider,
   TableBody,
   Container,
   IconButton,
   TableContainer,
   TablePagination,
-  FormControlLabel,
 } from '@mui/material';
-// redux
-import { useDispatch, useSelector } from '../../redux/store';
-import { getProducts } from '../../redux/slices/product';
-// routes
-import { PATH_DASHBOARD } from '../../routes/paths';
-// hooks
-import useSettings from '../../hooks/useSettings';
-import useTable, { getComparator, emptyRows } from '../../hooks/useTable';
-// @types
-import { Product } from '../../@types/product';
-// components
-import Page from '../../components/Page';
-import Iconify from '../../components/Iconify';
-import Scrollbar from '../../components/Scrollbar';
-import HeaderBreadcrumbs from '../../components/HeaderBreadcrumbs';
-import {
-  TableNoData,
-  TableSkeleton,
-  TableEmptyRows,
-  TableHeadCustom,
-  TableSelectedActions,
-} from '../../components/table';
-// sections
-import {
-  ProductTableRow,
-  ProductTableToolbar,
-} from '../../sections/@dashboard/e-commerce/product-list';
-
-// ----------------------------------------------------------------------
+import useTable, { emptyRows, getComparator } from 'src/hooks/useTable';
+import useSettings from 'src/hooks/useSettings';
+import useTabs from 'src/hooks/useTabs';
+import { PATH_DASHBOARD } from 'src/routes/paths';
+import Page from 'src/components/Page';
+import HeaderBreadcrumbs from 'src/components/HeaderBreadcrumbs';
+import Iconify from 'src/components/Iconify';
+import ProviderTableToolbar from 'src/sections/@dashboard/provider/list/ProviderTableToolbar';
+import Scrollbar from 'src/components/Scrollbar';
+import { TableEmptyRows, TableHeadCustom, TableNoData, TableSelectedActions } from 'src/components/table';
+import ProviderTableRow from 'src/sections/@dashboard/provider/list/ProviderTableRow';
+import { ServiceProvider } from 'src/@types/provider';
+import { PROVIDERS_MOCK } from 'src/_mock/provider';
 
 const TABLE_HEAD = [
-  { id: 'name', label: 'Product', align: 'left' },
-  { id: 'createdAt', label: 'Create at', align: 'left' },
-  { id: 'inventoryType', label: 'Status', align: 'center', width: 180 },
-  { id: 'price', label: 'Price', align: 'right' },
+  { id: 'id', label: 'Código', align: 'left' },
+  { id: 'name', label: 'Proveedor', align: 'left' },
+  { id: 'email', label: 'Correo Electrónico', align: 'left' },
+  { id: 'phone', label: 'Teléfono', align: 'left' },
+  { id: 'type', label: 'Tipo de Servicio', align: 'left' },
+  { id: 'isActive', label: 'Estado', align: 'left' },
   { id: '' },
 ];
 
 // ----------------------------------------------------------------------
 
-export default function EcommerceProductList() {
+export default function ProviderList() {
   const {
     dense,
     page,
@@ -71,96 +58,94 @@ export default function EcommerceProductList() {
     onSelectAllRows,
     //
     onSort,
-    onChangeDense,
     onChangePage,
     onChangeRowsPerPage,
-  } = useTable({
-    defaultOrderBy: 'createdAt',
-  });
-
+  } = useTable();
   const { themeStretch } = useSettings();
-
   const navigate = useNavigate();
-
-  const dispatch = useDispatch();
-
-  const { products, isLoading } = useSelector((state) => state.product);
-
-  const [tableData, setTableData] = useState<Product[]>([]);
-
+  const [tableData, setTableData] = useState<ServiceProvider[]>(PROVIDERS_MOCK);
   const [filterName, setFilterName] = useState('');
-
-  useEffect(() => {
-    dispatch(getProducts());
-  }, [dispatch]);
-
-  useEffect(() => {
-    if (products.length) {
-      setTableData(products);
-    }
-  }, [products]);
+  const { currentTab: filterStatus, onChangeTab: onChangeFilterStatus } = useTabs('todos');
 
   const handleFilterName = (filterName: string) => {
     setFilterName(filterName);
     setPage(0);
   };
 
-  const handleDeleteRow = (id: string) => {
-    const deleteRow = tableData.filter((row) => row.id !== id);
+  const handleDeleteRow = (id: number) => {
+    // TODO: Handle row delete
     setSelected([]);
-    setTableData(deleteRow);
   };
 
-  const handleDeleteRows = (selected: string[]) => {
+  const handleDeleteRows = (selected: (number | string)[]) => {
+    // TODO: Handle rows delete
     const deleteRows = tableData.filter((row) => !selected.includes(row.id));
     setSelected([]);
     setTableData(deleteRows);
   };
 
   const handleEditRow = (id: string) => {
-    navigate(PATH_DASHBOARD.eCommerce.edit(paramCase(id)));
+    // ! FIXME: Redirect to providers edit page
+    navigate(PATH_DASHBOARD.user.edit(paramCase(id)));
   };
 
   const dataFiltered = applySortFilter({
     tableData,
     comparator: getComparator(order, orderBy),
     filterName,
+    filterStatus,
   });
 
-  const denseHeight = dense ? 60 : 80;
+  const denseHeight = dense ? 52 : 72;
 
-  const isNotFound = (!dataFiltered.length && !!filterName) || (!isLoading && !dataFiltered.length);
+  const isNotFound =
+    (!dataFiltered.length && !!filterName) ||
+    (!dataFiltered.length && !!filterStatus);
 
   return (
-    <Page title="Ecommerce: Product List">
+    <Page title="Usuarios">
       <Container maxWidth={themeStretch ? false : 'lg'}>
         <HeaderBreadcrumbs
-          heading="Product List"
+          heading="Lista de Proveedores de Servicios"
           links={[
             { name: 'Dashboard', href: PATH_DASHBOARD.root },
-            {
-              name: 'E-Commerce',
-              href: PATH_DASHBOARD.eCommerce.root,
-            },
-            { name: 'Product List' },
+            { name: 'Proveedores' },
           ]}
           action={
             <Button
               variant="contained"
-              startIcon={<Iconify icon="eva:plus-fill" />}
               component={RouterLink}
-              to={PATH_DASHBOARD.eCommerce.new}
+              to={PATH_DASHBOARD.provider.new}
+              startIcon={<Iconify icon={'eva:plus-fill'} />}
             >
-              New Product
+              Nuevo Proveedor
             </Button>
           }
         />
 
         <Card>
-          <ProductTableToolbar filterName={filterName} onFilterName={handleFilterName} />
+          <Tabs
+            allowScrollButtonsMobile
+            variant="scrollable"
+            scrollButtons="auto"
+            value={filterStatus}
+            onChange={onChangeFilterStatus}
+            sx={{ px: 2, bgcolor: 'background.neutral' }}
+          >
+            {['todos', 'activo', 'desactivado'].map((tab) => (
+              <Tab disableRipple key={tab} label={tab} value={tab} />
+            ))}
+          </Tabs>
+
+          <Divider />
+
+          <ProviderTableToolbar
+            filterName={filterName}
+            onFilterName={handleFilterName}
+          />
 
           <Scrollbar>
-            <TableContainer sx={{ minWidth: 960, position: 'relative' }}>
+            <TableContainer sx={{ minWidth: 800, position: 'relative' }}>
               {selected.length > 0 && (
                 <TableSelectedActions
                   dense={dense}
@@ -199,22 +184,18 @@ export default function EcommerceProductList() {
                 />
 
                 <TableBody>
-                  {(isLoading ? [...Array(rowsPerPage)] : dataFiltered)
+                  {dataFiltered
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                    .map((row, index) =>
-                      row ? (
-                        <ProductTableRow
-                          key={row.id}
-                          row={row}
-                          selected={selected.includes(row.id)}
-                          onSelectRow={() => onSelectRow(row.id)}
-                          onDeleteRow={() => handleDeleteRow(row.id)}
-                          onEditRow={() => handleEditRow(row.name)}
-                        />
-                      ) : (
-                        !isNotFound && <TableSkeleton key={index} sx={{ height: denseHeight }} />
-                      )
-                    )}
+                    .map((row) => (
+                      <ProviderTableRow
+                        key={row.id}
+                        row={row}
+                        selected={selected.includes(row.id)}
+                        onSelectRow={() => onSelectRow(row.id)}
+                        onDeleteRow={() => handleDeleteRow(row.id)}
+                        onEditRow={() => handleEditRow(row.name)}
+                      />
+                    ))}
 
                   <TableEmptyRows
                     height={denseHeight}
@@ -238,11 +219,11 @@ export default function EcommerceProductList() {
               onRowsPerPageChange={onChangeRowsPerPage}
             />
 
-            <FormControlLabel
+            {/* <FormControlLabel
               control={<Switch checked={dense} onChange={onChangeDense} />}
               label="Dense"
               sx={{ px: 3, py: 1.5, top: 0, position: { md: 'absolute' } }}
-            />
+            /> */}
           </Box>
         </Card>
       </Container>
@@ -256,10 +237,12 @@ function applySortFilter({
   tableData,
   comparator,
   filterName,
+  filterStatus,
 }: {
-  tableData: Product[];
+  tableData: ServiceProvider[];
   comparator: (a: any, b: any) => number;
   filterName: string;
+  filterStatus: string;
 }) {
   const stabilizedThis = tableData.map((el, index) => [el, index] as const);
 
@@ -276,6 +259,14 @@ function applySortFilter({
       (item: Record<string, any>) =>
         item.name.toLowerCase().indexOf(filterName.toLowerCase()) !== -1
     );
+  }
+
+  if (filterStatus !== 'todos') {
+    let isActive = false;
+    if (filterStatus === 'activo') {
+      isActive = true;
+    }
+    tableData = tableData.filter((item: Record<string, any>) => item.isActive === isActive);
   }
 
   return tableData;

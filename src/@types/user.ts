@@ -57,20 +57,11 @@ export type Profile = {
 };
 
 export type UserManager = {
-  id: string;
-  avatarUrl: string;
+  id: number;
   name: string;
   email: string;
-  phoneNumber: string;
-  address: string;
-  country: string;
-  state: string;
-  city: string;
-  zipCode: string;
-  company: string;
-  isVerified: boolean;
   status: string;
-  role: string;
+  role: number;
 };
 
 export type UserData = {

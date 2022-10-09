@@ -4,6 +4,7 @@ import axios from '../utils/axios';
 import { isValidToken, setSession } from '../utils/jwt';
 // @types
 import { ActionMap, AuthState, AuthUser, JWTContextType } from '../@types/auth';
+import jwtDecode from 'jwt-decode';
 
 // ----------------------------------------------------------------------
 
@@ -11,7 +12,6 @@ enum Types {
   Initial = 'INITIALIZE',
   Login = 'LOGIN',
   Logout = 'LOGOUT',
-  Register = 'REGISTER',
 }
 
 type JWTAuthPayload = {
@@ -23,9 +23,6 @@ type JWTAuthPayload = {
     user: AuthUser;
   };
   [Types.Logout]: undefined;
-  [Types.Register]: {
-    user: AuthUser;
-  };
 };
 
 export type JWTActions = ActionMap<JWTAuthPayload>[keyof ActionMap<JWTAuthPayload>];
@@ -57,13 +54,6 @@ const JWTReducer = (state: AuthState, action: JWTActions) => {
         user: null,
       };
 
-    case 'REGISTER':
-      return {
-        ...state,
-        isAuthenticated: true,
-        user: action.payload.user,
-      };
-
     default:
       return state;
   }
@@ -87,9 +77,7 @@ function AuthProvider({ children }: AuthProviderProps) {
 
         if (accessToken && isValidToken(accessToken)) {
           setSession(accessToken);
-
-          const response = await axios.get('/api/account/my-account');
-          const { user } = response.data;
+          const user = jwtDecode<AuthUser>(accessToken);
 
           dispatch({
             type: Types.Initial,
@@ -123,35 +111,17 @@ function AuthProvider({ children }: AuthProviderProps) {
   }, []);
 
   const login = async (email: string, password: string) => {
-    const response = await axios.post('/api/account/login', {
+    const response = await axios.post('/auth/login', {
       email,
       password,
     });
-    const { accessToken, user } = response.data;
+    const accessToken = response.data;
+    const user = jwtDecode<AuthUser>(accessToken);
 
     setSession(accessToken);
 
     dispatch({
       type: Types.Login,
-      payload: {
-        user,
-      },
-    });
-  };
-
-  const register = async (email: string, password: string, firstName: string, lastName: string) => {
-    const response = await axios.post('/api/account/register', {
-      email,
-      password,
-      firstName,
-      lastName,
-    });
-    const { accessToken, user } = response.data;
-
-    localStorage.setItem('accessToken', accessToken);
-
-    dispatch({
-      type: Types.Register,
       payload: {
         user,
       },
@@ -170,7 +140,6 @@ function AuthProvider({ children }: AuthProviderProps) {
         method: 'jwt',
         login,
         logout,
-        register,
       }}
     >
       {children}

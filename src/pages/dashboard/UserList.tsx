@@ -1,5 +1,5 @@
 import { paramCase } from 'change-case';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 // @mui
 import {
@@ -40,20 +40,17 @@ import {
 } from '../../components/table';
 // sections
 import { UserTableToolbar, UserTableRow } from '../../sections/@dashboard/user/list';
+import useSWR from 'swr';
+import UserService from 'src/services/UserService';
 
 // ----------------------------------------------------------------------
 
 const STATUS_OPTIONS = ['todos', 'activo', 'desactivado'];
 
-const ROLE_OPTIONS = [
-  'todos',
-  'admin',
-  'director',
-  'agente'
-];
+const ROLE_OPTIONS = ['todos', 'admin', 'director', 'agente'];
 
 const TABLE_HEAD = [
-  { id: 'Nombre', label: 'Nombre', align: 'left' },
+  { id: 'name', label: 'Nombre', align: 'left' },
   { id: 'role', label: 'Rol', align: 'left' },
   { id: 'status', label: 'Estado', align: 'left' },
   { id: '' },
@@ -85,7 +82,7 @@ export default function UserList() {
 
   const navigate = useNavigate();
 
-  const [tableData, setTableData] = useState(_userList);
+  const { data: tableData = [] } = useSWR('users', UserService.getAll);
 
   const [filterName, setFilterName] = useState('');
 
@@ -102,16 +99,14 @@ export default function UserList() {
     setFilterRole(event.target.value);
   };
 
-  const handleDeleteRow = (id: string) => {
+  const handleDeleteRow = (id: number) => {
     const deleteRow = tableData.filter((row) => row.id !== id);
     setSelected([]);
-    setTableData(deleteRow);
   };
 
-  const handleDeleteRows = (selected: string[]) => {
+  const handleDeleteRows = (selected: number[]) => {
     const deleteRows = tableData.filter((row) => !selected.includes(row.id));
     setSelected([]);
-    setTableData(deleteRows);
   };
 
   const handleEditRow = (id: string) => {
@@ -138,10 +133,7 @@ export default function UserList() {
       <Container maxWidth={themeStretch ? false : 'lg'}>
         <HeaderBreadcrumbs
           heading="Lista de Usuarios"
-          links={[
-            { name: 'Dashboard', href: PATH_DASHBOARD.root },
-            { name: 'Usuarios' },
-          ]}
+          links={[{ name: 'Dashboard', href: PATH_DASHBOARD.root }, { name: 'Usuarios' }]}
           action={
             <Button
               variant="contained"
@@ -293,7 +285,7 @@ function applySortFilter({
   if (filterName) {
     tableData = tableData.filter(
       (item: Record<string, any>) =>
-        item.name.toLowerCase().indexOf(filterName.toLowerCase()) !== -1
+        (item.name ?? '').toLowerCase().indexOf(filterName.toLowerCase()) !== -1
     );
   }
 

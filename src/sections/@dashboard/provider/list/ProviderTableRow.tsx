@@ -1,25 +1,24 @@
 import { useState } from 'react';
 // @mui
 import { useTheme } from '@mui/material/styles';
-import { Avatar, Checkbox, TableRow, TableCell, Typography, MenuItem } from '@mui/material';
-// @types
-import { UserManager } from '../../../../@types/user';
+import { Checkbox, TableRow, TableCell, Typography, MenuItem } from '@mui/material';
 // components
 import Label from '../../../../components/Label';
 import Iconify from '../../../../components/Iconify';
 import { TableMoreMenu } from '../../../../components/table';
+import { ServiceProvider } from 'src/@types/provider';
 
 // ----------------------------------------------------------------------
 
 type Props = {
-  row: UserManager;
+  row: ServiceProvider;
   selected: boolean;
   onEditRow: VoidFunction;
   onSelectRow: VoidFunction;
   onDeleteRow: VoidFunction;
 };
 
-export default function UserTableRow({
+export default function ProviderTableRow({
   row,
   selected,
   onEditRow,
@@ -28,7 +27,7 @@ export default function UserTableRow({
 }: Props) {
   const theme = useTheme();
 
-  const { name, role, status } = row;
+  const { name, id, email, type, isActive, phone } = row;
 
   const [openMenu, setOpenMenuActions] = useState<HTMLElement | null>(null);
 
@@ -46,23 +45,33 @@ export default function UserTableRow({
         <Checkbox checked={selected} onClick={onSelectRow} />
       </TableCell>
 
-      <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
-        <Typography variant="subtitle2" noWrap>
-          {name}
-        </Typography>
+      <TableCell align="left" sx={{ textTransform: 'capitalize' }}>
+        {id}
       </TableCell>
 
       <TableCell align="left" sx={{ textTransform: 'capitalize' }}>
-        {role}
+          {name}
+      </TableCell>
+
+      <TableCell align="left">
+        {email}
+      </TableCell>
+
+      <TableCell align="left">
+        {phone}
+      </TableCell>
+
+      <TableCell align="left" sx={{ textTransform: 'capitalize' }}>
+        {type}
       </TableCell>
 
       <TableCell align="left">
         <Label
           variant={theme.palette.mode === 'light' ? 'ghost' : 'filled'}
-          color={(status === 'banned' && 'error') || 'success'}
+          color={(isActive && 'success') || 'error'}
           sx={{ textTransform: 'capitalize' }}
         >
-          {status}
+          {isActive ? 'Activo' : 'Desactivado'}
         </Label>
       </TableCell>
 

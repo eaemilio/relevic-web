@@ -1,0 +1,9 @@
+.marker {
+  transition: all 0.3s ease-in-out;
+  transform: translate(-50%, -50%);
+}
+
+.dragging {
+  transform: translate(-50%, -50%) rotate(15deg);
+  transform-origin: 100% 75%;
+}

@@ -23,12 +23,9 @@ import {
   RHFUploadAvatar,
 } from '../../../components/hook-form';
 import { role } from 'src/_mock/role';
+import { generateRandomPassword } from 'src/utils/jwt';
 
 // ----------------------------------------------------------------------
-
-interface FormValuesProps extends Omit<UserManager, 'avatarUrl'> {
-  avatarUrl: CustomFile | string | null;
-}
 
 type Props = {
   isEdit: boolean;
@@ -52,29 +49,23 @@ export default function UserNewEditForm({ isEdit, currentUser }: Props) {
     () => ({
       name: currentUser?.name || '',
       email: currentUser?.email || '',
-      phoneNumber: currentUser?.phoneNumber || '',
-      avatarUrl: currentUser?.avatarUrl || '',
-      role: currentUser?.role || '',
+      role: currentUser?.role || 0,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [currentUser]
   );
 
-  const methods = useForm<FormValuesProps>({
+  const methods = useForm<UserManager>({
     resolver: yupResolver(NewUserSchema),
     defaultValues,
   });
 
   const {
     reset,
-    watch,
-    control,
     setValue,
     handleSubmit,
     formState: { isSubmitting },
   } = methods;
-
-  const values = watch();
 
   useEffect(() => {
     if (isEdit && currentUser) {
@@ -86,48 +77,42 @@ export default function UserNewEditForm({ isEdit, currentUser }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isEdit, currentUser]);
 
-  const onSubmit = async (data: FormValuesProps) => {
-    try {
-      // ! FIXME: Replace with API
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      reset();
-      enqueueSnackbar(!isEdit ? 'Usuario Creado' : 'Cambios guardados');
-      navigate(PATH_DASHBOARD.user.list);
-    } catch (error) {
-      console.error(error);
-    }
+  const onSubmit = async (data: UserManager) => {
+    console.log(data);
+    // try {
+    //   // const password = generateRandomPassword();
+    //   // console.log({ password });
+    //   // ! FIXME: Replace with API
+    //   await new Promise((resolve) => setTimeout(resolve, 500));
+    //   reset();
+    //   enqueueSnackbar(!isEdit ? 'Usuario Creado' : 'Cambios guardados');
+    //   navigate(PATH_DASHBOARD.user.list);
+    // } catch (error) {
+    //   console.error(error);
+    // }
   };
 
-  const handleDrop = useCallback(
-    (acceptedFiles: File[]) => {
-      const file = acceptedFiles[0];
+  // const handleDrop = useCallback(
+  //   (acceptedFiles: File[]) => {
+  //     const file = acceptedFiles[0];
 
-      if (file) {
-        setValue(
-          'avatarUrl',
-          Object.assign(file, {
-            preview: URL.createObjectURL(file),
-          })
-        );
-      }
-    },
-    [setValue]
-  );
+  //     if (file) {
+  //       setValue(
+  //         'avatarUrl',
+  //         Object.assign(file, {
+  //           preview: URL.createObjectURL(file),
+  //         })
+  //       );
+  //     }
+  //   },
+  //   [setValue]
+  // );
 
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
       <Grid container spacing={3}>
-        <Grid item xs={12} md={4}>
+        {/* <Grid item xs={12} md={4}>
           <Card sx={{ py: 10, px: 3 }}>
-            {/* {isEdit && (
-              <Label
-                color={values.status !== 'active' ? 'error' : 'success'}
-                sx={{ textTransform: 'uppercase', position: 'absolute', top: 24, right: 24 }}
-              >
-                {values.status}
-              </Label>
-            )} */}
-
             <Box sx={{ mb: 5 }}>
               <RHFUploadAvatar
                 name="avatarUrl"
@@ -150,58 +135,10 @@ export default function UserNewEditForm({ isEdit, currentUser }: Props) {
                 }
               />
             </Box>
-
-            {/* {isEdit && (
-              <FormControlLabel
-                labelPlacement="start"
-                control={
-                  <Controller
-                    name="status"
-                    control={control}
-                    render={({ field }) => (
-                      <Switch
-                        {...field}
-                        checked={field.value !== 'active'}
-                        onChange={(event) =>
-                          field.onChange(event.target.checked ? 'banned' : 'active')
-                        }
-                      />
-                    )}
-                  />
-                }
-                label={
-                  <>
-                    <Typography variant="subtitle2" sx={{ mb: 0.5 }}>
-                      Banned
-                    </Typography>
-                    <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                      Apply disable account
-                    </Typography>
-                  </>
-                }
-                sx={{ mx: 0, mb: 3, width: 1, justifyContent: 'space-between' }}
-              />
-            )} */}
-
-            {/* <RHFSwitch
-              name="isVerified"
-              labelPlacement="start"
-              label={
-                <>
-                  <Typography variant="subtitle2" sx={{ mb: 0.5 }}>
-                    Email Verified
-                  </Typography>
-                  <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                    Disabling this will automatically send the user a verification email
-                  </Typography>
-                </>
-              }
-              sx={{ mx: 0, width: 1, justifyContent: 'space-between' }}
-            /> */}
           </Card>
-        </Grid>
+        </Grid> */}
 
-        <Grid item xs={12} md={8}>
+        <Grid item xs={12} md={12}>
           <Card sx={{ p: 3 }}>
             <Box
               sx={{
@@ -213,17 +150,10 @@ export default function UserNewEditForm({ isEdit, currentUser }: Props) {
             >
               <RHFTextField name="name" label="Nombre Completo" />
               <RHFTextField name="email" label="Correo Electrónico" />
-              <RHFTextField name="phoneNumber" label="Número de Teléfono" />
-
-              {/* <RHFTextField name="state" label="State/Region" />
-              <RHFTextField name="city" label="City" />
-              <RHFTextField name="address" label="Address" />
-              <RHFTextField name="zipCode" label="Zip/Code" />
-              <RHFTextField name="company" label="Company" /> */}
               <RHFSelect name="role" label="Rol" placeholder="Rol">
                 <option value="" />
-                {role.map((option) => (
-                  <option key={option} value={option}>
+                {role.map((option, index) => (
+                  <option key={index} value={index}>
                     {option}
                   </option>
                 ))}

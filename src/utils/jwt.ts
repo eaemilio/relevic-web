@@ -43,12 +43,14 @@ const setSession = (accessToken: string | null) => {
     axios.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
 
     // This function below will handle when token is expired
-    const { exp } = jwtDecode<{ exp: number }>(accessToken); // ~3 days by minimals server
+    const { exp } = jwtDecode<{ exp: number }>(accessToken);
     handleTokenExpired(exp);
   } else {
     localStorage.removeItem('accessToken');
     delete axios.defaults.headers.common.Authorization;
   }
 };
+
+export const generateRandomPassword = () => Math.random().toString(36).slice(-12);
 
 export { isValidToken, setSession };

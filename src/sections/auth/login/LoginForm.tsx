@@ -37,13 +37,13 @@ export default function LoginForm() {
   });
 
   const defaultValues: FormValuesProps = {
-    email: 'demo@minimals.cc',
-    password: 'demo1234'
+    email: 'ebarrientos@ijm.org',
+    password: '12345678',
   };
 
   const methods = useForm<FormValuesProps>({
     resolver: yupResolver(LoginSchema),
-    defaultValues
+    defaultValues,
   });
 
   const {

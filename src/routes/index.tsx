@@ -3,7 +3,6 @@ import { Navigate, useRoutes, useLocation } from 'react-router-dom';
 // hooks
 import useAuth from '../hooks/useAuth';
 // layouts
-import MainLayout from '../layouts/main';
 import DashboardLayout from '../layouts/dashboard';
 import LogoOnlyLayout from '../layouts/LogoOnlyLayout';
 // guards
@@ -73,27 +72,26 @@ export default function Router() {
       children: [
         { element: <Navigate to={PATH_AFTER_LOGIN} replace />, index: true },
         { path: 'app', element: <GeneralApp /> },
-        { path: 'ecommerce', element: <GeneralEcommerce /> },
-        { path: 'analytics', element: <GeneralAnalytics /> },
-        { path: 'banking', element: <GeneralBanking /> },
-        { path: 'booking', element: <GeneralBooking /> },
+        // { path: 'ecommerce', element: <GeneralEcommerce /> },
+        // { path: 'analytics', element: <GeneralAnalytics /> },
+        // { path: 'banking', element: <GeneralBanking /> },
+        // { path: 'booking', element: <GeneralBooking /> },
 
-        {
-          path: 'e-commerce',
-          children: [
-            { element: <Navigate to="/dashboard/e-commerce/shop" replace />, index: true },
-            { path: 'shop', element: <EcommerceShop /> },
-            { path: 'product/:name', element: <EcommerceProductDetails /> },
-            { path: 'list', element: <EcommerceProductList /> },
-            { path: 'product/new', element: <EcommerceProductCreate /> },
-            { path: 'product/:name/edit', element: <EcommerceProductEdit /> },
-            { path: 'checkout', element: <EcommerceCheckout /> },
-          ],
-        },
+        // {
+        //   path: 'e-commerce',
+        //   children: [
+        //     { element: <Navigate to="/dashboard/e-commerce/shop" replace />, index: true },
+        //     { path: 'shop', element: <EcommerceShop /> },
+        //     { path: 'product/:name', element: <EcommerceProductDetails /> },
+        //     { path: 'product/new', element: <EcommerceProductCreate /> },
+        //     { path: 'product/:name/edit', element: <EcommerceProductEdit /> },
+        //     { path: 'checkout', element: <EcommerceCheckout /> },
+        //   ],
+        // },
         {
           path: 'user',
           children: [
-            { element: <Navigate to="/dashboard/user/profile" replace />, index: true },
+            { element: <Navigate to="/dashboard/user/list" replace />, index: true },
             { path: 'profile', element: <UserProfile /> },
             { path: 'cards', element: <UserCards /> },
             { path: 'list', element: <UserList /> },
@@ -103,10 +101,17 @@ export default function Router() {
           ],
         },
         {
+          path: 'provider',
+          children: [
+            { element: <Navigate to="/dashboard/provider/list" replace />, index: true },
+            { path: 'list', element: <ProviderList /> },
+            { path: 'new', element: <ProviderCreate /> },
+          ],
+        },
+        {
           path: 'invoice',
           children: [
             { element: <Navigate to="/dashboard/invoice/list" replace />, index: true },
-            { path: 'list', element: <InvoiceList /> },
             { path: ':id', element: <InvoiceDetails /> },
             { path: ':id/edit', element: <InvoiceEdit /> },
             { path: 'new', element: <InvoiceCreate /> },
@@ -176,29 +181,8 @@ const VerifyCode = Loadable(lazy(() => import('../pages/auth/VerifyCode')));
 
 // GENERAL
 const GeneralApp = Loadable(lazy(() => import('../pages/dashboard/GeneralApp')));
-const GeneralEcommerce = Loadable(lazy(() => import('../pages/dashboard/GeneralEcommerce')));
-const GeneralAnalytics = Loadable(lazy(() => import('../pages/dashboard/GeneralAnalytics')));
-const GeneralBanking = Loadable(lazy(() => import('../pages/dashboard/GeneralBanking')));
-const GeneralBooking = Loadable(lazy(() => import('../pages/dashboard/GeneralBooking')));
-
-// ECOMMERCE
-const EcommerceShop = Loadable(lazy(() => import('../pages/dashboard/EcommerceShop')));
-const EcommerceProductDetails = Loadable(
-  lazy(() => import('../pages/dashboard/EcommerceProductDetails'))
-);
-const EcommerceProductList = Loadable(
-  lazy(() => import('../pages/dashboard/EcommerceProductList'))
-);
-const EcommerceProductCreate = Loadable(
-  lazy(() => import('../pages/dashboard/EcommerceProductCreate'))
-);
-const EcommerceProductEdit = Loadable(
-  lazy(() => import('../pages/dashboard/EcommerceProductEdit'))
-);
-const EcommerceCheckout = Loadable(lazy(() => import('../pages/dashboard/EcommerceCheckout')));
 
 // INVOICE
-const InvoiceList = Loadable(lazy(() => import('../pages/dashboard/InvoiceList')));
 const InvoiceDetails = Loadable(lazy(() => import('../pages/dashboard/InvoiceDetails')));
 const InvoiceCreate = Loadable(lazy(() => import('../pages/dashboard/InvoiceCreate')));
 const InvoiceEdit = Loadable(lazy(() => import('../pages/dashboard/InvoiceEdit')));
@@ -214,6 +198,11 @@ const UserCards = Loadable(lazy(() => import('../pages/dashboard/UserCards')));
 const UserList = Loadable(lazy(() => import('../pages/dashboard/UserList')));
 const UserAccount = Loadable(lazy(() => import('../pages/dashboard/UserAccount')));
 const UserCreate = Loadable(lazy(() => import('../pages/dashboard/UserCreate')));
+
+// PROVIDER
+const ProviderList = Loadable(lazy(() => import('../pages/dashboard/provider/ProviderList')));
+const ProviderCreate = Loadable(lazy(() => import('../pages/dashboard/provider/ProviderCreate')));
+
 
 // APP
 const Chat = Loadable(lazy(() => import('../pages/dashboard/Chat')));
