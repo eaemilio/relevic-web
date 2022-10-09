@@ -111,33 +111,6 @@ export default function UserNewEditForm({ isEdit, currentUser }: Props) {
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
       <Grid container spacing={3}>
-        {/* <Grid item xs={12} md={4}>
-          <Card sx={{ py: 10, px: 3 }}>
-            <Box sx={{ mb: 5 }}>
-              <RHFUploadAvatar
-                name="avatarUrl"
-                maxSize={3145728}
-                onDrop={handleDrop}
-                helperText={
-                  <Typography
-                    variant="caption"
-                    sx={{
-                      mt: 2,
-                      mx: 'auto',
-                      display: 'block',
-                      textAlign: 'center',
-                      color: 'text.secondary',
-                    }}
-                  >
-                    Allowed *.jpeg, *.jpg, *.png, *.gif
-                    <br /> max size of {fData(3145728)}
-                  </Typography>
-                }
-              />
-            </Box>
-          </Card>
-        </Grid> */}
-
         <Grid item xs={12} md={12}>
           <Card sx={{ p: 3 }}>
             <Box
