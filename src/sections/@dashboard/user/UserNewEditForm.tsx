@@ -92,22 +92,6 @@ export default function UserNewEditForm({ isEdit, currentUser }: Props) {
     // }
   };
 
-  // const handleDrop = useCallback(
-  //   (acceptedFiles: File[]) => {
-  //     const file = acceptedFiles[0];
-
-  //     if (file) {
-  //       setValue(
-  //         'avatarUrl',
-  //         Object.assign(file, {
-  //           preview: URL.createObjectURL(file),
-  //         })
-  //       );
-  //     }
-  //   },
-  //   [setValue]
-  // );
-
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
       <Grid container spacing={3}>
