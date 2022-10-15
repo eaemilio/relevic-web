@@ -9,22 +9,26 @@ import ScrollToTop from './components/ScrollToTop';
 import { ProgressBarStyle } from './components/ProgressBar';
 import NotistackProvider from './components/NotistackProvider';
 import MotionLazyContainer from './components/animate/MotionLazyContainer';
+import { SWRConfig } from 'swr';
+import SWRService from './services/SWRService';
 
 // ----------------------------------------------------------------------
 
 export default function App() {
   return (
     <MotionLazyContainer>
-      <ThemeProvider>
-        <ThemeSettings>
-          <NotistackProvider>
-            <ProgressBarStyle />
-            <ChartStyle />
-            <ScrollToTop />
-            <Router />
-          </NotistackProvider>
-        </ThemeSettings>
-      </ThemeProvider>
+      <SWRConfig value={{ fetcher: SWRService.getAll }}>
+        <ThemeProvider>
+          <ThemeSettings>
+            <NotistackProvider>
+              <ProgressBarStyle />
+              <ChartStyle />
+              <ScrollToTop />
+              <Router />
+            </NotistackProvider>
+          </ThemeSettings>
+        </ThemeProvider>
+      </SWRConfig>
     </MotionLazyContainer>
   );
 }

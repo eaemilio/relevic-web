@@ -1,5 +1,5 @@
 import * as Yup from 'yup';
-import { useCallback, useEffect, useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useSnackbar } from 'notistack';
 import { useNavigate } from 'react-router-dom';
 // form
@@ -7,23 +7,17 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
 import { LoadingButton } from '@mui/lab';
-import { Box, Card, Grid, Stack, Typography } from '@mui/material';
-// utils
-import { fData } from '../../../utils/formatNumber';
+import { Box, Card, Grid, Stack } from '@mui/material';
 // routes
 import { PATH_DASHBOARD } from '../../../routes/paths';
 // @types
 import { UserManager } from '../../../@types/user';
-// components
-import { CustomFile } from '../../../components/upload';
-import {
-  FormProvider,
-  RHFSelect,
-  RHFTextField,
-  RHFUploadAvatar,
-} from '../../../components/hook-form';
-import { role } from 'src/_mock/role';
+import { FormProvider, RHFSelect, RHFTextField } from '../../../components/hook-form';
 import { generateRandomPassword } from 'src/utils/jwt';
+import { createUser, editUser } from 'src/services/UserService';
+import useSWR, { useSWRConfig } from 'swr';
+import SWRService from 'src/services/SWRService';
+import { Role } from 'src/@types/role';
 
 // ----------------------------------------------------------------------
 
@@ -34,22 +28,21 @@ type Props = {
 
 export default function UserNewEditForm({ isEdit, currentUser }: Props) {
   const navigate = useNavigate();
-
+  const { mutate } = useSWRConfig();
   const { enqueueSnackbar } = useSnackbar();
+  const { data: roles = [] } = useSWR<Role[]>('/role');
 
   const NewUserSchema = Yup.object().shape({
     name: Yup.string().required('Name is required'),
     email: Yup.string().required('Email is required').email(),
-    phoneNumber: Yup.string().required('Phone number is required'),
-    role: Yup.string().required('Role Number is required'),
-    avatarUrl: Yup.string(),
+    roleId: Yup.number().required('Role Number is required'),
   });
 
   const defaultValues = useMemo(
     () => ({
       name: currentUser?.name || '',
       email: currentUser?.email || '',
-      role: currentUser?.role || 0,
+      roleId: currentUser?.roleId || 0,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [currentUser]
@@ -62,7 +55,6 @@ export default function UserNewEditForm({ isEdit, currentUser }: Props) {
 
   const {
     reset,
-    setValue,
     handleSubmit,
     formState: { isSubmitting },
   } = methods;
@@ -78,18 +70,20 @@ export default function UserNewEditForm({ isEdit, currentUser }: Props) {
   }, [isEdit, currentUser]);
 
   const onSubmit = async (data: UserManager) => {
-    console.log(data);
-    // try {
-    //   // const password = generateRandomPassword();
-    //   // console.log({ password });
-    //   // ! FIXME: Replace with API
-    //   await new Promise((resolve) => setTimeout(resolve, 500));
-    //   reset();
-    //   enqueueSnackbar(!isEdit ? 'Usuario Creado' : 'Cambios guardados');
-    //   navigate(PATH_DASHBOARD.user.list);
-    // } catch (error) {
-    //   console.error(error);
-    // }
+    try {
+      if (!isEdit) {
+        const password = generateRandomPassword();
+        await createUser({ ...data, password });
+      } else if (currentUser?.id) {
+        await editUser(currentUser?.id, data);
+      }
+      mutate('/user');
+      reset();
+      enqueueSnackbar(!isEdit ? 'Usuario Creado' : 'Cambios guardados');
+      navigate(PATH_DASHBOARD.user.list);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
@@ -107,11 +101,11 @@ export default function UserNewEditForm({ isEdit, currentUser }: Props) {
             >
               <RHFTextField name="name" label="Nombre Completo" />
               <RHFTextField name="email" label="Correo Electrónico" />
-              <RHFSelect name="role" label="Rol" placeholder="Rol">
-                <option value="" />
-                {role.map((option, index) => (
-                  <option key={index} value={index}>
-                    {option}
+              <RHFSelect name="roleId" label="Rol" placeholder="Rol">
+                <option value={0} />
+                {roles.map((option) => (
+                  <option key={option.id} value={option.id}>
+                    {option.name}
                   </option>
                 ))}
               </RHFSelect>

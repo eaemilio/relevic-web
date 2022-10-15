@@ -96,7 +96,7 @@ export default function Router() {
             { path: 'cards', element: <UserCards /> },
             { path: 'list', element: <UserList /> },
             { path: 'new', element: <UserCreate /> },
-            { path: ':name/edit', element: <UserCreate /> },
+            { path: ':id', element: <UserCreate /> },
             { path: 'account', element: <UserAccount /> },
           ],
         },
@@ -106,6 +106,33 @@ export default function Router() {
             { element: <Navigate to="/dashboard/provider/list" replace />, index: true },
             { path: 'list', element: <ProviderList /> },
             { path: 'new', element: <ProviderCreate /> },
+          ],
+        },
+        {
+          path: 'role',
+          children: [
+            { element: <Navigate to="/dashboard/role/list" replace />, index: true },
+            { path: 'list', element: <RoleList /> },
+            { path: 'new', element: <RoleCreate /> },
+            { path: ':id', element: <RoleCreate /> },
+          ],
+        },
+        {
+          path: 'service-type',
+          children: [
+            { element: <Navigate to="/dashboard/service-type/list" replace />, index: true },
+            { path: 'list', element: <ServiceTypeList /> },
+            { path: 'new', element: <ServiceTypeCreate /> },
+            { path: ':id', element: <ServiceTypeCreate /> },
+          ],
+        },
+        {
+          path: 'province',
+          children: [
+            { element: <Navigate to="/dashboard/province/list" replace />, index: true },
+            { path: 'list', element: <ProvinceList /> },
+            { path: 'new', element: <ProvinceCreate /> },
+            { path: ':id', element: <ProvinceCreate /> },
           ],
         },
         {
@@ -203,6 +230,21 @@ const UserCreate = Loadable(lazy(() => import('../pages/dashboard/UserCreate')))
 const ProviderList = Loadable(lazy(() => import('../pages/dashboard/provider/ProviderList')));
 const ProviderCreate = Loadable(lazy(() => import('../pages/dashboard/provider/ProviderCreate')));
 
+// ROLE
+const RoleList = Loadable(lazy(() => import('../pages/dashboard/role/RoleList')));
+const RoleCreate = Loadable(lazy(() => import('../pages/dashboard/role/RoleCreate')));
+
+// SERVICE TYPE
+const ServiceTypeList = Loadable(
+  lazy(() => import('../pages/dashboard/service-type/ServiceTypeList'))
+);
+const ServiceTypeCreate = Loadable(
+  lazy(() => import('../pages/dashboard/service-type/ServiceTypeCreate'))
+);
+
+// PROVINCE
+const ProvinceList = Loadable(lazy(() => import('../pages/dashboard/province/ProvinceList')));
+const ProvinceCreate = Loadable(lazy(() => import('../pages/dashboard/province/ProvinceCreate')));
 
 // APP
 const Chat = Loadable(lazy(() => import('../pages/dashboard/Chat')));

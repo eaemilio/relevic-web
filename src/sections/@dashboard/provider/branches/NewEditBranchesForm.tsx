@@ -1,22 +1,22 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import { LoadingButton } from '@mui/lab';
-import { Card, Grid, Stack, Typography } from '@mui/material';
+import { Button, Card, Grid, Stack, Typography } from '@mui/material';
 import { Box } from '@mui/system';
 import { useSnackbar } from 'notistack';
 import { useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { ProviderBranch } from 'src/@types/provider';
 import { FormProvider, RHFTextField } from 'src/components/hook-form';
-import { PATH_DASHBOARD } from 'src/routes/paths';
 import LocationMap from 'src/sections/location-map/LocationMap';
 import * as Yup from 'yup';
 
 type Props = {
   isEdit?: boolean;
   currentBranch?: ProviderBranch;
+  onCancel?: () => void;
 };
 
-function NewEditBranchesForm({ isEdit = false, currentBranch }: Props) {
+function NewEditBranchesForm({ isEdit = false, currentBranch, onCancel }: Props) {
   const { enqueueSnackbar } = useSnackbar();
   const NewBranchSchema = Yup.object().shape({
     name: Yup.string().required('Campo obligatorio'),
@@ -76,7 +76,7 @@ function NewEditBranchesForm({ isEdit = false, currentBranch }: Props) {
         <Grid item xs={12} md={12} sx={{ mt: 2 }}>
           <Card sx={{ p: 3, flexDirection: 'column', display: 'flex' }}>
             <Typography variant="h5" noWrap>
-              Agregar Nueva Sede
+              {isEdit ? 'Editar Sede' : 'Agregar Nueva Sede'}
             </Typography>
             <Typography variant="caption" noWrap>
               Selecciona en el mapa la ubicación exacta y llena los datos de la sede
@@ -97,11 +97,16 @@ function NewEditBranchesForm({ isEdit = false, currentBranch }: Props) {
                 <RHFTextField name="email" label="Correo de la Sede" />
                 <RHFTextField name="phone" label="Número de teléfono de Sede" />
               </Box>
-              <Stack alignItems="flex-end" sx={{ mt: 3 }}>
+              <Box sx={{ mt: 3, display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
+                {onCancel && (
+                  <Button variant="contained" color="error" onClick={onCancel}>
+                    Cancelar
+                  </Button>
+                )}
                 <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
                   {!isEdit ? 'Crear Sede' : 'Guardar Cambios'}
                 </LoadingButton>
-              </Stack>
+              </Box>
             </Box>
           </Card>
         </Grid>

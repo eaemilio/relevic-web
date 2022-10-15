@@ -1,21 +1,14 @@
 import { UserManager } from 'src/@types/user';
 import axiosInstance from 'src/utils/axios';
 
-const BASE_URL = '/user';
+export const createUser = async (
+  body: UserManager & { password: string }
+): Promise<UserManager> => {
+  const user = await axiosInstance.post<UserManager>('/auth/register', body);
+  return user.data;
+};
 
-export default class UserService {
-  static getAll = async (): Promise<UserManager[]> => {
-    const result = await axiosInstance.get(BASE_URL);
-    return result.data;
-  };
-
-  static getSingle = async (id: number): Promise<UserManager> => {
-    const result = await axiosInstance.get(`${BASE_URL}/${id}`);
-    return result.data;
-  };
-
-  static create = async (body: Partial<UserManager>): Promise<UserManager> => {
-    const result = await axiosInstance.post(BASE_URL, body);
-    return result.data;
-  };
-}
+export const editUser = async (id: number, body: UserManager): Promise<UserManager> => {
+  const user = await axiosInstance.put<UserManager>(`/user/${id}`, body);
+  return user.data;
+};

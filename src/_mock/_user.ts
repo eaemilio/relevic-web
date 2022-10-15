@@ -126,5 +126,5 @@ export const _userList: UserManager[] = [...Array(24)].map((_, index) => ({
   email: _mock.email(index),
   phoneNumber: _mock.phoneNumber(index),
   status: randomInArray(['active', 'banned']),
-  role: 1,
+  roleId: 1,
 }));

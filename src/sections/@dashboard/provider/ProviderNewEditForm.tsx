@@ -1,5 +1,5 @@
 import * as Yup from 'yup';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useSnackbar } from 'notistack';
 import { useNavigate } from 'react-router-dom';
 // form
@@ -21,7 +21,7 @@ import {
 import { HELP_ITEMS, INTEREST_OPTIONS, ServiceProvider } from 'src/@types/provider';
 import useTabs from 'src/hooks/useTabs';
 import Iconify from 'src/components/Iconify';
-import NewEditBranchesForm from './branches/NewEditBranchesForm';
+import BranchesView from './branches/BranchesView';
 
 // ----------------------------------------------------------------------
 
@@ -40,6 +40,7 @@ export default function ProviderNewEditForm({ isEdit, currentProvider }: Props) 
   const navigate = useNavigate();
 
   const { enqueueSnackbar } = useSnackbar();
+  const [branchDisabled, setBranchDisabled] = useState(!isEdit);
 
   const NewServiceProviderSchema = Yup.object().shape({
     name: Yup.string().required('Campo obligatorio'),
@@ -51,7 +52,7 @@ export default function ProviderNewEditForm({ isEdit, currentProvider }: Props) 
       name: currentProvider?.name ?? '',
       email: currentProvider?.email ?? '',
       phone: currentProvider?.phone ?? '',
-      description: currentProvider?.phone ?? '',
+      description: currentProvider?.description ?? '',
       address: currentProvider?.address ?? '',
       province: currentProvider?.province ?? '',
       type: currentProvider?.type ?? 0,
@@ -81,7 +82,7 @@ export default function ProviderNewEditForm({ isEdit, currentProvider }: Props) 
   } = methods;
 
   const values = watch();
-  const { currentTab, onChangeTab } = useTabs('general');
+  const { currentTab, onChangeTab, setCurrentTab } = useTabs('general');
 
   useEffect(() => {
     if (isEdit && currentProvider) {
@@ -97,9 +98,11 @@ export default function ProviderNewEditForm({ isEdit, currentProvider }: Props) 
     try {
       // ! FIXME: Replace with API
       await new Promise((resolve) => setTimeout(resolve, 500));
-      reset();
-      enqueueSnackbar(!isEdit ? 'Proveedor Creado' : 'Cambios guardados');
-      navigate(PATH_DASHBOARD.user.list);
+      enqueueSnackbar(currentProvider ? 'Proveedor Creado' : 'Cambios guardados');
+      setCurrentTab('sedes');
+      setBranchDisabled(false);
+
+      // TODO: Mutate /provider/id to get the current provider.
     } catch (error) {
       console.error(error);
     }
@@ -123,6 +126,7 @@ export default function ProviderNewEditForm({ isEdit, currentProvider }: Props) 
         />
         <Tab
           disableRipple
+          disabled={branchDisabled}
           key={1}
           label="Sedes"
           icon={<Iconify icon={'ic:round-place'} width={20} height={20} />}
@@ -265,7 +269,7 @@ export default function ProviderNewEditForm({ isEdit, currentProvider }: Props) 
             <Grid item xs={12} md={12}>
               <Stack alignItems="flex-end" sx={{ mt: 2 }}>
                 <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
-                  {!isEdit ? 'Crear Proveedor' : 'Guardar Cambios'}
+                  {!isEdit ? 'Siguiente: Agregar Sedes' : 'Guardar Cambios'}
                 </LoadingButton>
               </Stack>
             </Grid>
@@ -273,7 +277,7 @@ export default function ProviderNewEditForm({ isEdit, currentProvider }: Props) 
         </FormProvider>
       )}
 
-      {currentTab === 'sedes' && <NewEditBranchesForm />}
+      {currentTab === 'sedes' && <BranchesView providerId={currentProvider?.id} />}
     </>
   );
 }

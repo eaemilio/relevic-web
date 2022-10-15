@@ -7,19 +7,17 @@ import Page from 'src/components/Page';
 import { PATH_DASHBOARD } from 'src/routes/paths';
 import HeaderBreadcrumbs from 'src/components/HeaderBreadcrumbs';
 import ProviderNewEditForm from 'src/sections/@dashboard/provider/ProviderNewEditForm';
+import { ServiceProvider } from 'src/@types/provider';
+import useSWR from 'swr';
 
 // ----------------------------------------------------------------------
 
 export default function ProviderCreate() {
   const { themeStretch } = useSettings();
-
-  const { pathname } = useLocation();
-
   const { id } = useParams();
+  const isEdit = !!id;
 
-  const isEdit = pathname.includes('edit');
-
-  console.log(`params id: ${id}`)
+  const { data: currentProvider } = useSWR<ServiceProvider>(id && `/provider/${id}`);
 
   return (
     <Page title="Nuevo Proveedor">
@@ -33,7 +31,7 @@ export default function ProviderCreate() {
           ]}
         />
 
-        <ProviderNewEditForm isEdit={isEdit} />
+        <ProviderNewEditForm isEdit={isEdit} currentProvider={currentProvider} />
       </Container>
     </Page>
   );

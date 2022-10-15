@@ -26,7 +26,12 @@ import HeaderBreadcrumbs from 'src/components/HeaderBreadcrumbs';
 import Iconify from 'src/components/Iconify';
 import ProviderTableToolbar from 'src/sections/@dashboard/provider/list/ProviderTableToolbar';
 import Scrollbar from 'src/components/Scrollbar';
-import { TableEmptyRows, TableHeadCustom, TableNoData, TableSelectedActions } from 'src/components/table';
+import {
+  TableEmptyRows,
+  TableHeadCustom,
+  TableNoData,
+  TableSelectedActions,
+} from 'src/components/table';
 import ProviderTableRow from 'src/sections/@dashboard/provider/list/ProviderTableRow';
 import { ServiceProvider } from 'src/@types/provider';
 import { PROVIDERS_MOCK } from 'src/_mock/provider';
@@ -86,7 +91,7 @@ export default function ProviderList() {
 
   const handleEditRow = (id: string) => {
     // ! FIXME: Redirect to providers edit page
-    navigate(PATH_DASHBOARD.user.edit(paramCase(id)));
+    // navigate(PATH_DASHBOARD.user.edit(paramCase(id)));
   };
 
   const dataFiltered = applySortFilter({
@@ -99,18 +104,14 @@ export default function ProviderList() {
   const denseHeight = dense ? 52 : 72;
 
   const isNotFound =
-    (!dataFiltered.length && !!filterName) ||
-    (!dataFiltered.length && !!filterStatus);
+    (!dataFiltered.length && !!filterName) || (!dataFiltered.length && !!filterStatus);
 
   return (
     <Page title="Usuarios">
       <Container maxWidth={themeStretch ? false : 'lg'}>
         <HeaderBreadcrumbs
           heading="Lista de Proveedores de Servicios"
-          links={[
-            { name: 'Dashboard', href: PATH_DASHBOARD.root },
-            { name: 'Proveedores' },
-          ]}
+          links={[{ name: 'Dashboard', href: PATH_DASHBOARD.root }, { name: 'Proveedores' }]}
           action={
             <Button
               variant="contained"
@@ -139,10 +140,7 @@ export default function ProviderList() {
 
           <Divider />
 
-          <ProviderTableToolbar
-            filterName={filterName}
-            onFilterName={handleFilterName}
-          />
+          <ProviderTableToolbar filterName={filterName} onFilterName={handleFilterName} />
 
           <Scrollbar>
             <TableContainer sx={{ minWidth: 800, position: 'relative' }}>

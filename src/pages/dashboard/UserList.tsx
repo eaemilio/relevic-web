@@ -41,7 +41,9 @@ import {
 // sections
 import { UserTableToolbar, UserTableRow } from '../../sections/@dashboard/user/list';
 import useSWR from 'swr';
-import UserService from 'src/services/UserService';
+import SWRService from 'src/services/SWRService';
+import { useSnackbar } from 'notistack';
+import { removeAsync } from 'src/services/APIGateway';
 
 // ----------------------------------------------------------------------
 
@@ -82,13 +84,15 @@ export default function UserList() {
 
   const navigate = useNavigate();
 
-  const { data: tableData = [] } = useSWR('users', UserService.getAll);
+  const { data: tableData = [], mutate } = useSWR<UserManager[]>('/user');
 
   const [filterName, setFilterName] = useState('');
 
   const [filterRole, setFilterRole] = useState('todos');
 
   const { currentTab: filterStatus, onChangeTab: onChangeFilterStatus } = useTabs('todos');
+
+  const { enqueueSnackbar } = useSnackbar();
 
   const handleFilterName = (filterName: string) => {
     setFilterName(filterName);
@@ -99,18 +103,24 @@ export default function UserList() {
     setFilterRole(event.target.value);
   };
 
-  const handleDeleteRow = (id: number) => {
-    const deleteRow = tableData.filter((row) => row.id !== id);
-    setSelected([]);
+  const handleDeleteRow = async (id: number) => {
+    try {
+      await removeAsync(`/user/${id}`);
+      mutate([...tableData.filter((td) => td.id !== id)]);
+      setSelected([]);
+    } catch {
+      enqueueSnackbar('Ocurrió un error, inténtalo de nuevo', {
+        variant: 'error',
+      });
+    }
   };
 
   const handleDeleteRows = (selected: number[]) => {
-    const deleteRows = tableData.filter((row) => !selected.includes(row.id));
     setSelected([]);
   };
 
-  const handleEditRow = (id: string) => {
-    navigate(PATH_DASHBOARD.user.edit(paramCase(id)));
+  const handleEditRow = (id: number) => {
+    navigate(PATH_DASHBOARD.user.edit(id));
   };
 
   const dataFiltered = applySortFilter({
@@ -219,7 +229,7 @@ export default function UserList() {
                         selected={selected.includes(row.id)}
                         onSelectRow={() => onSelectRow(row.id)}
                         onDeleteRow={() => handleDeleteRow(row.id)}
-                        onEditRow={() => handleEditRow(row.name)}
+                        onEditRow={() => handleEditRow(row.id)}
                       />
                     ))}
 
@@ -294,11 +304,11 @@ function applySortFilter({
     if (filterStatus === 'activo') {
       status = 'active';
     }
-    tableData = tableData.filter((item: Record<string, any>) => item.status === status);
+    tableData = tableData.filter((item) => item.status === status);
   }
 
   if (filterRole !== 'todos') {
-    tableData = tableData.filter((item: Record<string, any>) => item.role === filterRole);
+    // tableData = tableData.filter((item) => item.roleId === filterRole);
   }
 
   return tableData;

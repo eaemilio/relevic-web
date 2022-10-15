@@ -70,6 +70,39 @@ const navConfig = [
           { title: 'Nuevo Proveedor', path: PATH_DASHBOARD.provider.new },
         ],
       },
+
+      // ROLES
+      {
+        title: 'Roles',
+        path: PATH_DASHBOARD.role.list,
+        icon: <Iconify icon={'heroicons:lock-open-20-solid'} width={20} height={20} />,
+        children: [
+          { title: 'Lista de Roles', path: PATH_DASHBOARD.role.list },
+          { title: 'Nuevo Rol', path: PATH_DASHBOARD.role.new },
+        ],
+      },
+
+      // SERVICE TYPES
+      {
+        title: 'Tipos de Servicio',
+        path: PATH_DASHBOARD.serviceType.list,
+        icon: <Iconify icon={'heroicons:globe-alt-20-solid'} width={20} height={20} />,
+        children: [
+          { title: 'Listado', path: PATH_DASHBOARD.serviceType.list },
+          { title: 'Nuevo Tipo de Servicio', path: PATH_DASHBOARD.serviceType.new },
+        ],
+      },
+
+      // PROVINCE
+      {
+        title: 'Provincias',
+        path: PATH_DASHBOARD.serviceType.list,
+        icon: <Iconify icon={'heroicons:flag-20-solid'} width={20} height={20} />,
+        children: [
+          { title: 'Listado de Provincias', path: PATH_DASHBOARD.province.list },
+          { title: 'Nueva Provincia', path: PATH_DASHBOARD.province.new },
+        ],
+      },
       // E-COMMERCE
       // {
       //   title: 'ecommerce',

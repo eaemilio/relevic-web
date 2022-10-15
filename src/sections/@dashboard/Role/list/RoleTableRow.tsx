@@ -1,34 +1,29 @@
 import { useState } from 'react';
 // @mui
-import { useTheme } from '@mui/material/styles';
-import { Avatar, Checkbox, TableRow, TableCell, Typography, MenuItem } from '@mui/material';
-// @types
-import { UserManager } from '../../../../@types/user';
+import { Checkbox, TableRow, TableCell, MenuItem } from '@mui/material';
 // components
-import Label from '../../../../components/Label';
 import Iconify from '../../../../components/Iconify';
 import { TableMoreMenu } from '../../../../components/table';
+import { Role } from 'src/@types/role';
 
 // ----------------------------------------------------------------------
 
 type Props = {
-  row: UserManager;
+  row: Role;
   selected: boolean;
   onEditRow: VoidFunction;
   onSelectRow: VoidFunction;
   onDeleteRow: VoidFunction;
 };
 
-export default function UserTableRow({
+export default function RoleTableRow({
   row,
   selected,
   onEditRow,
   onSelectRow,
   onDeleteRow,
 }: Props) {
-  const theme = useTheme();
-
-  const { name, roleId, status } = row;
+  const { name, id, description } = row;
 
   const [openMenu, setOpenMenuActions] = useState<HTMLElement | null>(null);
 
@@ -46,24 +41,16 @@ export default function UserTableRow({
         <Checkbox checked={selected} onClick={onSelectRow} />
       </TableCell>
 
-      <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
-        <Typography variant="subtitle2" noWrap>
-          {name}
-        </Typography>
+      <TableCell align="left" sx={{ textTransform: 'capitalize' }}>
+        {id}
       </TableCell>
 
       <TableCell align="left" sx={{ textTransform: 'capitalize' }}>
-        {roleId}
+        {name}
       </TableCell>
 
-      <TableCell align="left">
-        <Label
-          variant={theme.palette.mode === 'light' ? 'ghost' : 'filled'}
-          color={(status === 'banned' && 'error') || 'success'}
-          sx={{ textTransform: 'capitalize' }}
-        >
-          {status}
-        </Label>
+      <TableCell align="left" sx={{ textTransform: 'capitalize' }}>
+        {description}
       </TableCell>
 
       <TableCell align="right">

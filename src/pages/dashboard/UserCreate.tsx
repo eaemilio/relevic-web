@@ -13,19 +13,18 @@ import Page from '../../components/Page';
 import HeaderBreadcrumbs from '../../components/HeaderBreadcrumbs';
 // sections
 import UserNewEditForm from '../../sections/@dashboard/user/UserNewEditForm';
+import useSWR from 'swr';
+import { UserManager } from 'src/@types/user';
 
 // ----------------------------------------------------------------------
 
 export default function UserCreate() {
   const { themeStretch } = useSettings();
+  const { id } = useParams();
 
-  const { pathname } = useLocation();
+  const isEdit = !!id;
 
-  const { name = '' } = useParams();
-
-  const isEdit = pathname.includes('edit');
-
-  const currentUser = _userList.find((user) => paramCase(user.name) === name);
+  const { data: currentUser } = useSWR<UserManager>(id && `/user/${id}`);
 
   return (
     <Page title="Nuevo Usuario">
@@ -35,7 +34,7 @@ export default function UserCreate() {
           links={[
             { name: 'Dashboard', href: PATH_DASHBOARD.root },
             { name: 'Usuarios', href: PATH_DASHBOARD.user.list },
-            { name: !isEdit ? 'Nuevo usuario' : capitalCase(name) },
+            { name: !isEdit ? 'Nuevo usuario' : capitalCase(currentUser?.name ?? '') },
           ]}
         />
 

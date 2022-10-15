@@ -61,7 +61,7 @@ export type UserManager = {
   name: string;
   email: string;
   status: string;
-  role: number;
+  roleId: number;
 };
 
 export type UserData = {
