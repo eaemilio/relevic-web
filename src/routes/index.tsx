@@ -136,6 +136,15 @@ export default function Router() {
           ],
         },
         {
+          path: 'evaluation-area',
+          children: [
+            { element: <Navigate to="/dashboard/evaluation-area/list" replace />, index: true },
+            { path: 'list', element: <EvaluationAreaList /> },
+            { path: 'new', element: <EvaluationAreaCreate /> },
+            { path: ':id', element: <EvaluationAreaCreate /> },
+          ],
+        },
+        {
           path: 'invoice',
           children: [
             { element: <Navigate to="/dashboard/invoice/list" replace />, index: true },
@@ -245,6 +254,14 @@ const ServiceTypeCreate = Loadable(
 // PROVINCE
 const ProvinceList = Loadable(lazy(() => import('../pages/dashboard/province/ProvinceList')));
 const ProvinceCreate = Loadable(lazy(() => import('../pages/dashboard/province/ProvinceCreate')));
+
+// EVALUATION AREA
+const EvaluationAreaList = Loadable(
+  lazy(() => import('../pages/dashboard/evaluation-area/EvaluationAreaList'))
+);
+const EvaluationAreaCreate = Loadable(
+  lazy(() => import('../pages/dashboard/evaluation-area/EvaluationAreaCreate'))
+);
 
 // APP
 const Chat = Loadable(lazy(() => import('../pages/dashboard/Chat')));

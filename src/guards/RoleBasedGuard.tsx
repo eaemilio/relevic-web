@@ -7,34 +7,34 @@ import useAuth from '../hooks/useAuth';
 import { MotionContainer, varBounce } from '../components/animate';
 // assets
 import { ForbiddenIllustration } from '../assets';
+import { Module } from 'src/@types/module';
 
 // ----------------------------------------------------------------------
 
 type RoleBasedGuardProp = {
   hasContent?: boolean;
-  roles?: string[];
   children: React.ReactNode;
+  moduleId?: number;
 };
 
-export default function RoleBasedGuard({ hasContent, roles, children }: RoleBasedGuardProp) {
+export default function RoleBasedGuard({ hasContent, children, moduleId }: RoleBasedGuardProp) {
   // Logic here to get current user role
   const { user } = useAuth();
 
-  // const currentRole = 'user';
-  const currentRole = user?.role; // admin;
+  const permissions = ((user?.role?.permissions as Module[]) ?? []).map((p) => p.id);
 
-  if (typeof roles !== 'undefined' && !roles.includes(currentRole)) {
+  if (typeof moduleId !== 'undefined' && !permissions.includes(moduleId)) {
     return hasContent ? (
       <Container component={MotionContainer} sx={{ textAlign: 'center' }}>
         <m.div variants={varBounce().in}>
           <Typography variant="h3" paragraph>
-            Permission Denied
+            Permiso Denegado
           </Typography>
         </m.div>
 
         <m.div variants={varBounce().in}>
           <Typography sx={{ color: 'text.secondary' }}>
-            You do not have permission to access this page
+            No tienes permisos para acceder al contenido de esta página.
           </Typography>
         </m.div>
 

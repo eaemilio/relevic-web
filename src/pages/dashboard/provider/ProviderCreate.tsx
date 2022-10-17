@@ -9,6 +9,8 @@ import HeaderBreadcrumbs from 'src/components/HeaderBreadcrumbs';
 import ProviderNewEditForm from 'src/sections/@dashboard/provider/ProviderNewEditForm';
 import { ServiceProvider } from 'src/@types/provider';
 import useSWR from 'swr';
+import RoleBasedGuard from 'src/guards/RoleBasedGuard';
+import { ModuleType } from 'src/@types/module';
 
 // ----------------------------------------------------------------------
 
@@ -20,19 +22,21 @@ export default function ProviderCreate() {
   const { data: currentProvider } = useSWR<ServiceProvider>(id && `/provider/${id}`);
 
   return (
-    <Page title="Nuevo Proveedor">
-      <Container maxWidth={themeStretch ? false : 'lg'}>
-        <HeaderBreadcrumbs
-          heading={!isEdit ? 'Crear un Nuevo Proveedor' : 'Editar Proveedor'}
-          links={[
-            { name: 'Dashboard', href: PATH_DASHBOARD.root },
-            { name: 'Proveedores', href: PATH_DASHBOARD.user.list },
-            { name: !isEdit ? 'Nuevo Proveedor' : 'Proveedor' },
-          ]}
-        />
+    <RoleBasedGuard hasContent moduleId={ModuleType.PROVIDER}>
+      <Page title="Nuevo Proveedor">
+        <Container maxWidth={themeStretch ? false : 'lg'}>
+          <HeaderBreadcrumbs
+            heading={!isEdit ? 'Crear un Nuevo Proveedor' : 'Editar Proveedor'}
+            links={[
+              { name: 'Dashboard', href: PATH_DASHBOARD.root },
+              { name: 'Proveedores', href: PATH_DASHBOARD.user.list },
+              { name: !isEdit ? 'Nuevo Proveedor' : 'Proveedor' },
+            ]}
+          />
 
-        <ProviderNewEditForm isEdit={isEdit} currentProvider={currentProvider} />
-      </Container>
-    </Page>
+          <ProviderNewEditForm isEdit={isEdit} currentProvider={currentProvider} />
+        </Container>
+      </Page>
+    </RoleBasedGuard>
   );
 }

@@ -5,6 +5,7 @@ import { isValidToken, setSession } from '../utils/jwt';
 // @types
 import { ActionMap, AuthState, AuthUser, JWTContextType } from '../@types/auth';
 import jwtDecode from 'jwt-decode';
+import { UserData } from 'src/@types/user';
 
 // ----------------------------------------------------------------------
 
@@ -77,7 +78,9 @@ function AuthProvider({ children }: AuthProviderProps) {
 
         if (accessToken && isValidToken(accessToken)) {
           setSession(accessToken);
-          const user = jwtDecode<AuthUser>(accessToken);
+          const tempUser = jwtDecode<AuthUser>(accessToken);
+          const result = await axios.get<UserData>(`/user/${tempUser?.id}`);
+          const user = result.data;
 
           dispatch({
             type: Types.Initial,

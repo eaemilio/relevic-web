@@ -3,6 +3,7 @@ import { PATH_DASHBOARD } from '../../../routes/paths';
 // components
 import SvgIconStyle from '../../../components/SvgIconStyle';
 import Iconify from 'src/components/Iconify';
+import { ModuleType } from 'src/@types/module';
 
 // ----------------------------------------------------------------------
 
@@ -52,10 +53,8 @@ const navConfig = [
         path: PATH_DASHBOARD.user.list,
         icon: <Iconify icon={'heroicons:user-circle-20-solid'} width={20} height={20} />,
         children: [
-          // { title: 'profile', path: PATH_DASHBOARD.user.profile },
-          // { title: 'cards', path: PATH_DASHBOARD.user.cards },
-          { title: 'Lista de Usuarios', path: PATH_DASHBOARD.user.list },
-          { title: 'Nuevo Usuario', path: PATH_DASHBOARD.user.new },
+          { title: 'Lista de Usuarios', path: PATH_DASHBOARD.user.list, moduleId: ModuleType.USER },
+          { title: 'Nuevo Usuario', path: PATH_DASHBOARD.user.new, moduleId: ModuleType.USER },
           { title: 'Mi Perfil', path: PATH_DASHBOARD.user.account },
         ],
       },
@@ -63,44 +62,92 @@ const navConfig = [
       // PROVIDER
       {
         title: 'Proveedores',
+        moduleId: ModuleType.PROVIDER,
         path: PATH_DASHBOARD.provider.list,
         icon: <Iconify icon={'heroicons:building-library-20-solid'} width={20} height={20} />,
         children: [
-          { title: 'Lista de Proveedores', path: PATH_DASHBOARD.provider.list },
-          { title: 'Nuevo Proveedor', path: PATH_DASHBOARD.provider.new },
+          {
+            title: 'Lista de Proveedores',
+            path: PATH_DASHBOARD.provider.list,
+            moduleId: ModuleType.PROVIDER,
+          },
+          {
+            title: 'Nuevo Proveedor',
+            path: PATH_DASHBOARD.provider.new,
+            moduleId: ModuleType.PROVIDER,
+          },
         ],
       },
 
       // ROLES
       {
         title: 'Roles',
+        moduleId: ModuleType.ROLE,
         path: PATH_DASHBOARD.role.list,
         icon: <Iconify icon={'heroicons:lock-open-20-solid'} width={20} height={20} />,
         children: [
-          { title: 'Lista de Roles', path: PATH_DASHBOARD.role.list },
-          { title: 'Nuevo Rol', path: PATH_DASHBOARD.role.new },
+          { title: 'Lista de Roles', path: PATH_DASHBOARD.role.list, moduleId: ModuleType.ROLE },
+          { title: 'Nuevo Rol', path: PATH_DASHBOARD.role.new, moduleId: ModuleType.ROLE },
         ],
       },
 
       // SERVICE TYPES
       {
         title: 'Tipos de Servicio',
+        moduleId: ModuleType.SERVICE_TYPE,
         path: PATH_DASHBOARD.serviceType.list,
         icon: <Iconify icon={'heroicons:globe-alt-20-solid'} width={20} height={20} />,
         children: [
-          { title: 'Listado', path: PATH_DASHBOARD.serviceType.list },
-          { title: 'Nuevo Tipo de Servicio', path: PATH_DASHBOARD.serviceType.new },
+          {
+            title: 'Listado',
+            path: PATH_DASHBOARD.serviceType.list,
+            moduleId: ModuleType.SERVICE_TYPE,
+          },
+          {
+            title: 'Nuevo Tipo de Servicio',
+            path: PATH_DASHBOARD.serviceType.new,
+            moduleId: ModuleType.SERVICE_TYPE,
+          },
         ],
       },
 
       // PROVINCE
       {
         title: 'Provincias',
+        moduleId: ModuleType.PROVINCE,
         path: PATH_DASHBOARD.serviceType.list,
         icon: <Iconify icon={'heroicons:flag-20-solid'} width={20} height={20} />,
         children: [
-          { title: 'Listado de Provincias', path: PATH_DASHBOARD.province.list },
-          { title: 'Nueva Provincia', path: PATH_DASHBOARD.province.new },
+          {
+            title: 'Listado de Provincias',
+            path: PATH_DASHBOARD.province.list,
+            moduleId: ModuleType.PROVINCE,
+          },
+          {
+            title: 'Nueva Provincia',
+            path: PATH_DASHBOARD.province.new,
+            moduleId: ModuleType.PROVINCE,
+          },
+        ],
+      },
+
+      // EVALUATION AREA
+      {
+        title: 'Áreas de Evaluación',
+        moduleId: ModuleType.EVALUATION_AREA,
+        path: PATH_DASHBOARD.evaluationArea.list,
+        icon: <Iconify icon={'heroicons:pencil-square-20-solid'} width={20} height={20} />,
+        children: [
+          {
+            title: 'Listado',
+            path: PATH_DASHBOARD.evaluationArea.list,
+            moduleId: ModuleType.EVALUATION_AREA,
+          },
+          {
+            title: 'Nueva área de evaluación',
+            path: PATH_DASHBOARD.evaluationArea.new,
+            moduleId: ModuleType.EVALUATION_AREA,
+          },
         ],
       },
       // E-COMMERCE

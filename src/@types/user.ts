@@ -1,5 +1,7 @@
 // ----------------------------------------------------------------------
 
+import { Role } from './role';
+
 export type UserInvoice = {
   id: string;
   createdAt: Date | string | number;
@@ -64,7 +66,7 @@ export type UserManager = {
   roleId: number;
 };
 
-export type UserData = {
+export type IUserData = {
   id: string;
   avatarUrl: string;
   cover: string;
@@ -73,6 +75,14 @@ export type UserData = {
   following: number;
   totalPost: number;
   position: string;
+};
+
+export type UserData = {
+  id: number;
+  name: string;
+  email: string;
+  lastLoginAt: string;
+  role: Role;
 };
 
 export type NotificationSettings = {

@@ -8,6 +8,8 @@ import HeaderBreadcrumbs from 'src/components/HeaderBreadcrumbs';
 import useSWR from 'swr';
 import { ServiceType } from 'src/@types/service-type';
 import ServiceTypeNewEditForm from 'src/sections/@dashboard/service-type/ServiceTypeNewEditForm';
+import RoleBasedGuard from 'src/guards/RoleBasedGuard';
+import { ModuleType } from 'src/@types/module';
 
 export default function ServiceTypeCreate() {
   const { themeStretch } = useSettings();
@@ -17,18 +19,20 @@ export default function ServiceTypeCreate() {
   const { data: currentService } = useSWR<ServiceType>(id && `/service-type/${id}`);
 
   return (
-    <Page title="Nuevo Tipo de Servicio">
-      <Container maxWidth={themeStretch ? false : 'lg'}>
-        <HeaderBreadcrumbs
-          heading={!isEdit ? 'Nuevo Tipo de Servicio' : 'Editar Tipo de Servicio'}
-          links={[
-            { name: 'Dashboard', href: PATH_DASHBOARD.root },
-            { name: 'Tipos de Servicio', href: PATH_DASHBOARD.serviceType.list },
-            { name: !isEdit ? 'Nuevo Tipo de Servicio' : 'Tipo de Servicio' },
-          ]}
-        />
-        <ServiceTypeNewEditForm isEdit={isEdit} currentService={currentService} />
-      </Container>
-    </Page>
+    <RoleBasedGuard hasContent moduleId={ModuleType.SERVICE_TYPE}>
+      <Page title="Nuevo Tipo de Servicio">
+        <Container maxWidth={themeStretch ? false : 'lg'}>
+          <HeaderBreadcrumbs
+            heading={!isEdit ? 'Nuevo Tipo de Servicio' : 'Editar Tipo de Servicio'}
+            links={[
+              { name: 'Dashboard', href: PATH_DASHBOARD.root },
+              { name: 'Tipos de Servicio', href: PATH_DASHBOARD.serviceType.list },
+              { name: !isEdit ? 'Nuevo Tipo de Servicio' : 'Tipo de Servicio' },
+            ]}
+          />
+          <ServiceTypeNewEditForm isEdit={isEdit} currentService={currentService} />
+        </Container>
+      </Page>
+    </RoleBasedGuard>
   );
 }

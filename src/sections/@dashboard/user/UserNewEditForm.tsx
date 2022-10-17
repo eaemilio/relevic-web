@@ -74,12 +74,14 @@ export default function UserNewEditForm({ isEdit, currentUser }: Props) {
       if (!isEdit) {
         const password = generateRandomPassword();
         await createUser({ ...data, password });
+        navigator.clipboard.writeText(password);
       } else if (currentUser?.id) {
         await editUser(currentUser?.id, data);
       }
       mutate('/user');
       reset();
       enqueueSnackbar(!isEdit ? 'Usuario Creado' : 'Cambios guardados');
+      !isEdit && enqueueSnackbar('Se ha copiado la contraseña al portapapeles');
       navigate(PATH_DASHBOARD.user.list);
     } catch (error) {
       console.error(error);

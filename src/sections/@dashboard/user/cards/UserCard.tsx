@@ -5,7 +5,7 @@ import { Box, Card, Avatar, Divider, Typography, Stack } from '@mui/material';
 import cssStyles from '../../../../utils/cssStyles';
 import { fShortenNumber } from '../../../../utils/formatNumber';
 // @types
-import { UserData } from '../../../../@types/user';
+import { IUserData } from '../../../../@types/user';
 // components
 import Image from '../../../../components/Image';
 import SocialsButton from '../../../../components/SocialsButton';
@@ -26,7 +26,7 @@ const OverlayStyle = styled('div')(({ theme }) => ({
 // ----------------------------------------------------------------------
 
 type Props = {
-  user: UserData;
+  user: IUserData;
 };
 
 export default function UserCard({ user }: Props) {

@@ -1,6 +1,8 @@
 import {
+  Box,
   Button,
   Card,
+  Container,
   IconButton,
   Table,
   TableBody,
@@ -8,13 +10,12 @@ import {
   TablePagination,
   Tooltip,
 } from '@mui/material';
-import { Box, Container } from '@mui/system';
-import HeaderBreadcrumbs from 'src/components/HeaderBreadcrumbs';
-import Page from 'src/components/Page';
-import { PATH_DASHBOARD } from 'src/routes/paths';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { EvaluationArea } from 'src/@types/evaluation-area';
+import { ModuleType } from 'src/@types/module';
+import HeaderBreadcrumbs from 'src/components/HeaderBreadcrumbs';
 import Iconify from 'src/components/Iconify';
-import useSettings from 'src/hooks/useSettings';
+import Page from 'src/components/Page';
 import Scrollbar from 'src/components/Scrollbar';
 import {
   TableEmptyRows,
@@ -22,23 +23,25 @@ import {
   TableNoData,
   TableSelectedActions,
 } from 'src/components/table';
-import useSWR from 'swr';
-import useTable, { emptyRows } from 'src/hooks/useTable';
-import { Role } from 'src/@types/role';
-import RoleTableRow from 'src/sections/@dashboard/Role/list/RoleTableRow';
-import SWRService from 'src/services/SWRService';
-import { removeAsync } from 'src/services/APIGateway';
 import RoleBasedGuard from 'src/guards/RoleBasedGuard';
-import { ModuleType } from 'src/@types/module';
+import useSettings from 'src/hooks/useSettings';
+import useTable, { emptyRows } from 'src/hooks/useTable';
+import { PATH_DASHBOARD } from 'src/routes/paths';
+import EvaluationAreaTableRow from 'src/sections/@dashboard/evaluation-area/list/EvaluationAreaTableRow';
+import { removeAsync } from 'src/services/APIGateway';
+import { EVALUATION_AREA } from 'src/_mock/evaluation-area';
+import useSWR from 'swr';
 
 const TABLE_HEAD = [
   { id: 'id', label: 'ID', align: 'left' },
-  { id: 'name', label: 'Rol', align: 'left' },
+  { id: 'name', label: 'Área de evaluación', align: 'left' },
   { id: 'description', label: 'Descripción', align: 'left' },
   { id: '' },
 ];
 
-export default function RoleList() {
+const BASE_URL = '/evaluation-area';
+
+export default function EvaluationAreaList() {
   const { themeStretch } = useSettings();
   const {
     dense,
@@ -57,12 +60,12 @@ export default function RoleList() {
     onChangeRowsPerPage,
   } = useTable();
   const denseHeight = dense ? 52 : 72;
-  const { data: tableData = [], mutate } = useSWR<Role[]>('/role');
+  const { data: tableData = [...EVALUATION_AREA], mutate } = useSWR<EvaluationArea[]>(BASE_URL);
   const isNotFound = !tableData.length;
   const navigate = useNavigate();
 
   const handleDeleteRow = (id: number) => {
-    mutate(async () => removeAsync(`/role/${id}`), {
+    mutate(async () => removeAsync(`${BASE_URL}/${id}`), {
       optimisticData: tableData.filter((d) => d.id !== id),
       rollbackOnError: true,
     });
@@ -75,24 +78,27 @@ export default function RoleList() {
   };
 
   const handleEditRow = (id: number) => {
-    navigate(PATH_DASHBOARD.role.edit(id));
+    navigate(PATH_DASHBOARD.evaluationArea.edit(id));
   };
 
   return (
-    <RoleBasedGuard hasContent moduleId={ModuleType.ROLE}>
-      <Page title="Roles">
+    <RoleBasedGuard hasContent moduleId={ModuleType.EVALUATION_AREA}>
+      <Page title="Áreas de Evaluación">
         <Container maxWidth={themeStretch ? false : 'lg'}>
           <HeaderBreadcrumbs
-            heading="Listado de Roles"
-            links={[{ name: 'Dashboard', href: PATH_DASHBOARD.root }, { name: 'Roles' }]}
+            heading="Listado"
+            links={[
+              { name: 'Dashboard', href: PATH_DASHBOARD.root },
+              { name: 'Áreas de Evaluación' },
+            ]}
             action={
               <Button
                 variant="contained"
                 component={RouterLink}
-                to={PATH_DASHBOARD.role.new}
+                to={PATH_DASHBOARD.evaluationArea.new}
                 startIcon={<Iconify icon={'eva:plus-fill'} />}
               >
-                Nuevo Rol
+                Nueva área de evaluación
               </Button>
             }
           />
@@ -141,7 +147,7 @@ export default function RoleList() {
                     {tableData
                       .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                       .map((row) => (
-                        <RoleTableRow
+                        <EvaluationAreaTableRow
                           key={row.id}
                           row={row}
                           selected={selected.includes(row.id)}

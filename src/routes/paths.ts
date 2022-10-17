@@ -88,6 +88,12 @@ export const PATH_DASHBOARD = {
     new: path(ROOTS_DASHBOARD, '/province/new'),
     edit: (id: number) => path(ROOTS_DASHBOARD, `/province/${id}`),
   },
+  evaluationArea: {
+    root: path(ROOTS_DASHBOARD, '/evaluation-area'),
+    list: path(ROOTS_DASHBOARD, '/evaluation-area/list'),
+    new: path(ROOTS_DASHBOARD, '/evaluation-area/new'),
+    edit: (id: number) => path(ROOTS_DASHBOARD, `/evaluation-area/${id}`),
+  },
   eCommerce: {
     root: path(ROOTS_DASHBOARD, '/e-commerce'),
     shop: path(ROOTS_DASHBOARD, '/e-commerce/shop'),

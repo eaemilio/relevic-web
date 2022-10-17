@@ -12,6 +12,7 @@ export type NavListProps = {
   disabled?: boolean;
   roles?: string[];
   children?: any;
+  moduleId?: number;
 };
 
 export type NavItemProps = {

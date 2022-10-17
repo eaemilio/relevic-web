@@ -8,6 +8,8 @@ import HeaderBreadcrumbs from 'src/components/HeaderBreadcrumbs';
 import useSWR from 'swr';
 import { Province } from 'src/@types/province';
 import ProvinceNewEditForm from 'src/sections/@dashboard/province/ProvinceNewEditForm';
+import RoleBasedGuard from 'src/guards/RoleBasedGuard';
+import { ModuleType } from 'src/@types/module';
 
 export default function ProvinceCreate() {
   const { themeStretch } = useSettings();
@@ -17,18 +19,20 @@ export default function ProvinceCreate() {
   const { data: currentProvince } = useSWR<Province>(id && `/province/${id}`);
 
   return (
-    <Page title="Nueva Provincia">
-      <Container maxWidth={themeStretch ? false : 'lg'}>
-        <HeaderBreadcrumbs
-          heading={!isEdit ? 'Nueva Provincia' : 'Editar Provincia'}
-          links={[
-            { name: 'Dashboard', href: PATH_DASHBOARD.root },
-            { name: 'Provincias', href: PATH_DASHBOARD.province.list },
-            { name: !isEdit ? 'Nueva Provincia' : 'Provincia' },
-          ]}
-        />
-        <ProvinceNewEditForm isEdit={isEdit} currentProvince={currentProvince} />
-      </Container>
-    </Page>
+    <RoleBasedGuard hasContent moduleId={ModuleType.PROVINCE}>
+      <Page title="Nueva Provincia">
+        <Container maxWidth={themeStretch ? false : 'lg'}>
+          <HeaderBreadcrumbs
+            heading={!isEdit ? 'Nueva Provincia' : 'Editar Provincia'}
+            links={[
+              { name: 'Dashboard', href: PATH_DASHBOARD.root },
+              { name: 'Provincias', href: PATH_DASHBOARD.province.list },
+              { name: !isEdit ? 'Nueva Provincia' : 'Provincia' },
+            ]}
+          />
+          <ProvinceNewEditForm isEdit={isEdit} currentProvince={currentProvince} />
+        </Container>
+      </Page>
+    </RoleBasedGuard>
   );
 }

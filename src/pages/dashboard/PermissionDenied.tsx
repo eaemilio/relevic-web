@@ -62,7 +62,7 @@ export default function PermissionDenied() {
           </ToggleButton>
         </ToggleButtonGroup>
 
-        <RoleBasedGuard hasContent roles={[role]}>
+        {/* <RoleBasedGuard hasContent roles={[role]}>
           <Box
             sx={{
               display: 'grid',
@@ -82,7 +82,7 @@ export default function PermissionDenied() {
               </Card>
             ))}
           </Box>
-        </RoleBasedGuard>
+        </RoleBasedGuard> */}
       </Container>
     </Page>
   );

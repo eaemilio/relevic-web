@@ -8,6 +8,8 @@ import HeaderBreadcrumbs from 'src/components/HeaderBreadcrumbs';
 import useSWR from 'swr';
 import RoleNewEditForm from 'src/sections/@dashboard/Role/RoleNewEditForm';
 import { RoleManager } from 'src/@types/role';
+import RoleBasedGuard from 'src/guards/RoleBasedGuard';
+import { ModuleType } from 'src/@types/module';
 
 // ----------------------------------------------------------------------
 
@@ -19,18 +21,20 @@ export default function RoleCreate() {
   const { data: currentRole } = useSWR<RoleManager>(id && `/role/${id}`);
 
   return (
-    <Page title="Nuevo Rol">
-      <Container maxWidth={themeStretch ? false : 'lg'}>
-        <HeaderBreadcrumbs
-          heading={!isEdit ? 'Crear un Nuevo Rol' : 'Editar Rol'}
-          links={[
-            { name: 'Dashboard', href: PATH_DASHBOARD.root },
-            { name: 'Roles', href: PATH_DASHBOARD.role.list },
-            { name: !isEdit ? 'Nuevo Rol' : 'Rol' },
-          ]}
-        />
-        <RoleNewEditForm isEdit={isEdit} currentRole={currentRole} />
-      </Container>
-    </Page>
+    <RoleBasedGuard hasContent moduleId={ModuleType.ROLE}>
+      <Page title="Nuevo Rol">
+        <Container maxWidth={themeStretch ? false : 'lg'}>
+          <HeaderBreadcrumbs
+            heading={!isEdit ? 'Crear un Nuevo Rol' : 'Editar Rol'}
+            links={[
+              { name: 'Dashboard', href: PATH_DASHBOARD.root },
+              { name: 'Roles', href: PATH_DASHBOARD.role.list },
+              { name: !isEdit ? 'Nuevo Rol' : 'Rol' },
+            ]}
+          />
+          <RoleNewEditForm isEdit={isEdit} currentRole={currentRole} />
+        </Container>
+      </Page>
+    </RoleBasedGuard>
   );
 }
