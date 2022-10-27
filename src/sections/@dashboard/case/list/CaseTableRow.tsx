@@ -1,33 +1,25 @@
+import { Checkbox, MenuItem, TableCell, TableRow } from '@mui/material';
 import { useState } from 'react';
-// @mui
-import { useTheme } from '@mui/material/styles';
-import { Checkbox, TableRow, TableCell, Typography, MenuItem } from '@mui/material';
-// components
-import Label from '../../../../components/Label';
-import Iconify from '../../../../components/Iconify';
-import { TableMoreMenu } from '../../../../components/table';
-import { ServiceProvider } from 'src/@types/provider';
-
-// ----------------------------------------------------------------------
+import { Case } from 'src/@types/case';
+import Iconify from 'src/components/Iconify';
+import { TableMoreMenu } from 'src/components/table';
 
 type Props = {
-  row: ServiceProvider;
+  row: Case;
   selected: boolean;
   onEditRow: VoidFunction;
   onSelectRow: VoidFunction;
   onDeleteRow: VoidFunction;
 };
 
-export default function ProviderTableRow({
+export default function CaseTableRow({
   row,
   selected,
   onEditRow,
   onSelectRow,
   onDeleteRow,
 }: Props) {
-  const theme = useTheme();
-
-  const { name, id, email, serviceTypeId, phoneNumber } = row;
+  const { name, id, description } = row;
 
   const [openMenu, setOpenMenuActions] = useState<HTMLElement | null>(null);
 
@@ -53,12 +45,8 @@ export default function ProviderTableRow({
         {name}
       </TableCell>
 
-      <TableCell align="left">{email}</TableCell>
-
-      <TableCell align="left">{phoneNumber}</TableCell>
-
       <TableCell align="left" sx={{ textTransform: 'capitalize' }}>
-        {serviceTypeId}
+        {description}
       </TableCell>
 
       <TableCell align="right">

@@ -11,8 +11,7 @@ import {
   Tooltip,
 } from '@mui/material';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
-import { EvaluationArea } from 'src/@types/evaluation-area';
-import { ModuleType } from 'src/@types/module';
+import { Victim, VICTIM_BASE_URL } from 'src/@types/victim';
 import HeaderBreadcrumbs from 'src/components/HeaderBreadcrumbs';
 import Iconify from 'src/components/Iconify';
 import Page from 'src/components/Page';
@@ -23,23 +22,22 @@ import {
   TableNoData,
   TableSelectedActions,
 } from 'src/components/table';
-import RoleBasedGuard from 'src/guards/RoleBasedGuard';
 import useSettings from 'src/hooks/useSettings';
 import useTable, { emptyRows } from 'src/hooks/useTable';
 import { PATH_DASHBOARD } from 'src/routes/paths';
-import EvaluationAreaTableRow from 'src/sections/@dashboard/evaluation-area/list/EvaluationAreaTableRow';
+import VictimTableRow from 'src/sections/@dashboard/victim/list/VictimTableRow';
 import { removeAsync } from 'src/services/APIGateway';
-import { EVALUATION_AREA } from 'src/_mock/evaluation-area';
 import useSWR from 'swr';
 
 const TABLE_HEAD = [
   { id: 'id', label: 'ID', align: 'left' },
-  { id: 'name', label: 'Área de evaluación', align: 'left' },
-  { id: 'description', label: 'Descripción', align: 'left' },
+  { id: 'name', label: 'Nombre', align: 'left' },
+  { id: 'birthday', label: 'Fecha de Nacimiento', align: 'left' },
+  { id: 'citizenship', label: 'Ciudadanía', align: 'left' },
+  { id: 'ethnicity', label: 'Etnicidad', align: 'left' },
+  { id: 'nationality', label: 'Nacionalidad', align: 'left' },
   { id: '' },
 ];
-
-const BASE_URL = '/provider-areas';
 
 export default function EvaluationAreaList() {
   const { themeStretch } = useSettings();
@@ -60,12 +58,12 @@ export default function EvaluationAreaList() {
     onChangeRowsPerPage,
   } = useTable();
   const denseHeight = dense ? 52 : 72;
-  const { data: tableData = [], mutate } = useSWR<EvaluationArea[]>(BASE_URL);
+  const { data: tableData = [], mutate } = useSWR<Victim[]>(VICTIM_BASE_URL);
   const isNotFound = !tableData.length;
   const navigate = useNavigate();
 
   const handleDeleteRow = (id: number) => {
-    mutate(async () => removeAsync(`${BASE_URL}/${id}`), {
+    mutate(async () => removeAsync(`${VICTIM_BASE_URL}/${id}`), {
       optimisticData: tableData.filter((d) => d.id !== id),
       rollbackOnError: true,
     });
@@ -83,22 +81,19 @@ export default function EvaluationAreaList() {
 
   return (
     // <RoleBasedGuard hasContent moduleId={ModuleType.EVALUATION_AREA}> FIXME
-    <Page title="Áreas de Evaluación">
+    <Page title="Víctimas">
       <Container maxWidth={themeStretch ? false : 'lg'}>
         <HeaderBreadcrumbs
-          heading="Listado"
-          links={[
-            { name: 'Dashboard', href: PATH_DASHBOARD.root },
-            { name: 'Áreas de Evaluación' },
-          ]}
+          heading="Listado de Víctimas"
+          links={[{ name: 'Dashboard', href: PATH_DASHBOARD.root }, { name: 'Víctimas' }]}
           action={
             <Button
               variant="contained"
               component={RouterLink}
-              to={PATH_DASHBOARD.evaluationArea.new}
+              to={PATH_DASHBOARD.general.victims.new}
               startIcon={<Iconify icon={'eva:plus-fill'} />}
             >
-              Nueva área de evaluación
+              Nueva Víctima
             </Button>
           }
         />
@@ -147,7 +142,7 @@ export default function EvaluationAreaList() {
                   {tableData
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                     .map((row) => (
-                      <EvaluationAreaTableRow
+                      <VictimTableRow
                         key={row.id}
                         row={row}
                         selected={selected.includes(row.id)}

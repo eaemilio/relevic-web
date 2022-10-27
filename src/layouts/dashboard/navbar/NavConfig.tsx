@@ -35,10 +35,19 @@ const navConfig = [
     subheader: '',
     items: [
       { title: 'Dashboard', path: PATH_DASHBOARD.general.app, icon: ICONS.dashboard },
-      // { title: 'ecommerce', path: PATH_DASHBOARD.general.ecommerce, icon: ICONS.ecommerce },
-      // { title: 'analytics', path: PATH_DASHBOARD.general.analytics, icon: ICONS.analytics },
-      // { title: 'banking', path: PATH_DASHBOARD.general.banking, icon: ICONS.banking },
-      // { title: 'booking', path: PATH_DASHBOARD.general.booking, icon: ICONS.booking },
+      // CASOS
+      {
+        title: 'Casos',
+        // moduleId: ModuleType.EVALUATION_AREA, FIXME
+        path: PATH_DASHBOARD.general.cases.root,
+        icon: <Iconify icon={'bi:inbox-fill'} width={20} height={20} />,
+      },
+      {
+        title: 'Víctimas',
+        // moduleId: ModuleType.EVALUATION_AREA, FIXME
+        path: PATH_DASHBOARD.general.victims.root,
+        icon: <Iconify icon={'bi:person-video2'} width={20} height={20} />,
+      },
     ],
   },
 
@@ -134,80 +143,24 @@ const navConfig = [
       // EVALUATION AREA
       {
         title: 'Áreas de Evaluación',
-        moduleId: ModuleType.EVALUATION_AREA,
+        // moduleId: ModuleType.EVALUATION_AREA, FIXME
         path: PATH_DASHBOARD.evaluationArea.list,
         icon: <Iconify icon={'heroicons:pencil-square-20-solid'} width={20} height={20} />,
         children: [
           {
             title: 'Listado',
             path: PATH_DASHBOARD.evaluationArea.list,
-            moduleId: ModuleType.EVALUATION_AREA,
+            // moduleId: ModuleType.EVALUATION_AREA, FIXME
           },
           {
             title: 'Nueva área de evaluación',
             path: PATH_DASHBOARD.evaluationArea.new,
-            moduleId: ModuleType.EVALUATION_AREA,
+            // moduleId: ModuleType.EVALUATION_AREA, FIXME
           },
         ],
       },
-      // E-COMMERCE
-      // {
-      //   title: 'ecommerce',
-      //   path: PATH_DASHBOARD.eCommerce.root,
-      //   icon: ICONS.cart,
-      //   children: [
-      //     { title: 'shop', path: PATH_DASHBOARD.eCommerce.shop },
-      //     { title: 'product', path: PATH_DASHBOARD.eCommerce.demoView },
-      //     { title: 'list', path: PATH_DASHBOARD.eCommerce.list },
-      //     { title: 'create', path: PATH_DASHBOARD.eCommerce.new },
-      //     { title: 'edit', path: PATH_DASHBOARD.eCommerce.demoEdit },
-      //     { title: 'checkout', path: PATH_DASHBOARD.eCommerce.checkout },
-      //   ],
-      // },
-
-      // INVOICE
-      // {
-      //   title: 'invoice',
-      //   path: PATH_DASHBOARD.invoice.root,
-      //   icon: ICONS.invoice,
-      //   children: [
-      //     { title: 'list', path: PATH_DASHBOARD.invoice.list },
-      //     { title: 'details', path: PATH_DASHBOARD.invoice.demoView },
-      //     { title: 'create', path: PATH_DASHBOARD.invoice.new },
-      //     { title: 'edit', path: PATH_DASHBOARD.invoice.demoEdit },
-      //   ],
-      // },
-
-      // BLOG
-      // {
-      //   title: 'blog',
-      //   path: PATH_DASHBOARD.blog.root,
-      //   icon: ICONS.blog,
-      //   children: [
-      //     { title: 'posts', path: PATH_DASHBOARD.blog.posts },
-      //     { title: 'post', path: PATH_DASHBOARD.blog.demoView },
-      //     { title: 'create', path: PATH_DASHBOARD.blog.new },
-      //   ],
-      // },
     ],
   },
-
-  // APP
-  // ----------------------------------------------------------------------
-  // {
-  //   subheader: 'app',
-  //   items: [
-  //     {
-  //       title: 'mail',
-  //       path: PATH_DASHBOARD.mail.root,
-  //       icon: ICONS.mail,
-  //       info: <Label color="error">+32</Label>,
-  //     },
-  //     { title: 'chat', path: PATH_DASHBOARD.chat.root, icon: ICONS.chat },
-  //     { title: 'calendar', path: PATH_DASHBOARD.calendar, icon: ICONS.calendar },
-  //     { title: 'kanban', path: PATH_DASHBOARD.kanban, icon: ICONS.kanban },
-  //   ],
-  // },
 
   // DEMO MENU STATES
   // {

@@ -6,31 +6,29 @@ import Page from 'src/components/Page';
 import { PATH_DASHBOARD } from 'src/routes/paths';
 import HeaderBreadcrumbs from 'src/components/HeaderBreadcrumbs';
 import useSWR from 'swr';
-import { EvaluationArea } from 'src/@types/evaluation-area';
-import EvaluationAreaNewEditForm from 'src/sections/@dashboard/evaluation-area/EvaluationAreaNewEditForm';
-import RoleBasedGuard from 'src/guards/RoleBasedGuard';
-import { ModuleType } from 'src/@types/module';
+import { Victim, VICTIM_BASE_URL } from 'src/@types/victim';
+import VictimNewEditForm from 'src/sections/@dashboard/victim/VictimNewEditForm';
 
 export default function EvaluationAreaCreate() {
   const { themeStretch } = useSettings();
   const { id } = useParams();
   const isEdit = !!id;
 
-  const { data: currentEvaluationArea } = useSWR<EvaluationArea>(id && `/provider-areas/${id}`);
+  const { data: currentVictim } = useSWR<Victim>(id && `${VICTIM_BASE_URL}/${id}`);
 
   return (
     // <RoleBasedGuard hasContent moduleId={ModuleType.EVALUATION_AREA}> FIXME
-    <Page title="Área de Evaluación">
+    <Page title="Víctima">
       <Container maxWidth={themeStretch ? false : 'lg'}>
         <HeaderBreadcrumbs
-          heading={!isEdit ? 'Nueva Área de Evaluación' : 'Editar Área de Evaluación'}
+          heading={!isEdit ? 'Nueva Víctima' : 'Editar Víctima'}
           links={[
             { name: 'Dashboard', href: PATH_DASHBOARD.root },
-            { name: 'Áreas de evaluación', href: PATH_DASHBOARD.evaluationArea.list },
-            { name: !isEdit ? 'Nueva área de evaluación' : 'Área de evaluación' },
+            { name: 'Víctimas', href: PATH_DASHBOARD.general.victims.list },
+            { name: !isEdit ? 'Nueva Víctima' : 'Víctima' },
           ]}
         />
-        <EvaluationAreaNewEditForm isEdit={isEdit} currentEvaluationArea={currentEvaluationArea} />
+        <VictimNewEditForm isEdit={isEdit} currentVictim={currentVictim} />
       </Container>
     </Page>
     // </RoleBasedGuard>

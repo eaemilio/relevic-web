@@ -88,6 +88,26 @@ export default function Router() {
         //     { path: 'checkout', element: <EcommerceCheckout /> },
         //   ],
         // },
+
+        {
+          path: 'case',
+          children: [
+            { element: <Navigate to="/dashboard/case/list" replace />, index: true },
+            { path: 'list', element: <CaseList /> },
+            { path: 'new', element: <CaseCreate /> },
+            { path: ':id', element: <CaseCreate /> },
+          ],
+        },
+        {
+          path: 'victim',
+          children: [
+            { element: <Navigate to="/dashboard/victim/list" replace />, index: true },
+            { path: 'list', element: <VictimList /> },
+            { path: 'new', element: <VictimCreate /> },
+            { path: ':id', element: <VictimCreate /> },
+          ],
+        },
+
         {
           path: 'user',
           children: [
@@ -106,6 +126,7 @@ export default function Router() {
             { element: <Navigate to="/dashboard/provider/list" replace />, index: true },
             { path: 'list', element: <ProviderList /> },
             { path: 'new', element: <ProviderCreate /> },
+            { path: ':id', element: <ProviderCreate /> },
           ],
         },
         {
@@ -217,6 +238,14 @@ const VerifyCode = Loadable(lazy(() => import('../pages/auth/VerifyCode')));
 
 // GENERAL
 const GeneralApp = Loadable(lazy(() => import('../pages/dashboard/GeneralApp')));
+
+// CASES
+const CaseList = Loadable(lazy(() => import('../pages/dashboard/case/CaseList')));
+const CaseCreate = Loadable(lazy(() => import('../pages/dashboard/case/CaseCreate')));
+
+// VICTIMS
+const VictimList = Loadable(lazy(() => import('../pages/dashboard/victim/VictimList')));
+const VictimCreate = Loadable(lazy(() => import('../pages/dashboard/victim/VictimCreate')));
 
 // INVOICE
 const InvoiceDetails = Loadable(lazy(() => import('../pages/dashboard/InvoiceDetails')));

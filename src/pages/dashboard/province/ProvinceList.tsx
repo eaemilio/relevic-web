@@ -60,7 +60,7 @@ export default function ProvinceList() {
     onChangeRowsPerPage,
   } = useTable();
   const denseHeight = dense ? 52 : 72;
-  const { data: tableData = [...PROVINCE], mutate } = useSWR<Province[]>(BASE_URL);
+  const { data: tableData = [], mutate } = useSWR<Province[]>(BASE_URL);
   const isNotFound = !tableData.length;
   const navigate = useNavigate();
 

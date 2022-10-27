@@ -13,6 +13,11 @@ type LocationMarkerProps = {
 
 type LocationMapProps = {
   zoom?: number;
+  onLocationChanged?: (latitude: number, longitude: number) => void;
+  currentCoords?: {
+    lat: number;
+    lng: number;
+  };
 };
 
 function LocationMarker({ dragging }: LocationMarkerProps) {
@@ -38,22 +43,24 @@ function LocationMarker({ dragging }: LocationMarkerProps) {
   );
 }
 
-function LocationMap({ zoom = DEFAULT_ZOOM }: LocationMapProps) {
-  const [lat, setLat] = useState<number | null>(null);
-  const [lng, setLng] = useState<number | null>(null);
+function LocationMap({ zoom = DEFAULT_ZOOM, onLocationChanged, currentCoords }: LocationMapProps) {
+  const [lat, setLat] = useState<number | undefined>(currentCoords?.lat);
+  const [lng, setLng] = useState<number | undefined>(currentCoords?.lng);
   const [dragging, setDragging] = useState(false);
 
   useEffect(() => {
-    navigator.geolocation.getCurrentPosition(({ coords }) => {
-      setLat(coords.latitude);
-      setLng(coords.longitude);
-    });
+    (!currentCoords?.lat || !currentCoords?.lng) &&
+      navigator.geolocation.getCurrentPosition(({ coords }) => {
+        setLat(coords.latitude);
+        setLng(coords.longitude);
+      });
   }, []);
 
   const onDragEnd = (e: any) => {
     setLat(e.center.lat());
     setLng(e.center.lng());
     setDragging(false);
+    onLocationChanged?.(e.center.lat().toFixed(8), e.center.lng().toFixed(8));
   };
 
   const onDrag = () => {

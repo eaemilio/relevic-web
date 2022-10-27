@@ -11,4 +11,5 @@ export enum ModuleType {
   ROLE = 4,
   PROVINCE = 5,
   EVALUATION_AREA = 6,
+  // CASE_CREATE = 7,
 }

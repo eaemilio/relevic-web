@@ -127,3 +127,5 @@ export type UserPost = {
     message: string;
   }[];
 };
+
+export const USER_BASE_URL = '/user';

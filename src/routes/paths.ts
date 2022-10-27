@@ -42,6 +42,20 @@ export const PATH_DASHBOARD = {
     analytics: path(ROOTS_DASHBOARD, '/analytics'),
     banking: path(ROOTS_DASHBOARD, '/banking'),
     booking: path(ROOTS_DASHBOARD, '/booking'),
+
+    cases: {
+      root: path(ROOTS_DASHBOARD, '/case'),
+      list: path(ROOTS_DASHBOARD, '/case/list'),
+      new: path(ROOTS_DASHBOARD, '/case/new'),
+      edit: (id: number) => path(ROOTS_DASHBOARD, `/case/${id}`),
+    },
+
+    victims: {
+      root: path(ROOTS_DASHBOARD, '/victim'),
+      list: path(ROOTS_DASHBOARD, '/victim/list'),
+      new: path(ROOTS_DASHBOARD, '/victim/new'),
+      edit: (id: number) => path(ROOTS_DASHBOARD, `/victim/${id}`),
+    },
   },
   mail: {
     root: path(ROOTS_DASHBOARD, '/mail'),

@@ -17,7 +17,7 @@ type Props = {
   currentEvaluationArea?: EvaluationArea;
 };
 
-const BASE_URL = '/evaluation-area';
+const BASE_URL = '/provider-areas';
 
 export default function EvaluationAreaNewEditForm({ isEdit, currentEvaluationArea }: Props) {
   const { enqueueSnackbar } = useSnackbar();

@@ -36,6 +36,7 @@ import { ServiceProvider } from 'src/@types/provider';
 import { PROVIDERS_MOCK } from 'src/_mock/provider';
 import RoleBasedGuard from 'src/guards/RoleBasedGuard';
 import { ModuleType } from 'src/@types/module';
+import useSWR from 'swr';
 
 const TABLE_HEAD = [
   { id: 'id', label: 'Código', align: 'left' },
@@ -43,9 +44,10 @@ const TABLE_HEAD = [
   { id: 'email', label: 'Correo Electrónico', align: 'left' },
   { id: 'phone', label: 'Teléfono', align: 'left' },
   { id: 'type', label: 'Tipo de Servicio', align: 'left' },
-  { id: 'isActive', label: 'Estado', align: 'left' },
   { id: '' },
 ];
+
+const BASE_URL = '/provider';
 
 // ----------------------------------------------------------------------
 
@@ -69,7 +71,7 @@ export default function ProviderList() {
   } = useTable();
   const { themeStretch } = useSettings();
   const navigate = useNavigate();
-  const [tableData, setTableData] = useState<ServiceProvider[]>(PROVIDERS_MOCK);
+  const { data: tableData = [], mutate } = useSWR<ServiceProvider[]>(BASE_URL);
   const [filterName, setFilterName] = useState('');
   const { currentTab: filterStatus, onChangeTab: onChangeFilterStatus } = useTabs('todos');
 
@@ -85,14 +87,12 @@ export default function ProviderList() {
 
   const handleDeleteRows = (selected: (number | string)[]) => {
     // TODO: Handle rows delete
-    const deleteRows = tableData.filter((row) => !selected.includes(row.id));
     setSelected([]);
-    setTableData(deleteRows);
   };
 
-  const handleEditRow = (id: string) => {
+  const handleEditRow = (id: number) => {
     // ! FIXME: Redirect to providers edit page
-    // navigate(PATH_DASHBOARD.user.edit(paramCase(id)));
+    navigate(PATH_DASHBOARD.provider.edit(id));
   };
 
   const dataFiltered = applySortFilter({
@@ -193,7 +193,7 @@ export default function ProviderList() {
                           selected={selected.includes(row.id)}
                           onSelectRow={() => onSelectRow(row.id)}
                           onDeleteRow={() => handleDeleteRow(row.id)}
-                          onEditRow={() => handleEditRow(row.name)}
+                          onEditRow={() => handleEditRow(row.id)}
                         />
                       ))}
 

@@ -11,7 +11,7 @@ import {
   Tooltip,
 } from '@mui/material';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
-import { EvaluationArea } from 'src/@types/evaluation-area';
+import { Case } from 'src/@types/case';
 import { ModuleType } from 'src/@types/module';
 import HeaderBreadcrumbs from 'src/components/HeaderBreadcrumbs';
 import Iconify from 'src/components/Iconify';
@@ -23,25 +23,23 @@ import {
   TableNoData,
   TableSelectedActions,
 } from 'src/components/table';
-import RoleBasedGuard from 'src/guards/RoleBasedGuard';
 import useSettings from 'src/hooks/useSettings';
 import useTable, { emptyRows } from 'src/hooks/useTable';
 import { PATH_DASHBOARD } from 'src/routes/paths';
-import EvaluationAreaTableRow from 'src/sections/@dashboard/evaluation-area/list/EvaluationAreaTableRow';
+import CaseTableRow from 'src/sections/@dashboard/case/list/CaseTableRow';
 import { removeAsync } from 'src/services/APIGateway';
-import { EVALUATION_AREA } from 'src/_mock/evaluation-area';
 import useSWR from 'swr';
 
 const TABLE_HEAD = [
   { id: 'id', label: 'ID', align: 'left' },
-  { id: 'name', label: 'Área de evaluación', align: 'left' },
+  { id: 'name', label: 'Nombre de Caso', align: 'left' },
   { id: 'description', label: 'Descripción', align: 'left' },
   { id: '' },
 ];
 
-const BASE_URL = '/provider-areas';
+const BASE_URL = '/case';
 
-export default function EvaluationAreaList() {
+export default function CaseList() {
   const { themeStretch } = useSettings();
   const {
     dense,
@@ -60,7 +58,7 @@ export default function EvaluationAreaList() {
     onChangeRowsPerPage,
   } = useTable();
   const denseHeight = dense ? 52 : 72;
-  const { data: tableData = [], mutate } = useSWR<EvaluationArea[]>(BASE_URL);
+  const { data: tableData = [], mutate } = useSWR<Case[]>(BASE_URL);
   const isNotFound = !tableData.length;
   const navigate = useNavigate();
 
@@ -78,27 +76,23 @@ export default function EvaluationAreaList() {
   };
 
   const handleEditRow = (id: number) => {
-    navigate(PATH_DASHBOARD.evaluationArea.edit(id));
+    navigate(PATH_DASHBOARD.general.cases.edit(id));
   };
 
   return (
-    // <RoleBasedGuard hasContent moduleId={ModuleType.EVALUATION_AREA}> FIXME
-    <Page title="Áreas de Evaluación">
+    <Page title="Casos">
       <Container maxWidth={themeStretch ? false : 'lg'}>
         <HeaderBreadcrumbs
-          heading="Listado"
-          links={[
-            { name: 'Dashboard', href: PATH_DASHBOARD.root },
-            { name: 'Áreas de Evaluación' },
-          ]}
+          heading="Listado de casos"
+          links={[{ name: 'Dashboard', href: PATH_DASHBOARD.root }, { name: 'Casos' }]}
           action={
             <Button
               variant="contained"
               component={RouterLink}
-              to={PATH_DASHBOARD.evaluationArea.new}
+              to={PATH_DASHBOARD.general.cases.new}
               startIcon={<Iconify icon={'eva:plus-fill'} />}
             >
-              Nueva área de evaluación
+              Nuevo Caso
             </Button>
           }
         />
@@ -147,7 +141,7 @@ export default function EvaluationAreaList() {
                   {tableData
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                     .map((row) => (
-                      <EvaluationAreaTableRow
+                      <CaseTableRow
                         key={row.id}
                         row={row}
                         selected={selected.includes(row.id)}
@@ -182,6 +176,5 @@ export default function EvaluationAreaList() {
         </Card>
       </Container>
     </Page>
-    // </RoleBasedGuard>
   );
 }

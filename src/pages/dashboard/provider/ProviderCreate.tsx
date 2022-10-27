@@ -7,7 +7,7 @@ import Page from 'src/components/Page';
 import { PATH_DASHBOARD } from 'src/routes/paths';
 import HeaderBreadcrumbs from 'src/components/HeaderBreadcrumbs';
 import ProviderNewEditForm from 'src/sections/@dashboard/provider/ProviderNewEditForm';
-import { ServiceProvider } from 'src/@types/provider';
+import { CurrentServiceProvider } from 'src/@types/provider';
 import useSWR from 'swr';
 import RoleBasedGuard from 'src/guards/RoleBasedGuard';
 import { ModuleType } from 'src/@types/module';
@@ -19,7 +19,7 @@ export default function ProviderCreate() {
   const { id } = useParams();
   const isEdit = !!id;
 
-  const { data: currentProvider } = useSWR<ServiceProvider>(id && `/provider/${id}`);
+  const { data: currentProvider } = useSWR<CurrentServiceProvider>(id && `/provider/${id}`);
 
   return (
     <RoleBasedGuard hasContent moduleId={ModuleType.PROVIDER}>
@@ -29,7 +29,7 @@ export default function ProviderCreate() {
             heading={!isEdit ? 'Crear un Nuevo Proveedor' : 'Editar Proveedor'}
             links={[
               { name: 'Dashboard', href: PATH_DASHBOARD.root },
-              { name: 'Proveedores', href: PATH_DASHBOARD.user.list },
+              { name: 'Proveedores', href: PATH_DASHBOARD.provider.list },
               { name: !isEdit ? 'Nuevo Proveedor' : 'Proveedor' },
             ]}
           />

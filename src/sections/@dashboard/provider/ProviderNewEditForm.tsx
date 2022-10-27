@@ -1,7 +1,7 @@
 import * as Yup from 'yup';
 import { useEffect, useMemo, useState } from 'react';
 import { useSnackbar } from 'notistack';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useHref } from 'react-router-dom';
 // form
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -18,10 +18,22 @@ import {
   RHFSelect,
   RHFTextField,
 } from '../../../components/hook-form';
-import { HELP_ITEMS, INTEREST_OPTIONS, ServiceProvider } from 'src/@types/provider';
+import {
+  CurrentServiceProvider,
+  HELP_ITEMS,
+  INTEREST_OPTIONS,
+  PROVIDER_BASE_URL,
+  ServiceProvider,
+  ServiceProviderBody,
+} from 'src/@types/provider';
 import useTabs from 'src/hooks/useTabs';
 import Iconify from 'src/components/Iconify';
 import BranchesView from './branches/BranchesView';
+import { EvaluationArea } from 'src/@types/evaluation-area';
+import useSWR from 'swr';
+import { Province } from 'src/@types/province';
+import { ServiceType } from 'src/@types/service-type';
+import axiosInstance from 'src/utils/axios';
 
 // ----------------------------------------------------------------------
 
@@ -33,14 +45,17 @@ const LabelStyle = styled(Typography)(({ theme }) => ({
 
 type Props = {
   isEdit: boolean;
-  currentProvider?: ServiceProvider;
+  currentProvider?: CurrentServiceProvider;
 };
 
 export default function ProviderNewEditForm({ isEdit, currentProvider }: Props) {
   const navigate = useNavigate();
 
   const { enqueueSnackbar } = useSnackbar();
-  const [branchDisabled, setBranchDisabled] = useState(!isEdit);
+
+  const { data: areas = [] } = useSWR<EvaluationArea[]>('/provider-areas');
+  const { data: provinces = [] } = useSWR<Province[]>('/province');
+  const { data: serviceTypes = [] } = useSWR<ServiceType[]>('/service-type');
 
   const NewServiceProviderSchema = Yup.object().shape({
     name: Yup.string().required('Campo obligatorio'),
@@ -51,17 +66,15 @@ export default function ProviderNewEditForm({ isEdit, currentProvider }: Props) 
     (): Omit<ServiceProvider, 'id'> => ({
       name: currentProvider?.name ?? '',
       email: currentProvider?.email ?? '',
-      phone: currentProvider?.phone ?? '',
+      phoneNumber: currentProvider?.phoneNumber ?? '',
       description: currentProvider?.description ?? '',
       address: currentProvider?.address ?? '',
-      province: currentProvider?.province ?? '',
-      type: currentProvider?.type ?? 0,
-      areaId: currentProvider?.areaId ?? 0,
-      interest: currentProvider?.interest ?? 0,
-      items: currentProvider?.items ?? [],
-      latitude: currentProvider?.latitude ?? '',
-      longitude: currentProvider?.longitude ?? '',
-      isActive: currentProvider ? currentProvider.isActive : true,
+      provinceId: currentProvider?.province.id ?? 0,
+      serviceTypeId: currentProvider?.serviceType.id ?? 0,
+      providerAreaId: currentProvider?.providerAreas.id ?? 0,
+      networkInterest: currentProvider?.networkInterest ?? 0,
+      networkNeeds: JSON.parse(currentProvider?.networkNeeds ?? '[]'),
+      // isActive: currentProvider ? currentProvider.isActive : true, FIXME
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [currentProvider]
@@ -96,13 +109,24 @@ export default function ProviderNewEditForm({ isEdit, currentProvider }: Props) 
 
   const onSubmit = async (data: ServiceProvider) => {
     try {
-      // ! FIXME: Replace with API
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      enqueueSnackbar(currentProvider ? 'Proveedor Creado' : 'Cambios guardados');
-      setCurrentTab('sedes');
-      setBranchDisabled(false);
+      const { provinceId, serviceTypeId, providerAreaId, networkNeeds, networkInterest } = data;
+      const body: ServiceProviderBody = {
+        ...data,
+        providerAreaId: +providerAreaId,
+        serviceTypeId: +serviceTypeId,
+        provinceId: +provinceId,
+        networkNeeds: JSON.stringify(networkNeeds),
+        networkInterest: +networkInterest,
+      };
 
-      // TODO: Mutate /provider/id to get the current provider.
+      if (!currentProvider) {
+        const provider = await axiosInstance.post(PROVIDER_BASE_URL, body);
+        navigate(`/dashboard/provider/${provider.data?.id}`);
+      } else {
+        await axiosInstance.put(`${PROVIDER_BASE_URL}/${currentProvider.id}`, body);
+      }
+      enqueueSnackbar(!isEdit ? 'Proveedor Creado' : 'Cambios guardados');
+      setCurrentTab('sedes');
     } catch (error) {
       console.error(error);
     }
@@ -126,7 +150,7 @@ export default function ProviderNewEditForm({ isEdit, currentProvider }: Props) 
         />
         <Tab
           disableRipple
-          disabled={branchDisabled}
+          disabled={!isEdit}
           key={1}
           label="Sedes"
           icon={<Iconify icon={'ic:round-place'} width={20} height={20} />}
@@ -155,7 +179,7 @@ export default function ProviderNewEditForm({ isEdit, currentProvider }: Props) 
                     }}
                   >
                     <RHFTextField name="name" label="Nombre de la organización o persona" />
-                    <RHFTextField name="phone" label="Teléfono" />
+                    <RHFTextField name="phoneNumber" label="Teléfono" />
                     <RHFTextField name="email" label="Correo Electrónico" />
                     <RHFTextField name="address" label="Dirección de la organización o persona" />
                     {/* <RHFTextField name="phoneNumber" label="Número de Teléfono" /> */}
@@ -192,38 +216,38 @@ export default function ProviderNewEditForm({ isEdit, currentProvider }: Props) 
                 </Typography>
                 <Box sx={{ flexDirection: 'column', display: 'flex', gap: 2, mt: 3 }}>
                   <RHFSelect
-                    name="province"
+                    name="provinceId"
                     label="Provincia en que trabaja"
                     placeholder="Provincia en que trabaja"
                   >
                     <option value="" />
-                    {['Provincia 1', 'Provincia 2'].map((option) => (
-                      <option key={option} value={option}>
-                        {option}
+                    {provinces.map((option) => (
+                      <option key={option.id} value={option.id}>
+                        {option.name}
                       </option>
                     ))}
                   </RHFSelect>
                   <RHFSelect
-                    name="type"
+                    name="serviceTypeId"
                     label="Tipo de Servicio que la persona puede proveer"
                     placeholder="Tipo de Servicio que la persona puede proveer"
                   >
                     <option value="" />
-                    {['Tipo 1', 'Tipo 2'].map((option) => (
-                      <option key={option} value={option}>
-                        {option}
+                    {serviceTypes.map((option) => (
+                      <option key={option.id} value={option.id}>
+                        {option.name}
                       </option>
                     ))}
                   </RHFSelect>
                   <RHFSelect
-                    name="areaId"
+                    name="providerAreaId"
                     label="En cuáles áreas de la evaluación del sobreviviente puede aportar esta persona u organización"
                     placeholder="En cuáles áreas de la evaluación del sobreviviente puede aportar esta persona u organización"
                   >
                     <option value="" />
-                    {['área 1', 'área 2'].map((option) => (
-                      <option key={option} value={option}>
-                        {option}
+                    {areas.map((option) => (
+                      <option key={option.id} value={option.id}>
+                        {option.name}
                       </option>
                     ))}
                   </RHFSelect>
@@ -243,7 +267,7 @@ export default function ProviderNewEditForm({ isEdit, currentProvider }: Props) 
                   <Box>
                     <LabelStyle>Está Interesado/a en formar parte de la red</LabelStyle>
                     <RHFRadioGroup
-                      name="interest"
+                      name="networkInterest"
                       options={INTEREST_OPTIONS}
                       sx={{
                         '& .MuiFormControlLabel-root': { mr: 4 },
@@ -255,7 +279,7 @@ export default function ProviderNewEditForm({ isEdit, currentProvider }: Props) 
                       Qué necesitará para formar parte de la red? Cómo puede ayudarle IJM?
                     </LabelStyle>
                     <RHFMultiCheckbox
-                      name="items"
+                      name="networkNeeds"
                       options={HELP_ITEMS}
                       sx={{
                         '& .MuiFormControlLabel-root': { mr: 4 },
@@ -277,7 +301,9 @@ export default function ProviderNewEditForm({ isEdit, currentProvider }: Props) 
         </FormProvider>
       )}
 
-      {currentTab === 'sedes' && <BranchesView providerId={currentProvider?.id} />}
+      {currentTab === 'sedes' && currentProvider && (
+        <BranchesView currentProvider={currentProvider} />
+      )}
     </>
   );
 }

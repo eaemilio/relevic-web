@@ -60,7 +60,7 @@ export default function ServiceTypeList() {
     onChangeRowsPerPage,
   } = useTable();
   const denseHeight = dense ? 52 : 72;
-  const { data: tableData = [...SERVICE_TYPES], mutate } = useSWR<ServiceType[]>(BASE_URL);
+  const { data: tableData = [], mutate } = useSWR<ServiceType[]>(BASE_URL);
   const isNotFound = !tableData.length;
   const navigate = useNavigate();
 

@@ -1,29 +1,68 @@
+import { EvaluationArea } from './evaluation-area';
+import { Province } from './province';
+import { ServiceType } from './service-type';
+
 export interface ServiceProvider {
   id: number;
   name: string;
-  phone: string;
+  phoneNumber: string;
   description: string;
   email: string;
   address: string;
 
-  province: string;
-  type: number;
-  areaId: number;
+  provinceId: number;
+  serviceTypeId: number;
+  providerAreaId: number;
 
-  interest: number;
-  items: number[];
+  networkInterest: number;
+  networkNeeds: number[];
 
-  latitude: string;
-  longitude: string;
+  // isActive: boolean; FIXME
+}
 
-  isActive: boolean;
+export interface ServiceProviderBody {
+  id: number;
+  name: string;
+  phoneNumber: string;
+  description: string;
+  email: string;
+  address: string;
+
+  provinceId: number;
+  serviceTypeId: number;
+  providerAreaId: number;
+
+  networkInterest: number;
+  networkNeeds: string;
+
+  // isActive: boolean; FIXME
+}
+
+export interface CurrentServiceProvider {
+  id: number;
+  name: string;
+  phoneNumber: string;
+  description: string;
+  email: string;
+  address: string;
+
+  providerAreas: EvaluationArea;
+  province: Province;
+  serviceType: ServiceType;
+
+  networkInterest: number;
+  networkNeeds: string;
+
+  branches: ProviderBranch[];
+
+  // isActive: boolean; FIXME
 }
 
 export const INTEREST_OPTIONS = [
-    { label: 'Sí', value: 1 },
-    { label: 'No', value: 2 },
-    { label: 'Quiere Más Información', value: 3 },
-    { label: 'No puede ahora pero quizá luego', value: 4 },
+  { label: 'Sí', value: 1 },
+  { label: 'No', value: 2 },
+  { label: 'Quiere Más Información', value: 3 },
+  { label: 'No puede ahora pero quizá luego', value: 4 },
 ];
 
 export const HELP_ITEMS = [
@@ -41,7 +80,22 @@ export interface ProviderBranch {
   name: string;
   email: string;
   address: string;
-  description: string;
-  phone: number | string;
+  personInCharge: string;
+  phoneNumber: string;
+  latitude: string;
+  longitude: string;
   id: number;
 }
+
+export interface ProviderBranchBody {
+  name: string;
+  email: string;
+  address: string;
+  personInCharge: string;
+  phoneNumber: string;
+  latitude: string;
+  longitude: string;
+}
+
+export const PROVIDER_BASE_URL = '/provider';
+export const BRANCH_BASE_URL = '/branch';
