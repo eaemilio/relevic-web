@@ -53,11 +53,11 @@ export default function AccountGeneral() {
   });
 
   const defaultValues = {
-      name: user?.displayName || '',
-      email: user?.email || '',
-      phoneNumber: user?.phoneNumber || '',
-      avatarUrl: user?.photoURL || '',
-      role: user?.role || '',
+    name: user?.name || '',
+    email: user?.email || '',
+    phoneNumber: user?.phoneNumber || '',
+    avatarUrl: user?.photoURL || '',
+    role: user?.role || '',
   };
 
   const methods = useForm<FormValuesProps>({
@@ -73,58 +73,17 @@ export default function AccountGeneral() {
 
   const onSubmit = async (data: FormValuesProps) => {
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      enqueueSnackbar('Se han guardado los cambios');
+      // await new Promise((resolve) => setTimeout(resolve, 500));
+      // enqueueSnackbar('Se han guardado los cambios');
     } catch (error) {
       console.error(error);
     }
   };
 
-  const handleDrop = useCallback(
-    (acceptedFiles: File[]) => {
-      const file = acceptedFiles[0];
-
-      if (file) {
-        setValue(
-          'photoURL',
-          Object.assign(file, {
-            preview: URL.createObjectURL(file),
-          })
-        );
-      }
-    },
-    [setValue]
-  );
-
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
       <Grid container spacing={3}>
-        <Grid item xs={12} md={4}>
-          <Card sx={{ py: 10, px: 3, textAlign: 'center' }}>
-            <RHFUploadAvatar
-              name="avatarUrl"
-              maxSize={3145728}
-              onDrop={handleDrop}
-              helperText={
-                <Typography
-                  variant="caption"
-                  sx={{
-                    mt: 2,
-                    mx: 'auto',
-                    display: 'block',
-                    textAlign: 'center',
-                    color: 'text.secondary',
-                  }}
-                >
-                  Allowed *.jpeg, *.jpg, *.png, *.gif
-                  <br /> max size of {fData(3145728)}
-                </Typography>
-              }
-            />
-          </Card>
-        </Grid>
-
-        <Grid item xs={12} md={8}>
+        <Grid item xs={12} md={12}>
           <Card sx={{ p: 3 }}>
             <Box
               sx={{
@@ -136,8 +95,6 @@ export default function AccountGeneral() {
             >
               <RHFTextField name="name" label="Nombre" />
               <RHFTextField name="email" label="Correo Electrónico" />
-
-              <RHFTextField name="phoneNumber" label="Número de Teléfono" />
             </Box>
 
             <Stack spacing={3} alignItems="flex-end" sx={{ mt: 3 }}>
