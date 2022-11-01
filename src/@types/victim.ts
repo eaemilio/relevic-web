@@ -3,7 +3,7 @@ export interface Victim {
   otherName: string;
   age: number;
   verifiedAge: number;
-  birthday: string;
+  birthday?: string;
   citizenship: string;
   ethnicity: string;
   nationality: string;
@@ -13,6 +13,7 @@ export interface Victim {
   currentAddress: string;
   phoneNumber: string;
   preferredLanguage: string;
+  genre: number;
   id: number;
 }
 
@@ -35,13 +36,18 @@ export const YES_NO_OPTIONS = [
   { label: 'No', value: 0 },
 ];
 
+export const GENRE_OPTIONS = [
+  { label: 'Femenino', value: 0 },
+  { label: 'Masculino', value: 1 },
+];
+
 export const MOCK_VICTIM: Victim[] = [
   {
     name: 'Consuelo María Pérez Baez',
     otherName: 'Consu',
     age: 45,
     verifiedAge: 45,
-    birthday: '10/10/1978',
+    birthday: '',
     citizenship: 'Dominicana',
     ethnicity: 'Latina',
     nationality: 'Dominicana',
@@ -52,6 +58,7 @@ export const MOCK_VICTIM: Victim[] = [
     originAddress: '51AVE B 2-90, Barrio la Merced',
     phoneNumber: '871890292',
     preferredLanguage: 'Español',
+    genre: 1,
   },
 ];
 
@@ -71,4 +78,5 @@ export const EMPTY_VICTIM: VictimBody = {
   phoneNumber: '',
   preferredLanguage: '',
   id: 0,
+  genre: 0,
 };

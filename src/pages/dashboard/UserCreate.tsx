@@ -14,7 +14,7 @@ import HeaderBreadcrumbs from '../../components/HeaderBreadcrumbs';
 // sections
 import UserNewEditForm from '../../sections/@dashboard/user/UserNewEditForm';
 import useSWR from 'swr';
-import { UserManager } from 'src/@types/user';
+import { CurrentUser, UserManager } from 'src/@types/user';
 import RoleBasedGuard from 'src/guards/RoleBasedGuard';
 import { ModuleType } from 'src/@types/module';
 
@@ -26,7 +26,7 @@ export default function UserCreate() {
 
   const isEdit = !!id;
 
-  const { data: currentUser } = useSWR<UserManager>(id && `/user/${id}`);
+  const { data: currentUser } = useSWR<CurrentUser>(id && `/user/${id}`);
 
   return (
     <RoleBasedGuard hasContent moduleId={ModuleType.USER}>

@@ -17,7 +17,7 @@ type Props = NavItemProps & ListItemButtonProps;
 export default function NavItem({ item, depth, active, open, isCollapse, ...other }: Props) {
   const { translate } = useLocales();
 
-  const { title, icon, info, children, disabled, caption, moduleId } = item;
+  const { title, icon, info, children, disabled, caption, moduleId, onlyRootProvider } = item;
 
   const renderContent = (
     <ListItemStyle depth={depth} active={active} disabled={disabled} {...other}>
@@ -64,7 +64,11 @@ export default function NavItem({ item, depth, active, open, isCollapse, ...othe
     </ListItemStyle>
   );
 
-  return <RoleBasedGuard moduleId={moduleId}>{renderContent}</RoleBasedGuard>;
+  return (
+    <RoleBasedGuard moduleId={moduleId} onlyRootProvider={onlyRootProvider}>
+      {renderContent}
+    </RoleBasedGuard>
+  );
 }
 
 // ----------------------------------------------------------------------

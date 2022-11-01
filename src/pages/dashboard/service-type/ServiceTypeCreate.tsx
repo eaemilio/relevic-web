@@ -19,7 +19,7 @@ export default function ServiceTypeCreate() {
   const { data: currentService } = useSWR<ServiceType>(id && `/service-type/${id}`);
 
   return (
-    <RoleBasedGuard hasContent moduleId={ModuleType.SERVICE_TYPE}>
+    <RoleBasedGuard hasContent moduleId={ModuleType.SERVICE_TYPE} onlyRootProvider>
       <Page title="Nuevo Tipo de Servicio">
         <Container maxWidth={themeStretch ? false : 'lg'}>
           <HeaderBreadcrumbs

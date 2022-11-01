@@ -21,7 +21,7 @@ export default function RoleCreate() {
   const { data: currentRole } = useSWR<RoleManager>(id && `/role/${id}`);
 
   return (
-    <RoleBasedGuard hasContent moduleId={ModuleType.ROLE}>
+    <RoleBasedGuard hasContent moduleId={ModuleType.ROLE} onlyRootProvider>
       <Page title="Nuevo Rol">
         <Container maxWidth={themeStretch ? false : 'lg'}>
           <HeaderBreadcrumbs

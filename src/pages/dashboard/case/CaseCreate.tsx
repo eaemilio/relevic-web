@@ -7,13 +7,14 @@ import { PATH_DASHBOARD } from 'src/routes/paths';
 import HeaderBreadcrumbs from 'src/components/HeaderBreadcrumbs';
 import useSWR from 'swr';
 import CaseNewEditForm from 'src/sections/@dashboard/case/CaseNewEditForm';
+import { NetworkCase } from 'src/@types/case';
 
 export default function ProvinceCreate() {
   const { themeStretch } = useSettings();
   const { id } = useParams();
   const isEdit = !!id;
 
-  const { data: currentCase } = useSWR(id && `/case/${id}`);
+  const { data: currentCase } = useSWR<NetworkCase>(id && `/case/${id}`);
 
   return (
     // <RoleBasedGuard hasContent moduleId={ModuleType.PROVINCE}> FIXME

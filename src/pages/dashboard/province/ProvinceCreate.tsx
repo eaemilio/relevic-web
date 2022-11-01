@@ -19,7 +19,7 @@ export default function ProvinceCreate() {
   const { data: currentProvince } = useSWR<Province>(id && `/province/${id}`);
 
   return (
-    <RoleBasedGuard hasContent moduleId={ModuleType.PROVINCE}>
+    <RoleBasedGuard hasContent moduleId={ModuleType.PROVINCE} onlyRootProvider>
       <Page title="Nueva Provincia">
         <Container maxWidth={themeStretch ? false : 'lg'}>
           <HeaderBreadcrumbs

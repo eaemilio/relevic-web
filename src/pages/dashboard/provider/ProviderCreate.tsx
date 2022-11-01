@@ -22,7 +22,7 @@ export default function ProviderCreate() {
   const { data: currentProvider } = useSWR<CurrentServiceProvider>(id && `/provider/${id}`);
 
   return (
-    <RoleBasedGuard hasContent moduleId={ModuleType.PROVIDER}>
+    <RoleBasedGuard hasContent moduleId={ModuleType.PROVIDER} onlyRootProvider>
       <Page title="Nuevo Proveedor">
         <Container maxWidth={themeStretch ? false : 'lg'}>
           <HeaderBreadcrumbs

@@ -82,7 +82,7 @@ export default function ProvinceList() {
   };
 
   return (
-    <RoleBasedGuard hasContent moduleId={ModuleType.PROVINCE}>
+    <RoleBasedGuard hasContent moduleId={ModuleType.PROVINCE} onlyRootProvider>
       <Page title="Provincias">
         <Container maxWidth={themeStretch ? false : 'lg'}>
           <HeaderBreadcrumbs

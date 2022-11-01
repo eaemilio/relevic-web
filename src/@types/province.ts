@@ -3,3 +3,5 @@ export interface Province {
   name: string;
   description: string;
 }
+
+export const PROVINCE_BASE_URL = '/province';

@@ -1,4 +1,5 @@
 import { UserCredential } from 'firebase/auth';
+import { CurrentUser } from './user';
 
 // ----------------------------------------------------------------------
 

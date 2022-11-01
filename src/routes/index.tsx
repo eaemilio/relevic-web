@@ -96,6 +96,7 @@ export default function Router() {
             { path: 'list', element: <CaseList /> },
             { path: 'new', element: <CaseCreate /> },
             { path: ':id', element: <CaseCreate /> },
+            { path: 'follow-up/:id', element: <FollowUpNoteList /> },
           ],
         },
         {
@@ -271,6 +272,11 @@ const ProviderCreate = Loadable(lazy(() => import('../pages/dashboard/provider/P
 // ROLE
 const RoleList = Loadable(lazy(() => import('../pages/dashboard/role/RoleList')));
 const RoleCreate = Loadable(lazy(() => import('../pages/dashboard/role/RoleCreate')));
+
+// ROLE
+const FollowUpNoteList = Loadable(
+  lazy(() => import('../pages/dashboard/case/follow-up/FollowUpList'))
+);
 
 // SERVICE TYPE
 const ServiceTypeList = Loadable(

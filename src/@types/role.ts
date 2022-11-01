@@ -13,3 +13,9 @@ export interface RoleManager {
   description: string;
   permissions: Module[];
 }
+
+export enum Roles {
+  ADMIN = 3,
+  COORDINADOR = 1,
+  AGENTE = 2,
+}

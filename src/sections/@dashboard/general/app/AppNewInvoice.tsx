@@ -26,17 +26,17 @@ import { TableMoreMenu, TableHeadCustom } from '../../../../components/table';
 
 // ----------------------------------------------------------------------
 
-type RowProps = {
-  id: string;
-  category: string;
-  price: number;
-  status: string;
+export type MyWork = {
+  description: string;
+  antiquity: number;
+  caseId: number;
+  isFollowUp: boolean;
 };
 
 interface Props extends CardProps {
   title?: string;
   subheader?: string;
-  tableData: RowProps[];
+  tableData: MyWork[];
   tableLabels: any;
 }
 
@@ -57,8 +57,8 @@ export default function AppNewInvoice({
             <TableHeadCustom headLabel={tableLabels} />
 
             <TableBody>
-              {tableData.map((row) => (
-                <AppNewInvoiceRow key={row.id} row={row} />
+              {tableData.map((row, index) => (
+                <AppNewInvoiceRow key={index} row={row} />
               ))}
             </TableBody>
           </Table>
@@ -83,95 +83,34 @@ export default function AppNewInvoice({
 // ----------------------------------------------------------------------
 
 type AppNewInvoiceRowProps = {
-  row: RowProps;
+  row: MyWork;
 };
 
 function AppNewInvoiceRow({ row }: AppNewInvoiceRowProps) {
   const theme = useTheme();
 
-  const [openMenu, setOpenMenuActions] = useState<HTMLElement | null>(null);
-
-  const handleOpenMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setOpenMenuActions(event.currentTarget);
-  };
-
-  const handleCloseMenu = () => {
-    setOpenMenuActions(null);
-  };
-
-  const handleDownload = () => {
-    handleCloseMenu();
-    console.log('DOWNLOAD', row.id);
-  };
-
-  const handlePrint = () => {
-    handleCloseMenu();
-    console.log('PRINT', row.id);
-  };
-
-  const handleShare = () => {
-    handleCloseMenu();
-    console.log('SHARE', row.id);
-  };
-
-  const handleDelete = () => {
-    handleCloseMenu();
-    console.log('DELETE', row.id);
+  const handleClick = (row: MyWork) => {
+    // TODO: figure something out
   };
 
   return (
-    <TableRow>
-      <TableCell>{`INV-${row.id}`}</TableCell>
-
-      <TableCell>{row.category}</TableCell>
-
-      <TableCell>{fCurrency(row.price)}</TableCell>
-
+    <TableRow hover>
+      <TableCell>{row.description}</TableCell>
       <TableCell>
         <Label
           variant={theme.palette.mode === 'light' ? 'ghost' : 'filled'}
-          color={
-            (row.status === 'in_progress' && 'warning') ||
-            (row.status === 'out_of_date' && 'error') ||
-            'success'
-          }
+          color={(row.antiquity > 10 && 'warning') || (row.antiquity > 20 && 'error') || 'success'}
         >
-          {sentenceCase(row.status)}
+          {row.antiquity} Días
         </Label>
       </TableCell>
+      {/* <TableCell>#{row.caseId}</TableCell> */}
 
-      <TableCell align="right">
-        <TableMoreMenu
-          open={openMenu}
-          onOpen={handleOpenMenu}
-          onClose={handleCloseMenu}
-          actions={
-            <>
-              <MenuItem onClick={handleDownload}>
-                <Iconify icon={'eva:download-fill'} />
-                Download
-              </MenuItem>
-
-              <MenuItem onClick={handlePrint}>
-                <Iconify icon={'eva:printer-fill'} />
-                Print
-              </MenuItem>
-
-              <MenuItem onClick={handleShare}>
-                <Iconify icon={'eva:share-fill'} />
-                Share
-              </MenuItem>
-
-              <Divider sx={{ borderStyle: 'dashed' }} />
-
-              <MenuItem onClick={handleDelete} sx={{ color: 'error.main' }}>
-                <Iconify icon={'eva:trash-2-outline'} />
-                Delete
-              </MenuItem>
-            </>
-          }
-        />
-      </TableCell>
+      {/* <TableCell align="right">
+        <Button variant="contained" onClick={() => handleClick(row)}>
+          Ver
+        </Button>
+      </TableCell> */}
     </TableRow>
   );
 }

@@ -32,11 +32,12 @@ import {
   TableSelectedActions,
 } from 'src/components/table';
 import ProviderTableRow from 'src/sections/@dashboard/provider/list/ProviderTableRow';
-import { ServiceProvider } from 'src/@types/provider';
+import { PROVIDER_BASE_URL, ServiceProvider } from 'src/@types/provider';
 import { PROVIDERS_MOCK } from 'src/_mock/provider';
 import RoleBasedGuard from 'src/guards/RoleBasedGuard';
 import { ModuleType } from 'src/@types/module';
 import useSWR from 'swr';
+import { removeAsync } from 'src/services/APIGateway';
 
 const TABLE_HEAD = [
   { id: 'id', label: 'Código', align: 'left' },
@@ -80,8 +81,9 @@ export default function ProviderList() {
     setPage(0);
   };
 
-  const handleDeleteRow = (id: number) => {
-    // TODO: Handle row delete
+  const handleDeleteRow = async (id: number) => {
+    await removeAsync(`${PROVIDER_BASE_URL}/${id}`);
+    mutate(tableData.filter((d) => d.id !== id));
     setSelected([]);
   };
 
@@ -91,7 +93,6 @@ export default function ProviderList() {
   };
 
   const handleEditRow = (id: number) => {
-    // ! FIXME: Redirect to providers edit page
     navigate(PATH_DASHBOARD.provider.edit(id));
   };
 
@@ -108,7 +109,7 @@ export default function ProviderList() {
     (!dataFiltered.length && !!filterName) || (!dataFiltered.length && !!filterStatus);
 
   return (
-    <RoleBasedGuard hasContent moduleId={ModuleType.PROVIDER}>
+    <RoleBasedGuard hasContent moduleId={ModuleType.PROVIDER} onlyRootProvider>
       <Page title="Usuarios">
         <Container maxWidth={themeStretch ? false : 'lg'}>
           <HeaderBreadcrumbs

@@ -13,6 +13,7 @@ export type NavListProps = {
   roles?: string[];
   children?: any;
   moduleId?: number;
+  onlyRootProvider?: boolean;
 };
 
 export type NavItemProps = {

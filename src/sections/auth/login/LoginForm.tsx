@@ -37,8 +37,8 @@ export default function LoginForm() {
   });
 
   const defaultValues: FormValuesProps = {
-    email: 'ebarrientos@ijm.org',
-    password: '12345678',
+    email: '',
+    password: '',
   };
 
   const methods = useForm<FormValuesProps>({
@@ -58,9 +58,6 @@ export default function LoginForm() {
       await login(data.email, data.password);
     } catch (error) {
       console.error(error);
-
-      reset();
-
       if (isMountedRef.current) {
         setError('afterSubmit', { ...error, message: error.message });
       }

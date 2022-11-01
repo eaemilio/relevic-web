@@ -19,7 +19,7 @@ export default function EvaluationAreaCreate() {
   const { data: currentEvaluationArea } = useSWR<EvaluationArea>(id && `/provider-areas/${id}`);
 
   return (
-    // <RoleBasedGuard hasContent moduleId={ModuleType.EVALUATION_AREA}> FIXME
+    // <RoleBasedGuard hasContent moduleId={ModuleType.EVALUATION_AREA} onlyRootProvider> FIXME
     <Page title="Área de Evaluación">
       <Container maxWidth={themeStretch ? false : 'lg'}>
         <HeaderBreadcrumbs

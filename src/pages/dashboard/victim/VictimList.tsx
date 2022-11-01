@@ -76,7 +76,7 @@ export default function EvaluationAreaList() {
   };
 
   const handleEditRow = (id: number) => {
-    navigate(PATH_DASHBOARD.evaluationArea.edit(id));
+    navigate(PATH_DASHBOARD.general.victims.edit(id));
   };
 
   return (

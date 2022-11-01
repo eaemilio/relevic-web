@@ -5,13 +5,13 @@ export const getAsync = async <T>(route: string): Promise<T> => {
   return result.data;
 };
 
-export const createAsync = async <T>(route: string, body: T): Promise<T> => {
-  const result = await axiosInstance.post<T>(route, body);
+export const createAsync = async <T, K = T>(route: string, body: T): Promise<K> => {
+  const result = await axiosInstance.post<K>(route, body);
   return result.data;
 };
 
-export const editAsync = async <T>(route: string, body: T): Promise<T> => {
-  const result = await axiosInstance.put<T>(route, body);
+export const editAsync = async <T, K = T>(route: string, body: T): Promise<K> => {
+  const result = await axiosInstance.put<K>(route, body);
   return result.data;
 };
 

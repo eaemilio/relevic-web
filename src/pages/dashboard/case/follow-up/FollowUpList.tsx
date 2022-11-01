@@ -10,10 +10,10 @@ import {
   TablePagination,
   Tooltip,
 } from '@mui/material';
-import { Link as RouterLink, useNavigate } from 'react-router-dom';
-import { CASE_BASE_URL, NetworkCase } from 'src/@types/case';
-import { Roles } from 'src/@types/role';
-import { CurrentUser } from 'src/@types/user';
+import { useState } from 'react';
+import { Link as RouterLink, useNavigate, useParams } from 'react-router-dom';
+import { CASE_BASE_URL, CurrentCase, NetworkCase } from 'src/@types/case';
+import { FollowUpNote, FOLLOW_UP_BASE_URL } from 'src/@types/follow-up';
 import HeaderBreadcrumbs from 'src/components/HeaderBreadcrumbs';
 import Iconify from 'src/components/Iconify';
 import Page from 'src/components/Page';
@@ -24,27 +24,25 @@ import {
   TableNoData,
   TableSelectedActions,
 } from 'src/components/table';
-import useAuth from 'src/hooks/useAuth';
 import useSettings from 'src/hooks/useSettings';
 import useTable, { emptyRows } from 'src/hooks/useTable';
 import { PATH_DASHBOARD } from 'src/routes/paths';
-import CaseTableRow from 'src/sections/@dashboard/case/list/CaseTableRow';
+import FollowUpTableRow from 'src/sections/@dashboard/follow-up/FollowUpTableRow';
 import { removeAsync } from 'src/services/APIGateway';
 import useSWR from 'swr';
+import FollowUpCreate from './FollowUpCreate';
 
 const TABLE_HEAD = [
   { id: 'id', label: 'ID', align: 'left' },
-  { id: 'victim.id', label: 'Cédula de la Víctima', align: 'left' },
-  { id: 'victim.name', label: 'Nombre de la Víctima', align: 'left' },
-  { id: 'provider.id', label: 'Nombre de la Organización', align: 'left' },
-  { id: 'userInCharge.id', label: 'Persona a Cargo', align: 'left' },
+  { id: 'description', label: 'Descripción', align: 'left' },
+  { id: 'createdAt', label: 'Fecha', align: 'left' },
   { id: '' },
 ];
 
-const BASE_URL = '/case';
-
-export default function CaseList() {
+export default function EvaluationAreaList() {
   const { themeStretch } = useSettings();
+  const [open, setOpen] = useState(false);
+  const [selectedNote, setSelectedNote] = useState<FollowUpNote | undefined>();
   const {
     dense,
     page,
@@ -62,19 +60,22 @@ export default function CaseList() {
     onChangeRowsPerPage,
   } = useTable();
   const denseHeight = dense ? 52 : 72;
-  const { user } = useAuth();
-  const providerId = user?.provider?.id;
-  const isRootProvider = providerId === 1;
-  const { data: tableData = [], mutate } = useSWR<NetworkCase[]>(
-    isRootProvider ? BASE_URL : providerId ? `${CASE_BASE_URL}/provider/${providerId}` : null
-  );
+  const { id } = useParams();
+  const { data: currentCase, mutate } = useSWR<NetworkCase>(id ? `${CASE_BASE_URL}/${id}` : null);
+  const { followUpNotes: tableData = [] } = currentCase ?? {};
   const isNotFound = !tableData.length;
-  const navigate = useNavigate();
 
-  const handleDeleteRow = async (id: number) => {
-    await removeAsync(`${BASE_URL}/${id}`);
-    mutate(tableData.filter((d) => d.id !== id));
-    setSelected([]);
+  const handleDeleteRow = (id: number) => {
+    if (currentCase) {
+      mutate(async () => removeAsync(`${FOLLOW_UP_BASE_URL}/${id}`), {
+        optimisticData: {
+          ...currentCase,
+          followUpNotes: tableData.filter((d) => d.id !== id),
+        },
+        rollbackOnError: true,
+      });
+      setSelected([]);
+    }
   };
 
   const handleDeleteRows = (selected: (number | string)[]) => {
@@ -82,24 +83,47 @@ export default function CaseList() {
     setSelected([]);
   };
 
-  const handleEditRow = (id: number) => {
-    navigate(PATH_DASHBOARD.general.cases.edit(id));
+  const handleEditRow = (note: FollowUpNote) => {
+    setOpen(true);
+    setSelectedNote(note);
   };
 
   return (
-    <Page title="Casos">
+    <Page title="Notas de Seguimiento">
       <Container maxWidth={themeStretch ? false : 'lg'}>
+        {currentCase && (
+          <FollowUpCreate
+            currentCase={currentCase}
+            open={open}
+            handleClose={() => {
+              setOpen(false);
+              setSelectedNote(undefined);
+            }}
+            currentNote={selectedNote}
+          />
+        )}
         <HeaderBreadcrumbs
-          heading="Listado de casos"
-          links={[{ name: 'Dashboard', href: PATH_DASHBOARD.root }, { name: 'Casos' }]}
+          heading={`Notas de Seguimiento para Caso #${currentCase?.id}`}
+          links={[
+            { name: 'Dashboard', href: PATH_DASHBOARD.root },
+            {
+              name: `Caso #${currentCase?.id}`,
+              href: currentCase
+                ? PATH_DASHBOARD.general.cases.edit(currentCase.id)
+                : PATH_DASHBOARD.general.cases.new,
+            },
+            { name: 'Notas de Seguimiento' },
+          ]}
           action={
             <Button
               variant="contained"
-              component={RouterLink}
-              to={PATH_DASHBOARD.general.cases.new}
+              onClick={() => {
+                setOpen(true);
+                setSelectedNote(undefined);
+              }}
               startIcon={<Iconify icon={'eva:plus-fill'} />}
             >
-              Nuevo Caso
+              Nueva Nota de Seguimiento
             </Button>
           }
         />
@@ -145,16 +169,16 @@ export default function CaseList() {
                 />
 
                 <TableBody>
-                  {(tableData ?? [])
+                  {tableData
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                     .map((row) => (
-                      <CaseTableRow
+                      <FollowUpTableRow
                         key={row.id}
                         row={row}
                         selected={selected.includes(row.id)}
                         onSelectRow={() => onSelectRow(row.id)}
                         onDeleteRow={() => handleDeleteRow(row.id)}
-                        onEditRow={() => handleEditRow(row.id)}
+                        onEditRow={() => handleEditRow(row)}
                       />
                     ))}
 

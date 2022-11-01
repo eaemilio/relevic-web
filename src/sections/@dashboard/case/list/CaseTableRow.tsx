@@ -1,11 +1,14 @@
 import { Checkbox, MenuItem, TableCell, TableRow } from '@mui/material';
 import { useState } from 'react';
-import { Case } from 'src/@types/case';
+import { NetworkCase } from 'src/@types/case';
+import { Roles } from 'src/@types/role';
+import { CurrentUser } from 'src/@types/user';
 import Iconify from 'src/components/Iconify';
 import { TableMoreMenu } from 'src/components/table';
+import useAuth from 'src/hooks/useAuth';
 
 type Props = {
-  row: Case;
+  row: NetworkCase;
   selected: boolean;
   onEditRow: VoidFunction;
   onSelectRow: VoidFunction;
@@ -19,7 +22,9 @@ export default function CaseTableRow({
   onSelectRow,
   onDeleteRow,
 }: Props) {
-  const { name, id, description } = row;
+  const { victim, provider, id, userInCharge } = row;
+  const { user } = useAuth();
+  const isAgent = (user as CurrentUser | null)?.role.id === Roles.AGENTE;
 
   const [openMenu, setOpenMenuActions] = useState<HTMLElement | null>(null);
 
@@ -42,11 +47,19 @@ export default function CaseTableRow({
       </TableCell>
 
       <TableCell align="left" sx={{ textTransform: 'capitalize' }}>
-        {name}
+        {victim?.id}
       </TableCell>
 
       <TableCell align="left" sx={{ textTransform: 'capitalize' }}>
-        {description}
+        {victim?.name}
+      </TableCell>
+
+      <TableCell align="left" sx={{ textTransform: 'capitalize' }}>
+        {provider?.name}
+      </TableCell>
+
+      <TableCell align="left" sx={{ textTransform: 'capitalize' }}>
+        {userInCharge?.name}
       </TableCell>
 
       <TableCell align="right">
@@ -56,16 +69,18 @@ export default function CaseTableRow({
           onClose={handleCloseMenu}
           actions={
             <>
-              <MenuItem
-                onClick={() => {
-                  onDeleteRow();
-                  handleCloseMenu();
-                }}
-                sx={{ color: 'error.main' }}
-              >
-                <Iconify icon={'eva:trash-2-outline'} />
-                Eliminar
-              </MenuItem>
+              {!isAgent && (
+                <MenuItem
+                  onClick={() => {
+                    onDeleteRow();
+                    handleCloseMenu();
+                  }}
+                  sx={{ color: 'error.main' }}
+                >
+                  <Iconify icon={'eva:trash-2-outline'} />
+                  Eliminar
+                </MenuItem>
+              )}
               <MenuItem
                 onClick={() => {
                   onEditRow();

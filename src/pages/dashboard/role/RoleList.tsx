@@ -79,7 +79,7 @@ export default function RoleList() {
   };
 
   return (
-    <RoleBasedGuard hasContent moduleId={ModuleType.ROLE}>
+    <RoleBasedGuard hasContent moduleId={ModuleType.ROLE} onlyRootProvider>
       <Page title="Roles">
         <Container maxWidth={themeStretch ? false : 'lg'}>
           <HeaderBreadcrumbs

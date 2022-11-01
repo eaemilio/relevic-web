@@ -82,7 +82,7 @@ export default function ServiceTypeList() {
   };
 
   return (
-    <RoleBasedGuard hasContent moduleId={ModuleType.SERVICE_TYPE}>
+    <RoleBasedGuard hasContent moduleId={ModuleType.SERVICE_TYPE} onlyRootProvider>
       <Page title="Tipos de Servicio">
         <Container maxWidth={themeStretch ? false : 'lg'}>
           <HeaderBreadcrumbs

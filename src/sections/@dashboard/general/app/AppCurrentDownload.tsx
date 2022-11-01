@@ -2,11 +2,13 @@ import merge from 'lodash/merge';
 import ReactApexChart from 'react-apexcharts';
 // @mui
 import { useTheme, styled } from '@mui/material/styles';
-import { Card, CardHeader, CardProps } from '@mui/material';
+import { Card, CardHeader, CardProps, TextField } from '@mui/material';
 // utils
 import { fNumber } from '../../../../utils/formatNumber';
 // components
 import { BaseOptionChart } from '../../../../components/chart';
+import { useState } from 'react';
+import useSurvivorEvaluationChartData from 'src/hooks/useSurvivorEvaluationChartData';
 
 // ----------------------------------------------------------------------
 
@@ -34,21 +36,13 @@ const ChartWrapperStyle = styled('div')(({ theme }) => ({
 interface Props extends CardProps {
   title?: string;
   subheader?: string;
-  chartData: {
-    label: string;
-    value: number;
-  }[];
   chartColors?: string[];
 }
 
-export default function AppCurrentDownload({
-  title,
-  subheader,
-  chartData,
-  chartColors,
-  ...other
-}: Props) {
+export default function AppCurrentDownload({ title, subheader, chartColors, ...other }: Props) {
   const theme = useTheme();
+  const [seriesData, setSeriesData] = useState(0);
+  const chartData = useSurvivorEvaluationChartData(seriesData);
 
   const chartLabels = chartData.map((i) => i.label);
 
@@ -88,9 +82,52 @@ export default function AppCurrentDownload({
     },
   });
 
+  const handleChangeSeriesData = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSeriesData(+event.target.value);
+  };
+
   return (
     <Card {...other}>
-      <CardHeader title={title} subheader={subheader} />
+      <CardHeader
+        title={title}
+        subheader={subheader}
+        action={
+          <TextField
+            select
+            fullWidth
+            value={seriesData}
+            SelectProps={{ native: true }}
+            onChange={handleChangeSeriesData}
+            sx={{
+              '& fieldset': { border: '0 !important' },
+              '& select': {
+                pl: 1,
+                py: 0.5,
+                pr: '24px !important',
+                typography: 'subtitle2',
+              },
+              '& .MuiOutlinedInput-root': {
+                borderRadius: 0.75,
+                bgcolor: 'background.neutral',
+              },
+              '& .MuiNativeSelect-icon': {
+                top: 4,
+                right: 0,
+                width: 20,
+                height: 20,
+              },
+            }}
+          >
+            {['Etapa Inicial', 'Al Cierre del Caso', 'Un año después del cierre'].map(
+              (option, index) => (
+                <option key={index} value={index}>
+                  {option}
+                </option>
+              )
+            )}
+          </TextField>
+        }
+      />
 
       <ChartWrapperStyle dir="ltr">
         <ReactApexChart type="donut" series={chartSeries} options={chartOptions} height={280} />

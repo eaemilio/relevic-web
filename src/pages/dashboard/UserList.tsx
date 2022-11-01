@@ -22,7 +22,7 @@ import useTabs from '../../hooks/useTabs';
 import useSettings from '../../hooks/useSettings';
 import useTable, { getComparator, emptyRows } from '../../hooks/useTable';
 // @types
-import { UserManager } from '../../@types/user';
+import { CurrentUser } from '../../@types/user';
 // components
 import Page from '../../components/Page';
 import Iconify from '../../components/Iconify';
@@ -42,6 +42,7 @@ import { removeAsync } from 'src/services/APIGateway';
 import RoleBasedGuard from 'src/guards/RoleBasedGuard';
 import { ModuleType } from 'src/@types/module';
 import { useState } from 'react';
+import useAuth from 'src/hooks/useAuth';
 
 // ----------------------------------------------------------------------
 
@@ -52,7 +53,7 @@ const ROLE_OPTIONS = ['todos', 'admin', 'director', 'agente'];
 const TABLE_HEAD = [
   { id: 'name', label: 'Nombre', align: 'left' },
   { id: 'role', label: 'Rol', align: 'left' },
-  { id: 'status', label: 'Estado', align: 'left' },
+  { id: 'provider', label: 'Organización', align: 'left' },
   { id: '' },
 ];
 
@@ -80,8 +81,11 @@ export default function UserList() {
   const { themeStretch } = useSettings();
 
   const navigate = useNavigate();
+  const { user } = useAuth();
 
-  const { data: tableData = [], mutate } = useSWR<UserManager[]>('/user');
+  const { data: tableData = [], mutate } = useSWR<CurrentUser[]>(
+    user?.provider?.id === 1 ? '/user' : `/user/provider/${user?.provider?.id}`
+  );
 
   const [filterName, setFilterName] = useState('');
 
@@ -155,7 +159,7 @@ export default function UserList() {
           />
 
           <Card>
-            <Tabs
+            {/* <Tabs
               allowScrollButtonsMobile
               variant="scrollable"
               scrollButtons="auto"
@@ -166,17 +170,17 @@ export default function UserList() {
               {STATUS_OPTIONS.map((tab) => (
                 <Tab disableRipple key={tab} label={tab} value={tab} />
               ))}
-            </Tabs>
+            </Tabs> */}
 
             <Divider />
 
-            <UserTableToolbar
+            {/* <UserTableToolbar
               filterName={filterName}
               filterRole={filterRole}
               onFilterName={handleFilterName}
               onFilterRole={handleFilterRole}
               optionsRole={ROLE_OPTIONS}
-            />
+            /> */}
 
             <Scrollbar>
               <TableContainer sx={{ minWidth: 800, position: 'relative' }}>
@@ -275,7 +279,7 @@ function applySortFilter({
   filterStatus,
   filterRole,
 }: {
-  tableData: UserManager[];
+  tableData: CurrentUser[];
   comparator: (a: any, b: any) => number;
   filterName: string;
   filterStatus: string;

@@ -1,8 +1,12 @@
 import { Checkbox, MenuItem, TableCell, TableRow } from '@mui/material';
+import dayjs from 'dayjs';
 import { useState } from 'react';
+import { Roles } from 'src/@types/role';
+import { CurrentUser } from 'src/@types/user';
 import { Victim } from 'src/@types/victim';
 import Iconify from 'src/components/Iconify';
 import { TableMoreMenu } from 'src/components/table';
+import useAuth from 'src/hooks/useAuth';
 
 type Props = {
   row: Victim;
@@ -20,6 +24,8 @@ export default function VictimTableRow({
   onDeleteRow,
 }: Props) {
   const { id, name, birthday, citizenship, ethnicity, nationality } = row;
+  const { user } = useAuth();
+  const isAgent = (user as CurrentUser | null)?.role.id === Roles.AGENTE;
 
   const [openMenu, setOpenMenuActions] = useState<HTMLElement | null>(null);
 
@@ -46,7 +52,7 @@ export default function VictimTableRow({
       </TableCell>
 
       <TableCell align="left" sx={{ textTransform: 'capitalize' }}>
-        {birthday}
+        {dayjs(birthday).format('DD/MM/YYYY')}
       </TableCell>
 
       <TableCell align="left" sx={{ textTransform: 'capitalize' }}>
@@ -68,16 +74,18 @@ export default function VictimTableRow({
           onClose={handleCloseMenu}
           actions={
             <>
-              <MenuItem
-                onClick={() => {
-                  onDeleteRow();
-                  handleCloseMenu();
-                }}
-                sx={{ color: 'error.main' }}
-              >
-                <Iconify icon={'eva:trash-2-outline'} />
-                Eliminar
-              </MenuItem>
+              {!isAgent && (
+                <MenuItem
+                  onClick={() => {
+                    onDeleteRow();
+                    handleCloseMenu();
+                  }}
+                  sx={{ color: 'error.main' }}
+                >
+                  <Iconify icon={'eva:trash-2-outline'} />
+                  Eliminar
+                </MenuItem>
+              )}
               <MenuItem
                 onClick={() => {
                   onEditRow();

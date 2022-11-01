@@ -1,6 +1,7 @@
 // ----------------------------------------------------------------------
 
-import { Role } from './role';
+import { ServiceProvider } from './provider';
+import { Role, RoleManager } from './role';
 
 export type UserInvoice = {
   id: string;
@@ -64,6 +65,24 @@ export type UserManager = {
   email: string;
   status: string;
   roleId: number;
+};
+
+export type UserBody = {
+  name: string;
+  email: string;
+  roleId: number;
+  providerId: number;
+  password: string;
+};
+
+export type CurrentUser = {
+  id: number;
+  name: string;
+  email: string;
+  status: string;
+  roleId: number;
+  provider: ServiceProvider;
+  role: RoleManager;
 };
 
 export type IUserData = {

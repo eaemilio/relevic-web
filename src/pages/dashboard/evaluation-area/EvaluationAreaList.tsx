@@ -82,7 +82,7 @@ export default function EvaluationAreaList() {
   };
 
   return (
-    // <RoleBasedGuard hasContent moduleId={ModuleType.EVALUATION_AREA}> FIXME
+    // <RoleBasedGuard hasContent moduleId={ModuleType.EVALUATION_AREA} onlyRootProvider> FIXME
     <Page title="Áreas de Evaluación">
       <Container maxWidth={themeStretch ? false : 'lg'}>
         <HeaderBreadcrumbs

@@ -38,13 +38,11 @@ const navConfig = [
       // CASOS
       {
         title: 'Casos',
-        // moduleId: ModuleType.EVALUATION_AREA, FIXME
         path: PATH_DASHBOARD.general.cases.root,
         icon: <Iconify icon={'bi:inbox-fill'} width={20} height={20} />,
       },
       {
         title: 'Víctimas',
-        // moduleId: ModuleType.EVALUATION_AREA, FIXME
         path: PATH_DASHBOARD.general.victims.root,
         icon: <Iconify icon={'bi:person-video2'} width={20} height={20} />,
       },
@@ -72,6 +70,7 @@ const navConfig = [
       {
         title: 'Proveedores',
         moduleId: ModuleType.PROVIDER,
+        onlyRootProvider: true,
         path: PATH_DASHBOARD.provider.list,
         icon: <Iconify icon={'heroicons:building-library-20-solid'} width={20} height={20} />,
         children: [
@@ -79,11 +78,13 @@ const navConfig = [
             title: 'Lista de Proveedores',
             path: PATH_DASHBOARD.provider.list,
             moduleId: ModuleType.PROVIDER,
+            onlyRootProvider: true,
           },
           {
             title: 'Nuevo Proveedor',
             path: PATH_DASHBOARD.provider.new,
             moduleId: ModuleType.PROVIDER,
+            onlyRootProvider: true,
           },
         ],
       },
@@ -92,11 +93,22 @@ const navConfig = [
       {
         title: 'Roles',
         moduleId: ModuleType.ROLE,
+        onlyRootProvider: true,
         path: PATH_DASHBOARD.role.list,
         icon: <Iconify icon={'heroicons:lock-open-20-solid'} width={20} height={20} />,
         children: [
-          { title: 'Lista de Roles', path: PATH_DASHBOARD.role.list, moduleId: ModuleType.ROLE },
-          { title: 'Nuevo Rol', path: PATH_DASHBOARD.role.new, moduleId: ModuleType.ROLE },
+          {
+            title: 'Lista de Roles',
+            path: PATH_DASHBOARD.role.list,
+            moduleId: ModuleType.ROLE,
+            onlyRootProvider: true,
+          },
+          {
+            title: 'Nuevo Rol',
+            path: PATH_DASHBOARD.role.new,
+            moduleId: ModuleType.ROLE,
+            onlyRootProvider: true,
+          },
         ],
       },
 
@@ -105,17 +117,20 @@ const navConfig = [
         title: 'Tipos de Servicio',
         moduleId: ModuleType.SERVICE_TYPE,
         path: PATH_DASHBOARD.serviceType.list,
+        onlyRootProvider: true,
         icon: <Iconify icon={'heroicons:globe-alt-20-solid'} width={20} height={20} />,
         children: [
           {
             title: 'Listado',
             path: PATH_DASHBOARD.serviceType.list,
             moduleId: ModuleType.SERVICE_TYPE,
+            onlyRootProvider: true,
           },
           {
             title: 'Nuevo Tipo de Servicio',
             path: PATH_DASHBOARD.serviceType.new,
             moduleId: ModuleType.SERVICE_TYPE,
+            onlyRootProvider: true,
           },
         ],
       },
@@ -124,6 +139,7 @@ const navConfig = [
       {
         title: 'Provincias',
         moduleId: ModuleType.PROVINCE,
+        onlyRootProvider: true,
         path: PATH_DASHBOARD.serviceType.list,
         icon: <Iconify icon={'heroicons:flag-20-solid'} width={20} height={20} />,
         children: [
@@ -131,11 +147,13 @@ const navConfig = [
             title: 'Listado de Provincias',
             path: PATH_DASHBOARD.province.list,
             moduleId: ModuleType.PROVINCE,
+            onlyRootProvider: true,
           },
           {
             title: 'Nueva Provincia',
             path: PATH_DASHBOARD.province.new,
             moduleId: ModuleType.PROVINCE,
+            onlyRootProvider: true,
           },
         ],
       },
@@ -145,16 +163,19 @@ const navConfig = [
         title: 'Áreas de Evaluación',
         // moduleId: ModuleType.EVALUATION_AREA, FIXME
         path: PATH_DASHBOARD.evaluationArea.list,
+        onlyRootProvider: true,
         icon: <Iconify icon={'heroicons:pencil-square-20-solid'} width={20} height={20} />,
         children: [
           {
             title: 'Listado',
             path: PATH_DASHBOARD.evaluationArea.list,
+            onlyRootProvider: true,
             // moduleId: ModuleType.EVALUATION_AREA, FIXME
           },
           {
             title: 'Nueva área de evaluación',
             path: PATH_DASHBOARD.evaluationArea.new,
+            onlyRootProvider: true,
             // moduleId: ModuleType.EVALUATION_AREA, FIXME
           },
         ],

@@ -1,34 +1,26 @@
+import { Checkbox, MenuItem, TableCell, TableRow } from '@mui/material';
+import dayjs from 'dayjs';
 import { useState } from 'react';
-// @mui
-import { useTheme } from '@mui/material/styles';
-import { Avatar, Checkbox, TableRow, TableCell, Typography, MenuItem } from '@mui/material';
-// @types
-import { CurrentUser, UserManager } from '../../../../@types/user';
-// components
-import Label from '../../../../components/Label';
-import Iconify from '../../../../components/Iconify';
-import { TableMoreMenu } from '../../../../components/table';
-
-// ----------------------------------------------------------------------
+import { FollowUpNote } from 'src/@types/follow-up';
+import Iconify from 'src/components/Iconify';
+import { TableMoreMenu } from 'src/components/table';
 
 type Props = {
-  row: CurrentUser;
+  row: FollowUpNote;
   selected: boolean;
   onEditRow: VoidFunction;
   onSelectRow: VoidFunction;
   onDeleteRow: VoidFunction;
 };
 
-export default function UserTableRow({
+export default function FollowUpTableRow({
   row,
   selected,
   onEditRow,
   onSelectRow,
   onDeleteRow,
 }: Props) {
-  const theme = useTheme();
-
-  const { name, role, provider } = row;
+  const { id, description, createdAt } = row;
 
   const [openMenu, setOpenMenuActions] = useState<HTMLElement | null>(null);
 
@@ -46,18 +38,14 @@ export default function UserTableRow({
         <Checkbox checked={selected} onClick={onSelectRow} />
       </TableCell>
 
-      <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
-        <Typography variant="subtitle2" noWrap>
-          {name}
-        </Typography>
+      <TableCell align="left" sx={{ textTransform: 'capitalize' }}>
+        {id}
       </TableCell>
+
+      <TableCell align="left">{description}</TableCell>
 
       <TableCell align="left" sx={{ textTransform: 'capitalize' }}>
-        {role?.name}
-      </TableCell>
-
-      <TableCell align="left">
-        <Label sx={{ textTransform: 'capitalize' }}>{provider?.name}</Label>
+        {dayjs(createdAt).format('DD/MM/YYYY')}
       </TableCell>
 
       <TableCell align="right">
