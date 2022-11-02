@@ -70,8 +70,8 @@ export default function ProviderNewEditForm({ isEdit, currentProvider }: Props) 
       description: currentProvider?.description ?? '',
       address: currentProvider?.address ?? '',
       provinceId: currentProvider?.province.id ?? 0,
-      serviceTypeId: currentProvider?.serviceType.id ?? 0,
-      providerAreaId: currentProvider?.providerAreas.id ?? 0,
+      serviceTypeId: currentProvider?.serviceType?.id ?? 0,
+      providerAreaId: currentProvider?.providerAreas?.id ?? 0,
       networkInterest: currentProvider?.networkInterest ?? 0,
       networkNeeds: JSON.parse(currentProvider?.networkNeeds ?? '[]'),
       // isActive: currentProvider ? currentProvider.isActive : true, FIXME

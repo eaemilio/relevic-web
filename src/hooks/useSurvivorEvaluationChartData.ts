@@ -13,7 +13,7 @@ export default function useSurvivorEvaluationChartData(phase: SurvivorEvaluation
   const { user } = useAuth();
   const isAgent = (user as CurrentUser | null)?.role.id === Roles.AGENTE;
   const userId = (user as CurrentUser | null)?.id;
-  const providerId = (user as CurrentUser | null)?.provider.id;
+  const providerId = (user as CurrentUser | null)?.provider?.id;
 
   const { data: evaluations = [] } = useSWR<SurvivorEvaluation[]>(
     isAgent
@@ -32,23 +32,23 @@ export default function useSurvivorEvaluationChartData(phase: SurvivorEvaluation
 
   useEffect(() => {
     let filtered = evaluations.filter((e) => e.phase === phase);
-
-    if (providerId !== 1) {
-      filtered = filtered.filter((e) => e.userInCharge.provider.id === providerId);
+    if (providerId === null) {
+      return;
     }
-
+    if (providerId !== 1) {
+      filtered = filtered.filter((e) => e.userInCharge?.provider?.id === providerId);
+    }
     const veryVulnerable = filtered.filter((e) => e.total <= 1).length;
     const vulnerable = filtered.filter((e) => e.total > 1 && e.total <= 2).length;
     const stable = filtered.filter((e) => e.total > 2 && e.total <= 3).length;
     const veryStable = filtered.filter((e) => e.total > 3).length;
-
     setData([
       { label: 'Muy Vulnerable', value: veryVulnerable },
       { label: 'Vulnerable', value: vulnerable },
       { label: 'Estable', value: stable },
       { label: 'Muy Estable', value: veryStable },
     ]);
-  }, [evaluations, phase]);
+  }, [evaluations, phase, providerId]);
 
   return data;
 }

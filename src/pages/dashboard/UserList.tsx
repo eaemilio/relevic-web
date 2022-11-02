@@ -84,7 +84,11 @@ export default function UserList() {
   const { user } = useAuth();
 
   const { data: tableData = [], mutate } = useSWR<CurrentUser[]>(
-    user?.provider?.id === 1 ? '/user' : `/user/provider/${user?.provider?.id}`
+    user?.provider?.id === 1
+      ? '/user'
+      : user?.provider
+      ? `/user/provider/${user?.provider?.id}`
+      : null
   );
 
   const [filterName, setFilterName] = useState('');
