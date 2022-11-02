@@ -93,9 +93,11 @@ export default function Login() {
             <Stack direction="row" alignItems="center" sx={{ mb: 5 }}>
               <Box sx={{ flexGrow: 1 }}>
                 <Typography variant="h4" gutterBottom>
-                  Iniciar Sesión a Módulo de Víctimas
+                  Iniciar Sesión a Módulo de Servicios a la Víctima
                 </Typography>
-                <Typography sx={{ color: 'text.secondary' }}>Ingresa con tus credenciales</Typography>
+                <Typography sx={{ color: 'text.secondary' }}>
+                  Ingresa con tus credenciales
+                </Typography>
               </Box>
             </Stack>
 
