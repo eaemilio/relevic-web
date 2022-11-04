@@ -8,28 +8,31 @@ import { Stack, Card } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 // components
 import { FormProvider, RHFTextField } from '../../../../components/hook-form';
+import { editAsync } from 'src/services/APIGateway';
+import useAuth from 'src/hooks/useAuth';
 
 // ----------------------------------------------------------------------
 
 type FormValuesProps = {
-  oldPassword: string;
   newPassword: string;
   confirmNewPassword: string;
 };
 
 export default function AccountChangePassword() {
   const { enqueueSnackbar } = useSnackbar();
+  const { user } = useAuth();
 
   const ChangePassWordSchema = Yup.object().shape({
-    oldPassword: Yup.string().required('Old Password is required'),
     newPassword: Yup.string()
-      .min(6, 'Password must be at least 6 characters')
-      .required('New Password is required'),
-    confirmNewPassword: Yup.string().oneOf([Yup.ref('newPassword'), null], 'Passwords must match'),
+      .min(8, 'La contraseña debe de tener al menos 8 caracteres')
+      .required('Campo obligatorio'),
+    confirmNewPassword: Yup.string().oneOf(
+      [Yup.ref('newPassword'), null],
+      'Las contraseñas no coinciden'
+    ),
   });
 
   const defaultValues = {
-    oldPassword: '',
     newPassword: '',
     confirmNewPassword: '',
   };
@@ -47,10 +50,16 @@ export default function AccountChangePassword() {
 
   const onSubmit = async (data: FormValuesProps) => {
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      if (!user?.id) {
+        return;
+      }
+      await editAsync(`/auth/${user.id}/password`, {
+        password: data.newPassword,
+      });
       reset();
-      enqueueSnackbar('Update success!');
+      enqueueSnackbar('Contraseña actualizada!');
     } catch (error) {
+      enqueueSnackbar('Ocurrió un error, intentalo nuevamente.', { variant: 'error' });
       console.error(error);
     }
   };
@@ -59,12 +68,12 @@ export default function AccountChangePassword() {
     <Card sx={{ p: 3 }}>
       <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
         <Stack spacing={3} alignItems="flex-end">
-          <RHFTextField name="oldPassword" type="password" label="Contraseña Actual" />
-
           <RHFTextField name="newPassword" type="password" label="Nueva Contraseña" />
-
-          <RHFTextField name="confirmNewPassword" type="password" label="Confirmar Nueva Contraseña" />
-
+          <RHFTextField
+            name="confirmNewPassword"
+            type="password"
+            label="Confirmar Nueva Contraseña"
+          />
           <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
             Guardar Cambios
           </LoadingButton>
