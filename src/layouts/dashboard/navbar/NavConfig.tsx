@@ -62,7 +62,7 @@ const navConfig = [
         children: [
           { title: 'Lista de Usuarios', path: PATH_DASHBOARD.user.list, moduleId: ModuleType.USER },
           { title: 'Nuevo Usuario', path: PATH_DASHBOARD.user.new, moduleId: ModuleType.USER },
-          { title: 'Mi Perfil', path: PATH_DASHBOARD.user.account },
+          { title: 'Mi Cuenta', path: PATH_DASHBOARD.user.account },
         ],
       },
 

@@ -63,14 +63,11 @@ export default function UserAccount() {
   ];
 
   return (
-    <Page title="Cuenta">
+    <Page title="<Mi Cuenta">
       <Container maxWidth={themeStretch ? false : 'lg'}>
         <HeaderBreadcrumbs
-          heading="Cuenta"
-          links={[
-            { name: 'Dashboard', href: PATH_DASHBOARD.root },
-            { name: 'Cuenta' },
-          ]}
+          heading="Mi Cuenta"
+          links={[{ name: 'Dashboard', href: PATH_DASHBOARD.root }, { name: 'Mi Cuenta' }]}
         />
 
         <Tabs
