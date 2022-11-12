@@ -32,9 +32,7 @@ function NewEditBranchesForm({ isEdit = false, currentBranch, onCancel, currentP
   const [longitude, setLongitude] = useState<number | null>(null);
   const NewBranchSchema = Yup.object().shape({
     name: Yup.string().required('Campo obligatorio'),
-    email: Yup.string().required('Campo obligatorio'),
     address: Yup.string().required('Campo obligatorio'),
-    phoneNumber: Yup.string().required('Campo obligatorio'),
     personInCharge: Yup.string().required('Campo obligatorio'),
   });
 
