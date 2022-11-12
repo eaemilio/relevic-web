@@ -59,7 +59,6 @@ export default function ProviderNewEditForm({ isEdit, currentProvider }: Props) 
 
   const NewServiceProviderSchema = Yup.object().shape({
     name: Yup.string().required('Campo obligatorio'),
-    email: Yup.string().required('Campo obligatorio').email(),
   });
 
   const defaultValues = useMemo(
