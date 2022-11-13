@@ -15,6 +15,7 @@ export interface Victim {
   preferredLanguage: string;
   genre: number;
   id: number;
+  email: string;
 }
 
 export type VictimBody = Victim;
@@ -59,6 +60,7 @@ export const MOCK_VICTIM: Victim[] = [
     phoneNumber: '871890292',
     preferredLanguage: 'Español',
     genre: 1,
+    email: 'test@test.com',
   },
 ];
 
@@ -79,4 +81,5 @@ export const EMPTY_VICTIM: VictimBody = {
   preferredLanguage: '',
   id: 0,
   genre: 0,
+  email: '',
 };

@@ -43,6 +43,7 @@ export default function VictimNewEditForm({ isEdit, currentVictim }: Props) {
     nationality: Yup.string().required('Campo obligatorio'),
     maritalStatus: Yup.number().min(1, 'Campo obligatorio'),
     currentAddress: Yup.string().required('Campo obligatorio'),
+    email: Yup.string().required('Campo obligatorio'),
     children: Yup.number(),
   });
 
@@ -64,6 +65,7 @@ export default function VictimNewEditForm({ isEdit, currentVictim }: Props) {
       currentAddress: currentVictim?.currentAddress ?? '',
       phoneNumber: currentVictim?.phoneNumber ?? '',
       preferredLanguage: currentVictim?.preferredLanguage ?? '',
+      email: currentVictim?.email ?? '',
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [currentVictim]
@@ -140,6 +142,7 @@ export default function VictimNewEditForm({ isEdit, currentVictim }: Props) {
                 <RHFTextField name="name" label="Nombre (como se indica)" />
                 <RHFTextField name="otherName" label="Otros nombres usados" />
                 <RHFTextField name="id" label="Cédula" />
+                <RHFTextField name="email" label="Correo Electrónico" />
                 <RHFTextField name="age" label="Edad, indicado" type="number" />
                 <RHFTextField name="verifiedAge" label="Edad, verificada" type="number" />
                 <RHFTextField name="citizenship" label="Ciudadanía" />
