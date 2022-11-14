@@ -93,6 +93,7 @@ export default function CaseNewEditForm({ isEdit, currentCase }: Props) {
       nationality: Yup.string().required('Campo obligatorio'),
       maritalStatus: Yup.number().min(1, 'Campo obligatorio'),
       currentAddress: Yup.string().required('Campo obligatorio'),
+      email: Yup.string().required('Campo obligatorio'),
       id: Yup.number().min(1, 'Cédula no válida').required('Campo obligatorio'),
       children: Yup.number(),
     }),
@@ -405,6 +406,7 @@ export default function CaseNewEditForm({ isEdit, currentCase }: Props) {
                   <RHFTextField name="victim.id" label="Cédula" />
                   <RHFTextField name="victim.name" label="Nombre (como se indica)" />
                   <RHFTextField name="victim.otherName" label="Otros nombres usados" />
+                  <RHFTextField name="victim.email" label="Correo Electrónico" />
                   <RHFTextField name="victim.age" label="Edad, indicado" type="number" />
                   <RHFTextField name="victim.verifiedAge" label="Edad, verificada" type="number" />
                   <RHFTextField
