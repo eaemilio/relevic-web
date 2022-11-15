@@ -52,6 +52,7 @@ const ROLE_OPTIONS = ['todos', 'admin', 'director', 'agente'];
 
 const TABLE_HEAD = [
   { id: 'name', label: 'Nombre', align: 'left' },
+  { id: 'email', label: 'Correo Electrónico', align: 'left' },
   { id: 'role', label: 'Rol', align: 'left' },
   { id: 'provider', label: 'Organización', align: 'left' },
   { id: '' },

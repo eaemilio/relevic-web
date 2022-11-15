@@ -28,7 +28,7 @@ export default function UserTableRow({
 }: Props) {
   const theme = useTheme();
 
-  const { name, role, provider } = row;
+  const { name, role, provider, email } = row;
 
   const [openMenu, setOpenMenuActions] = useState<HTMLElement | null>(null);
 
@@ -46,18 +46,39 @@ export default function UserTableRow({
         <Checkbox checked={selected} onClick={onSelectRow} />
       </TableCell>
 
-      <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
+      <TableCell align="left">
         <Typography variant="subtitle2" noWrap>
           {name}
         </Typography>
       </TableCell>
 
+      <TableCell align="left">{email}</TableCell>
+
       <TableCell align="left" sx={{ textTransform: 'capitalize' }}>
-        {role?.name}
+        {role && provider ? (
+          role?.name
+        ) : (
+          <Label
+            sx={{
+              textTransform: 'capitalize',
+              backgroundColor: theme.palette.primary.dark,
+            }}
+          >
+            VÍCTIMA
+          </Label>
+        )}
       </TableCell>
 
       <TableCell align="left">
-        <Label sx={{ textTransform: 'capitalize' }}>{provider?.name}</Label>
+        <Label
+          sx={{
+            textTransform: 'capitalize',
+            backgroundColor:
+              provider && role ? theme.palette.background.neutral : theme.palette.primary.dark,
+          }}
+        >
+          {provider && role ? provider?.name : 'VÍCTIMA'}
+        </Label>
       </TableCell>
 
       <TableCell align="right">

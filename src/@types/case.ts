@@ -3,7 +3,7 @@ import { DemographicForm, DemographicFormBody } from './demographic-form';
 import { FollowUpNote } from './follow-up';
 import { ServiceProvider } from './provider';
 import { SurvivorEvaluation, SurvivorEvaluationBody } from './survivor-evaluation';
-import { UserManager } from './user';
+import { CurrentUser, UserManager } from './user';
 import { Victim, VictimBody } from './victim';
 
 export interface Case {
@@ -28,10 +28,17 @@ export interface CurrentCase {
   followUpNotes: FollowUpNote[];
 }
 
-export interface CaseBody {
-  name: string;
-  description: string;
-  providerId: number;
+export interface Comment {
+  id: number;
+  text: string;
+  user: UserManager;
+  createdAt: string;
+}
+
+export interface CommentBody {
+  text: string;
+  userId: number;
+  caseId: number;
 }
 
 export interface NetworkCase {
@@ -49,6 +56,7 @@ export interface NetworkCase {
   followUpUserInCharge: UserManager;
   followUpNotes: FollowUpNote[];
   createdAt: string;
+  comments: Comment[];
 }
 
 export interface NetworkCaseBody {
@@ -66,3 +74,4 @@ export interface NetworkCaseBody {
 }
 
 export const CASE_BASE_URL = '/case';
+export const COMMENT_BASE_URL = '/comment';

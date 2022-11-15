@@ -16,10 +16,15 @@ import { useEffect, useMemo } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { CASE_BASE_URL, CurrentCase, NetworkCase } from 'src/@types/case';
 import { FollowUpNote, FollowUpNoteBody, FOLLOW_UP_BASE_URL } from 'src/@types/follow-up';
-import { RHFTextField } from 'src/components/hook-form';
+import { RHFCheckbox, RHFTextField } from 'src/components/hook-form';
 import { createAsync, editAsync } from 'src/services/APIGateway';
 import { useSWRConfig } from 'swr';
 import * as Yup from 'yup';
+import dayjs from 'dayjs';
+
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
 
 type Props = {
   open: boolean;
@@ -33,14 +38,8 @@ function FollowUpCreate({ open, handleClose, currentNote, currentCase }: Props) 
   const { mutate } = useSWRConfig();
 
   const NewSchema = Yup.object().shape({
+    dueDate: Yup.string().required('Campo obligatorio'),
     description: Yup.string().required('Campo obligatorio'),
-    victimThoughts: Yup.string().required('Campo obligatorio'),
-    observations: Yup.string().required('Campo obligatorio'),
-    topics: Yup.string().required('Campo obligatorio'),
-    comprehension: Yup.string().required('Campo obligatorio'),
-    needs: Yup.string().required('Campo obligatorio'),
-    survivorPlan: Yup.string().required('Campo obligatorio'),
-    evaluatorPlan: Yup.string().required('Campo obligatorio'),
   });
 
   const defaultValues = useMemo(
@@ -55,6 +54,8 @@ function FollowUpCreate({ open, handleClose, currentNote, currentCase }: Props) 
       survivorPlan: currentNote?.survivorPlan ?? '',
       evaluatorPlan: currentNote?.evaluatorPlan ?? '',
       userInChargeId: currentCase.followUpUserInCharge.id,
+      dueDate: currentNote?.dueDate ?? new Date().toString(),
+      completed: currentNote?.completed ?? false,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [currentNote]
@@ -69,6 +70,8 @@ function FollowUpCreate({ open, handleClose, currentNote, currentCase }: Props) 
     reset,
     handleSubmit,
     formState: { isSubmitting },
+    watch,
+    setValue,
   } = methods;
 
   useEffect(() => {
@@ -93,7 +96,10 @@ function FollowUpCreate({ open, handleClose, currentNote, currentCase }: Props) 
         enqueueSnackbar('Formulario demográfico guardado.');
         handleClose();
       } else {
-        const note = await createAsync<FollowUpNoteBody, FollowUpNote>(FOLLOW_UP_BASE_URL, data);
+        const note = await createAsync<FollowUpNoteBody, FollowUpNote>(FOLLOW_UP_BASE_URL, {
+          ...data,
+          dueDate: dayjs(data.dueDate).toISOString(),
+        });
         mutate<NetworkCase>(`${CASE_BASE_URL}/${currentCase.id}`, {
           ...currentCase,
           followUpNotes: [...currentCase.followUpNotes, note],
@@ -107,6 +113,8 @@ function FollowUpCreate({ open, handleClose, currentNote, currentCase }: Props) 
       });
     }
   };
+
+  const watchDueDate = watch('dueDate');
 
   return (
     <Dialog open={open} onClose={handleClose} fullWidth maxWidth="xl">
@@ -127,18 +135,27 @@ function FollowUpCreate({ open, handleClose, currentNote, currentCase }: Props) 
                 <TextField
                   disabled
                   label="Nombre del sobreviviente"
-                  value={currentCase.victim.name}
+                  value={currentCase?.victim?.name}
                 />
                 <TextField
                   disabled
                   label="Organización de la persona que tuvo contacto con sobreviviente"
-                  value={currentCase.provider.name}
+                  value={currentCase?.provider?.name}
                 />
                 <TextField
                   disabled
                   label="Nombre de persona que tuvo contacto con sobreviviente"
-                  value={currentCase.followUpUserInCharge.name}
+                  value={currentCase.followUpUserInCharge?.name}
                 />
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DesktopDatePicker
+                    label="Fecha para Seguimiento (Se notificará a la víctima)"
+                    inputFormat="DD/MM/YYYY"
+                    value={watchDueDate}
+                    onChange={(e) => e && setValue('dueDate', e)}
+                    renderInput={(params) => <TextField {...params} />}
+                  />
+                </LocalizationProvider>
               </Box>
               <Typography variant="h5" sx={{ mt: 2 }}>
                 Describir:{' '}
@@ -149,55 +166,60 @@ function FollowUpCreate({ open, handleClose, currentNote, currentCase }: Props) 
                 multiline
                 rows={3}
               />
-              <RHFTextField
-                name="victimThoughts"
-                label="¿Qué es lo que el/la sobreviviente le está diciendo? (Los pensamientos, sentimientos, observaciones, etc.)"
-                multiline
-                rows={3}
-              />
-              <RHFTextField
-                name="observations"
-                label="¿Qué observaciones tiene de el/la sobreviviente? (Sus pensamientos y observaciones sobre la Participante (sentimientos, apariencia, estado de ánimo, etc.)"
-                multiline
-                rows={3}
-              />
-              <RHFTextField
-                name="topics"
-                label="Temas revisados, cuestiones que surgieron."
-                multiline
-                rows={3}
-              />
-              <Typography variant="h5" sx={{ mt: 2 }}>
-                Evaluar:
-              </Typography>
-              <RHFTextField
-                name="comprehension"
-                label="¿Cuál es su comprensión de lo que está sucediendo con el/la sobreviviente (cómo las cosas
+              {currentNote && (
+                <>
+                  <RHFTextField
+                    name="victimThoughts"
+                    label="¿Qué es lo que el/la sobreviviente le está diciendo? (Los pensamientos, sentimientos, observaciones, etc.)"
+                    multiline
+                    rows={3}
+                  />
+                  <RHFTextField
+                    name="observations"
+                    label="¿Qué observaciones tiene de el/la sobreviviente? (Sus pensamientos y observaciones sobre la Participante (sentimientos, apariencia, estado de ánimo, etc.)"
+                    multiline
+                    rows={3}
+                  />
+                  <RHFTextField
+                    name="topics"
+                    label="Temas revisados, cuestiones que surgieron."
+                    multiline
+                    rows={3}
+                  />
+                  <Typography variant="h5" sx={{ mt: 2 }}>
+                    Evaluar:
+                  </Typography>
+                  <RHFTextField
+                    name="comprehension"
+                    label="¿Cuál es su comprensión de lo que está sucediendo con el/la sobreviviente (cómo las cosas
                   están/no están progresando)?"
-                multiline
-                rows={3}
-              />
-              <RHFTextField
-                name="needs"
-                label="¿Qué cree que es necesario para ayudar a el/la sobreviviente a progresar más?"
-                multiline
-                rows={3}
-              />
-              <Typography variant="h5" sx={{ mt: 2 }}>
-                Plan:
-              </Typography>
-              <RHFTextField
-                name="survivorPlan"
-                label="¿Qué sucederá a continuación? ¿Qué hará el/la sobreviviente a continuación? ¿tiene tareas escolares?"
-                multiline
-                rows={3}
-              />
-              <RHFTextField
-                name="evaluatorPlan"
-                label="¿Qué va a hacer usted a continuación? ¿Hay llamadas que usted necesita hacer, personas con la que debe comunicarse, citas que debe organizar, etc.? ¿Cuándo será la próxima vez que usted verá a el/la sobreviviente?"
-                multiline
-                rows={3}
-              />
+                    multiline
+                    rows={3}
+                  />
+                  <RHFTextField
+                    name="needs"
+                    label="¿Qué cree que es necesario para ayudar a el/la sobreviviente a progresar más?"
+                    multiline
+                    rows={3}
+                  />
+                  <Typography variant="h5" sx={{ mt: 2 }}>
+                    Plan:
+                  </Typography>
+                  <RHFTextField
+                    name="survivorPlan"
+                    label="¿Qué sucederá a continuación? ¿Qué hará el/la sobreviviente a continuación? ¿tiene tareas escolares?"
+                    multiline
+                    rows={3}
+                  />
+                  <RHFTextField
+                    name="evaluatorPlan"
+                    label="¿Qué va a hacer usted a continuación? ¿Hay llamadas que usted necesita hacer, personas con la que debe comunicarse, citas que debe organizar, etc.? ¿Cuándo será la próxima vez que usted verá a el/la sobreviviente?"
+                    multiline
+                    rows={3}
+                  />
+                  <RHFCheckbox name="completed" label="Marcar como completado" sx={{ mt: 3 }} />
+                </>
+              )}
             </Box>
           </DialogContent>
           <DialogActions>

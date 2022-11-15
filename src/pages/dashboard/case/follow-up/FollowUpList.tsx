@@ -123,7 +123,7 @@ export default function EvaluationAreaList() {
               }}
               startIcon={<Iconify icon={'eva:plus-fill'} />}
             >
-              Nueva Nota de Seguimiento
+              Programar Nota de Seguimiento
             </Button>
           }
         />

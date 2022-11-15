@@ -13,6 +13,8 @@ export interface FollowUpNote {
   evaluatorPlan: string;
   userInCharge: CurrentUser | null;
   createdAt: string;
+  dueDate: string;
+  completed: boolean;
 }
 
 export interface FollowUpNoteBody {
@@ -26,6 +28,8 @@ export interface FollowUpNoteBody {
   survivorPlan: string;
   evaluatorPlan: string;
   userInChargeId: number;
+  dueDate: string;
+  completed: boolean;
 }
 
 export const FOLLOW_UP_BASE_URL = '/follow-up-note';

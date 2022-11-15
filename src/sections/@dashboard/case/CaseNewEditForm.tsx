@@ -9,6 +9,8 @@ import {
   Grid,
   Stack,
   styled,
+  Tab,
+  Tabs,
   Typography,
 } from '@mui/material';
 import { useSnackbar } from 'notistack';
@@ -46,11 +48,14 @@ import {
   VICTIM_BASE_URL,
 } from 'src/@types/victim';
 import { RHFRadioGroup, RHFSelect, RHFTextField } from 'src/components/hook-form';
+import Iconify from 'src/components/Iconify';
+import useTabs from 'src/hooks/useTabs';
 import { PATH_DASHBOARD } from 'src/routes/paths';
 import { createAsync, editAsync, getAsync } from 'src/services/APIGateway';
 import { _userList } from 'src/_mock';
 import useSWR, { useSWRConfig } from 'swr';
 import * as Yup from 'yup';
+import Comments from './Comments';
 import AttentionProtocolDialog from './dialog/AttentionProtocolDialog';
 import DemographicDialog from './dialog/DemographicDialog';
 import SurvivorEvaluationDialog from './dialog/SurvivorEvaluationDialog';
@@ -73,6 +78,7 @@ export default function CaseNewEditForm({ isEdit, currentCase }: Props) {
   const { enqueueSnackbar } = useSnackbar();
   const navigate = useNavigate();
   const { mutate } = useSWRConfig();
+  const { currentTab, onChangeTab } = useTabs('general');
 
   const [demographicOpen, setDemographicOpen] = useState(false);
   const [initialSurvivorEvaluationOpen, setInitialSurvivorEvaluationOpen] = useState(false);
@@ -348,119 +354,149 @@ export default function CaseNewEditForm({ isEdit, currentCase }: Props) {
 
   return (
     <>
-      <FormProvider {...methods}>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <Grid container spacing={3}>
-            <Grid
-              item
-              xs={12}
-              md={12}
-              sx={{ mt: 2, display: 'flex', flexDirection: 'column', gap: 2 }}
-            >
-              <Card sx={{ p: 3, flexDirection: 'column', display: 'flex' }}>
-                <Typography variant="h5" noWrap>
-                  Información del Caso
-                </Typography>
-                <Box sx={{ mb: 3, mt: 3 }}>
-                  <RHFTextField name="description" label="Descripción del Caso" />
-                </Box>
-                <Box
-                  sx={{
-                    display: 'grid',
-                    columnGap: 2,
-                    rowGap: 3,
-                    gridTemplateColumns: { xs: 'repeat(1, 1fr)', sm: 'repeat(2, 1fr)' },
-                  }}
-                >
-                  <RHFSelect name="providerId" label="Nombre de organización a cargo del caso">
-                    <option key={0} value={0} />
-                    {providers.map((provider) => (
-                      <option key={provider.id} value={provider.id}>
-                        {provider.name}
-                      </option>
-                    ))}
-                  </RHFSelect>
-                  <RHFSelect name="userInChargeId" label="Nombre de contacto principal del caso">
-                    <option key={0} value={0} />
-                    {(providerContacts ?? []).map((user) => (
-                      <option key={user.id} value={user.id}>
-                        {user.name}
-                      </option>
-                    ))}
-                  </RHFSelect>
-                </Box>
-              </Card>
-              <Card sx={{ p: 3, flexDirection: 'column', display: 'flex' }}>
-                <Typography variant="h5" noWrap>
-                  Información de la víctima
-                </Typography>
-                <Box
-                  sx={{
-                    display: 'grid',
-                    columnGap: 2,
-                    rowGap: 3,
-                    gridTemplateColumns: { xs: 'repeat(1, 1fr)', sm: 'repeat(3, 1fr)' },
-                    mt: 3,
-                  }}
-                >
-                  <RHFTextField name="victim.id" label="Cédula" />
-                  <RHFTextField name="victim.name" label="Nombre (como se indica)" />
-                  <RHFTextField name="victim.otherName" label="Otros nombres usados" />
-                  <RHFTextField name="victim.email" label="Correo Electrónico" />
-                  <RHFTextField name="victim.age" label="Edad, indicado" type="number" />
-                  <RHFTextField name="victim.verifiedAge" label="Edad, verificada" type="number" />
-                  <RHFTextField
-                    name="victim.birthday"
-                    label="Fecha de nacimiento (si es conocida)"
-                  />
-                  <RHFTextField name="victim.citizenship" label="Ciudadanía" />
-                  <RHFTextField name="victim.ethnicity" label="Etnicidad" />
-                  <RHFTextField name="victim.nationality" label="País/Providencia de origen" />
-                  <RHFTextField name="victim.originAddress" label="Dirección (de origen)" />
-                  <RHFTextField name="victim.currentAddress" label="Dirección (actual)" />
-                  <RHFTextField name="victim.phoneNumber" label="Número(s) de teléfono" />
-                  <RHFTextField name="victim.preferredLanguage" label="Idioma Preferido" />
-                  <RHFTextField name="victim.children" label="Cantidad de Hijos" type="number" />
-                </Box>
-                <Box sx={{ flexDirection: 'column', display: 'flex', gap: 2, mt: 3 }}>
-                  <LabelStyle>Estado Civil</LabelStyle>
-                  <RHFRadioGroup
-                    name="victim.maritalStatus"
-                    options={MARITAL_STATUES}
+      <Tabs
+        allowScrollButtonsMobile
+        variant="scrollable"
+        scrollButtons="auto"
+        value={currentTab}
+        onChange={onChangeTab}
+      >
+        <Tab
+          disableRipple
+          key={0}
+          label="General"
+          icon={<Iconify icon={'ion:clipboard'} width={20} height={20} />}
+          value={'general'}
+        />
+        <Tab
+          disableRipple
+          disabled={!isEdit}
+          key={1}
+          label="Comentarios"
+          icon={<Iconify icon={'ion:chatbubble'} width={20} height={20} />}
+          value={'comments'}
+        />
+      </Tabs>
+      {currentTab === 'general' && (
+        <FormProvider {...methods}>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <Grid container spacing={3}>
+              <Grid
+                item
+                xs={12}
+                md={12}
+                sx={{ mt: 2, display: 'flex', flexDirection: 'column', gap: 2 }}
+              >
+                <Card sx={{ p: 3, flexDirection: 'column', display: 'flex' }}>
+                  <Typography variant="h5" noWrap>
+                    Información del Caso
+                  </Typography>
+                  <Box sx={{ mb: 3, mt: 3 }}>
+                    <RHFTextField name="description" label="Descripción del Caso" />
+                  </Box>
+                  <Box
                     sx={{
-                      '& .MuiFormControlLabel-root': { mr: 4 },
+                      display: 'grid',
+                      columnGap: 2,
+                      rowGap: 3,
+                      gridTemplateColumns: { xs: 'repeat(1, 1fr)', sm: 'repeat(2, 1fr)' },
                     }}
+                  >
+                    <RHFSelect name="providerId" label="Nombre de organización a cargo del caso">
+                      <option key={0} value={0} />
+                      {providers.map((provider) => (
+                        <option key={provider.id} value={provider.id}>
+                          {provider.name}
+                        </option>
+                      ))}
+                    </RHFSelect>
+                    <RHFSelect name="userInChargeId" label="Nombre de contacto principal del caso">
+                      <option key={0} value={0} />
+                      {(providerContacts ?? []).map((user) => (
+                        <option key={user.id} value={user.id}>
+                          {user.name}
+                        </option>
+                      ))}
+                    </RHFSelect>
+                  </Box>
+                </Card>
+                <Card sx={{ p: 3, flexDirection: 'column', display: 'flex' }}>
+                  <Typography variant="h5" noWrap>
+                    Información de la víctima
+                  </Typography>
+                  <Box
+                    sx={{
+                      display: 'grid',
+                      columnGap: 2,
+                      rowGap: 3,
+                      gridTemplateColumns: { xs: 'repeat(1, 1fr)', sm: 'repeat(3, 1fr)' },
+                      mt: 3,
+                    }}
+                  >
+                    <RHFTextField name="victim.id" label="Cédula" />
+                    <RHFTextField name="victim.name" label="Nombre (como se indica)" />
+                    <RHFTextField name="victim.otherName" label="Otros nombres usados" />
+                    <RHFTextField name="victim.email" label="Correo Electrónico" />
+                    <RHFTextField name="victim.age" label="Edad, indicado" type="number" />
+                    <RHFTextField
+                      name="victim.verifiedAge"
+                      label="Edad, verificada"
+                      type="number"
+                    />
+                    <RHFTextField
+                      name="victim.birthday"
+                      label="Fecha de nacimiento (si es conocida)"
+                    />
+                    <RHFTextField name="victim.citizenship" label="Ciudadanía" />
+                    <RHFTextField name="victim.ethnicity" label="Etnicidad" />
+                    <RHFTextField name="victim.nationality" label="País/Providencia de origen" />
+                    <RHFTextField name="victim.originAddress" label="Dirección (de origen)" />
+                    <RHFTextField name="victim.currentAddress" label="Dirección (actual)" />
+                    <RHFTextField name="victim.phoneNumber" label="Número(s) de teléfono" />
+                    <RHFTextField name="victim.preferredLanguage" label="Idioma Preferido" />
+                    <RHFTextField name="victim.children" label="Cantidad de Hijos" type="number" />
+                  </Box>
+                  <Box sx={{ flexDirection: 'column', display: 'flex', gap: 2, mt: 3 }}>
+                    <LabelStyle>Estado Civil</LabelStyle>
+                    <RHFRadioGroup
+                      name="victim.maritalStatus"
+                      options={MARITAL_STATUES}
+                      sx={{
+                        '& .MuiFormControlLabel-root': { mr: 4 },
+                      }}
+                    />
+                  </Box>
+                </Card>
+                <Card sx={{ p: 3, flexDirection: 'column', display: 'flex' }}>
+                  <Typography variant="h5" noWrap>
+                    Proceso de Evaluación
+                  </Typography>
+                  <Typography variant="body2" noWrap sx={{ mb: 3 }}>
+                    Par ver el formulario, por favor hacer click en cualquier celda de evaluación.
+                  </Typography>
+                  <EvaluationCaseTable
+                    providerContacts={providerContacts}
+                    currentCase={currentCase}
+                    onDemographicClick={() => setDemographicOpen(true)}
+                    onInitialSurvivorEvaluationClick={() => setInitialSurvivorEvaluationOpen(true)}
+                    onFinalSurvivorEvaluationClick={() => setFinalSurvivorEvaluationOpen(true)}
+                    onPostSurvivorEvaluationClick={() => setPostSurvivorEvaluationOpen(true)}
+                    onAttentionProtocolClick={() => setAttentionProtocolOpen(true)}
                   />
-                </Box>
-              </Card>
-              <Card sx={{ p: 3, flexDirection: 'column', display: 'flex' }}>
-                <Typography variant="h5" noWrap>
-                  Proceso de Evaluación
-                </Typography>
-                <Typography variant="body2" noWrap sx={{ mb: 3 }}>
-                  Par ver el formulario, por favor hacer click en cualquier celda de evaluación.
-                </Typography>
-                <EvaluationCaseTable
-                  providerContacts={providerContacts}
-                  currentCase={currentCase}
-                  onDemographicClick={() => setDemographicOpen(true)}
-                  onInitialSurvivorEvaluationClick={() => setInitialSurvivorEvaluationOpen(true)}
-                  onFinalSurvivorEvaluationClick={() => setFinalSurvivorEvaluationOpen(true)}
-                  onPostSurvivorEvaluationClick={() => setPostSurvivorEvaluationOpen(true)}
-                  onAttentionProtocolClick={() => setAttentionProtocolOpen(true)}
-                />
-              </Card>
+                </Card>
+              </Grid>
+              <Grid item xs={12} md={12}>
+                <Stack alignItems="flex-end" sx={{ mt: 2 }}>
+                  <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
+                    {!isEdit ? 'Crear Caso' : 'Guardar Cambios'}
+                  </LoadingButton>
+                </Stack>
+              </Grid>
             </Grid>
-            <Grid item xs={12} md={12}>
-              <Stack alignItems="flex-end" sx={{ mt: 2 }}>
-                <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
-                  {!isEdit ? 'Crear Caso' : 'Guardar Cambios'}
-                </LoadingButton>
-              </Stack>
-            </Grid>
-          </Grid>
-        </form>
-      </FormProvider>
+          </form>
+        </FormProvider>
+      )}
+      {currentTab === 'comments' && currentCase && <Comments currentCase={currentCase} />}
       {currentCase && (
         <>
           <DemographicDialog
