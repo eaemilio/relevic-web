@@ -62,11 +62,9 @@ export default function EvaluationAreaList() {
   const isNotFound = !tableData.length;
   const navigate = useNavigate();
 
-  const handleDeleteRow = (id: number) => {
-    mutate(async () => removeAsync(`${VICTIM_BASE_URL}/${id}`), {
-      optimisticData: tableData.filter((d) => d.id !== id),
-      rollbackOnError: true,
-    });
+  const handleDeleteRow = async (id: number) => {
+    await removeAsync(`${VICTIM_BASE_URL}/${id}`);
+    mutate(tableData.filter((d) => d.id !== id));
     setSelected([]);
   };
 
