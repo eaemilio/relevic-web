@@ -64,11 +64,9 @@ export default function ServiceTypeList() {
   const isNotFound = !tableData.length;
   const navigate = useNavigate();
 
-  const handleDeleteRow = (id: number) => {
-    mutate(async () => removeAsync(`${BASE_URL}/${id}`), {
-      optimisticData: tableData.filter((d) => d.id !== id),
-      rollbackOnError: true,
-    });
+  const handleDeleteRow = async (id: number) => {
+    await removeAsync(`${BASE_URL}/${id}`);
+    mutate(tableData.filter((d) => d.id !== id));
     setSelected([]);
   };
 
@@ -144,7 +142,7 @@ export default function ServiceTypeList() {
                   />
 
                   <TableBody>
-                    {tableData
+                    {(tableData ?? [])
                       .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                       .map((row) => (
                         <ServiceTypeTableRow
