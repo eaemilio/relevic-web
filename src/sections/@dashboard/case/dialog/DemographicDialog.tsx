@@ -55,7 +55,7 @@ function DemographicDialog({ open, handleClose, currentDemographicForm, currentC
       participation: currentDemographicForm.participation,
       commitment: currentDemographicForm.commitment,
       comments: currentDemographicForm.comments,
-      userInChargeId: currentDemographicForm.userInCharge.id,
+      userInChargeId: currentDemographicForm.userInCharge?.id ?? 0,
       completed: currentDemographicForm.completed ?? false,
       description: currentDemographicForm.description,
     }),
