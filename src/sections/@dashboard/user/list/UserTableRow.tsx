@@ -17,6 +17,7 @@ type Props = {
   onEditRow: VoidFunction;
   onSelectRow: VoidFunction;
   onDeleteRow: VoidFunction;
+  onResetPassword: VoidFunction;
 };
 
 export default function UserTableRow({
@@ -25,6 +26,7 @@ export default function UserTableRow({
   onEditRow,
   onSelectRow,
   onDeleteRow,
+  onResetPassword,
 }: Props) {
   const theme = useTheme();
 
@@ -97,6 +99,16 @@ export default function UserTableRow({
               >
                 <Iconify icon={'eva:trash-2-outline'} />
                 Eliminar
+              </MenuItem>
+              <MenuItem
+                onClick={() => {
+                  onResetPassword();
+                  handleCloseMenu();
+                }}
+                sx={{ color: 'error.main' }}
+              >
+                <Iconify icon={'material-symbols:lock-reset-rounded'} />
+                Resetear Contraseña
               </MenuItem>
               <MenuItem
                 onClick={() => {

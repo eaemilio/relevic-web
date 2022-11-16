@@ -38,11 +38,12 @@ import {
 import { UserTableToolbar, UserTableRow } from '../../sections/@dashboard/user/list';
 import useSWR from 'swr';
 import { useSnackbar } from 'notistack';
-import { removeAsync } from 'src/services/APIGateway';
+import { editAsync, removeAsync } from 'src/services/APIGateway';
 import RoleBasedGuard from 'src/guards/RoleBasedGuard';
 import { ModuleType } from 'src/@types/module';
 import { useState } from 'react';
 import useAuth from 'src/hooks/useAuth';
+import { generateRandomPassword } from 'src/utils/jwt';
 
 // ----------------------------------------------------------------------
 
@@ -144,6 +145,17 @@ export default function UserList() {
     (!dataFiltered.length && !!filterRole) ||
     (!dataFiltered.length && !!filterStatus);
 
+  const handleResetPassword = async (id: number) => {
+    try {
+      const password = generateRandomPassword();
+      await editAsync(`/auth/${id}/password`, { password });
+      navigator.clipboard.writeText(password);
+      enqueueSnackbar('Se ha copiado la contraseña al portapapeles');
+    } catch (error) {
+      enqueueSnackbar('Ocurrió un error, inténtalo de nuevo');
+    }
+  };
+
   return (
     <RoleBasedGuard hasContent moduleId={ModuleType.USER}>
       <Page title="Usuarios">
@@ -237,6 +249,7 @@ export default function UserList() {
                           onSelectRow={() => onSelectRow(row.id)}
                           onDeleteRow={() => handleDeleteRow(row.id)}
                           onEditRow={() => handleEditRow(row.id)}
+                          onResetPassword={() => handleResetPassword(row.id)}
                         />
                       ))}
 
