@@ -21,10 +21,6 @@ function Comments({ currentCase }: Props) {
   const { user } = useAuth();
   const { mutate } = useSWRConfig();
 
-  useEffect(() => {
-    console.log('currentcase', currentCase);
-  }, [currentCase]);
-
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) {
