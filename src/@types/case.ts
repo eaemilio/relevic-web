@@ -12,22 +12,6 @@ export interface Case {
   description: string;
 }
 
-export interface CurrentCase {
-  id: number;
-  description: string;
-  victim: Victim;
-  providerId: number;
-  userInChargeId: number;
-  consent: boolean;
-  demographicForm: DemographicForm;
-  initialSurvivorEvaluation: SurvivorEvaluation;
-  finalSurvivorEvaluation: SurvivorEvaluation;
-  postSurvivorEvaluation: SurvivorEvaluation;
-  attentionProtocol: AttentionProtocol;
-  followUpUserInCharge: number;
-  followUpNotes: FollowUpNote[];
-}
-
 export interface Comment {
   id: number;
   text: string;
@@ -39,6 +23,24 @@ export interface CommentBody {
   text: string;
   userId: number;
   caseId: number;
+}
+
+export interface CurrentCase {
+  id: number;
+  description: string;
+  victim: Victim;
+  provider: ServiceProvider;
+  userInCharge: UserManager;
+  consent: boolean;
+  demographicForm: DemographicForm;
+  initialSurvivorEvaluation: SurvivorEvaluation;
+  finalSurvivorEvaluation: SurvivorEvaluation;
+  postSurvivorEvaluation: SurvivorEvaluation;
+  attentionProtocol: AttentionProtocol;
+  followUpUserInCharge: UserManager;
+  followUpNotes: FollowUpNote[];
+  createdAt: string;
+  comments: Comment[];
 }
 
 export interface NetworkCase {

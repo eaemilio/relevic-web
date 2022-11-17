@@ -59,27 +59,28 @@ export default function ProviderNewEditForm({ isEdit, currentProvider }: Props) 
 
   const NewServiceProviderSchema = Yup.object().shape({
     name: Yup.string().required('Campo obligatorio'),
+    provinceId: Yup.number(),
+    networkInterest: Yup.number(),
   });
 
-  const defaultValues = useMemo(
-    (): Omit<ServiceProvider, 'id'> => ({
+  const defaultValues: ServiceProviderBody = useMemo(
+    (): ServiceProviderBody => ({
       name: currentProvider?.name ?? '',
       email: currentProvider?.email ?? '',
       phoneNumber: currentProvider?.phoneNumber ?? '',
       description: currentProvider?.description ?? '',
       address: currentProvider?.address ?? '',
       provinceId: currentProvider?.province.id ?? 0,
-      serviceTypeId: currentProvider?.serviceType?.id ?? 0,
-      providerAreaId: currentProvider?.providerAreas?.id ?? 0,
+      serviceTypeIds: (currentProvider?.serviceTypes ?? []).map((m) => m.id),
+      providerAreaIds: (currentProvider?.providerAreas ?? []).map((m) => m.id),
       networkInterest: currentProvider?.networkInterest ?? 0,
       networkNeeds: JSON.parse(currentProvider?.networkNeeds ?? '[]'),
-      // isActive: currentProvider ? currentProvider.isActive : true, FIXME
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [currentProvider]
   );
 
-  const methods = useForm<ServiceProvider>({
+  const methods = useForm<ServiceProviderBody>({
     resolver: yupResolver(NewServiceProviderSchema),
     defaultValues,
   });
@@ -87,13 +88,10 @@ export default function ProviderNewEditForm({ isEdit, currentProvider }: Props) 
   const {
     reset,
     watch,
-    control,
-    setValue,
     handleSubmit,
     formState: { isSubmitting },
   } = methods;
 
-  const values = watch();
   const { currentTab, onChangeTab, setCurrentTab } = useTabs('general');
 
   useEffect(() => {
@@ -106,16 +104,12 @@ export default function ProviderNewEditForm({ isEdit, currentProvider }: Props) 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isEdit, currentProvider]);
 
-  const onSubmit = async (data: ServiceProvider) => {
+  const onSubmit = async (data: ServiceProviderBody) => {
     try {
-      const { provinceId, serviceTypeId, providerAreaId, networkNeeds, networkInterest } = data;
+      const { networkNeeds } = data;
       const body: ServiceProviderBody = {
         ...data,
-        providerAreaId: +providerAreaId,
-        serviceTypeId: +serviceTypeId,
-        provinceId: +provinceId,
         networkNeeds: JSON.stringify(networkNeeds),
-        networkInterest: +networkInterest,
       };
 
       if (!currentProvider) {
@@ -181,15 +175,6 @@ export default function ProviderNewEditForm({ isEdit, currentProvider }: Props) 
                     <RHFTextField name="phoneNumber" label="Teléfono" />
                     <RHFTextField name="email" label="Correo Electrónico" />
                     <RHFTextField name="address" label="Dirección de la organización o persona" />
-                    {/* <RHFTextField name="phoneNumber" label="Número de Teléfono" /> */}
-                    {/* <RHFSelect name="role" label="Rol" placeholder="Rol">
-                  <option value="" />
-                  {role.map((option) => (
-                    <option key={option} value={option}>
-                    {option}
-                    </option>
-                    ))}
-                  </RHFSelect> */}
                   </Box>
                   <Box
                     sx={{
@@ -226,30 +211,29 @@ export default function ProviderNewEditForm({ isEdit, currentProvider }: Props) 
                       </option>
                     ))}
                   </RHFSelect>
-                  <RHFSelect
-                    name="serviceTypeId"
-                    label="Tipo de Servicio que la persona puede proveer"
-                    placeholder="Tipo de Servicio que la persona puede proveer"
-                  >
-                    <option value="" />
-                    {serviceTypes.map((option) => (
-                      <option key={option.id} value={option.id}>
-                        {option.name}
-                      </option>
-                    ))}
-                  </RHFSelect>
-                  <RHFSelect
-                    name="providerAreaId"
-                    label="En cuáles áreas de la evaluación del sobreviviente puede aportar esta persona u organización"
-                    placeholder="En cuáles áreas de la evaluación del sobreviviente puede aportar esta persona u organización"
-                  >
-                    <option value="" />
-                    {areas.map((option) => (
-                      <option key={option.id} value={option.id}>
-                        {option.name}
-                      </option>
-                    ))}
-                  </RHFSelect>
+                  <Box>
+                    <LabelStyle>Tipo de Servicios que la persona puede proveer</LabelStyle>
+                    <RHFMultiCheckbox
+                      name="serviceTypeIds"
+                      options={serviceTypes.map((m) => ({ value: m.id, label: m.name }))}
+                      sx={{
+                        '& .MuiFormControlLabel-root': { mr: 4 },
+                      }}
+                    />
+                  </Box>
+                  <Box>
+                    <LabelStyle>
+                      En cuáles áreas de la evaluación del sobreviviente puede aportar esta persona
+                      u organización
+                    </LabelStyle>
+                    <RHFMultiCheckbox
+                      name="providerAreaIds"
+                      options={areas.map((m) => ({ value: m.id, label: m.name }))}
+                      sx={{
+                        '& .MuiFormControlLabel-root': { mr: 4 },
+                      }}
+                    />
+                  </Box>
                 </Box>
               </Card>
             </Grid>

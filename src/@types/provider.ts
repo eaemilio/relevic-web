@@ -21,7 +21,6 @@ export interface ServiceProvider {
 }
 
 export interface ServiceProviderBody {
-  id: number;
   name: string;
   phoneNumber: string;
   description: string;
@@ -29,13 +28,11 @@ export interface ServiceProviderBody {
   address: string;
 
   provinceId: number;
-  serviceTypeId: number;
-  providerAreaId: number;
+  serviceTypeIds: number[];
+  providerAreaIds: number[];
 
   networkInterest: number;
   networkNeeds: string;
-
-  // isActive: boolean; FIXME
 }
 
 export interface CurrentServiceProvider {
@@ -46,16 +43,14 @@ export interface CurrentServiceProvider {
   email: string;
   address: string;
 
-  providerAreas: EvaluationArea;
+  providerAreas: EvaluationArea[];
   province: Province;
-  serviceType: ServiceType;
+  serviceTypes: ServiceType[];
 
   networkInterest: number;
   networkNeeds: string;
 
   branches: ProviderBranch[];
-
-  // isActive: boolean; FIXME
 }
 
 export const INTEREST_OPTIONS = [
