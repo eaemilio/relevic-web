@@ -4,6 +4,9 @@ import { useState } from 'react';
 import { FollowUpNote } from 'src/@types/follow-up';
 import Iconify from 'src/components/Iconify';
 import { TableMoreMenu } from 'src/components/table';
+import calendar from 'dayjs/plugin/calendar';
+
+dayjs.extend(calendar);
 
 type Props = {
   row: FollowUpNote;
@@ -20,7 +23,7 @@ export default function FollowUpTableRow({
   onSelectRow,
   onDeleteRow,
 }: Props) {
-  const { id, description, createdAt } = row;
+  const { id, description, dueDate } = row;
 
   const [openMenu, setOpenMenuActions] = useState<HTMLElement | null>(null);
 
@@ -45,7 +48,12 @@ export default function FollowUpTableRow({
       <TableCell align="left">{description}</TableCell>
 
       <TableCell align="left" sx={{ textTransform: 'capitalize' }}>
-        {dayjs(createdAt).format('DD/MM/YYYY')}
+        {dayjs(dueDate).calendar(dayjs(), {
+          sameDay: '[Hoy a las] h:mm A', // The same day ( Today at 2:30 AM )
+          nextDay: '[Mañana a las] h:mm A',
+          nextWednesday: '[Próximo Miércoles a las] h:mm A',
+          sameElse: 'DD/MM/YYYY h:mm A',
+        })}
       </TableCell>
 
       <TableCell align="right">

@@ -23,7 +23,7 @@ import * as Yup from 'yup';
 import dayjs from 'dayjs';
 
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers';
+import { DateTimePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
 
 type Props = {
@@ -84,7 +84,10 @@ function FollowUpCreate({ open, handleClose, currentNote, currentCase }: Props) 
       if (currentNote) {
         const note = await editAsync<FollowUpNoteBody, FollowUpNote>(
           `${FOLLOW_UP_BASE_URL}/${currentNote.id}`,
-          data
+          {
+            ...data,
+            dueDate: dayjs(data.dueDate).toISOString(),
+          }
         );
         mutate<NetworkCase>(`${CASE_BASE_URL}/${currentCase.id}`, {
           ...currentCase,
@@ -148,9 +151,9 @@ function FollowUpCreate({ open, handleClose, currentNote, currentCase }: Props) 
                   value={currentCase.followUpUserInCharge?.name}
                 />
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  <DesktopDatePicker
+                  <DateTimePicker
                     label="Fecha para Seguimiento (Se notificará a la víctima)"
-                    inputFormat="DD/MM/YYYY"
+                    inputFormat="DD/MM/YYYY HH:mm"
                     value={watchDueDate}
                     onChange={(e) => e && setValue('dueDate', e)}
                     renderInput={(params) => <TextField {...params} />}
