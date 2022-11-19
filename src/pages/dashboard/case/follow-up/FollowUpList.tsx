@@ -122,6 +122,7 @@ export default function EvaluationAreaList() {
                 setSelectedNote(undefined);
               }}
               startIcon={<Iconify icon={'eva:plus-fill'} />}
+              disabled={currentCase?.inactive || currentCase?.completed}
             >
               Programar Nota de Seguimiento
             </Button>

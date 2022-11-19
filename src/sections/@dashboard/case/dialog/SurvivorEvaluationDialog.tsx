@@ -42,6 +42,7 @@ type Props = {
   handleClose: () => void;
   currentSurvivorEvaluation: SurvivorEvaluation;
   currentCase: NetworkCase;
+  disabled?: boolean;
 };
 
 const LabelStyle = styled(Typography)(({ theme }) => ({
@@ -55,6 +56,7 @@ function SurvivorEvaluationDialog({
   handleClose,
   currentSurvivorEvaluation,
   currentCase,
+  disabled = false,
 }: Props) {
   const { enqueueSnackbar } = useSnackbar();
   const { mutate } = useSWRConfig();
@@ -684,7 +686,12 @@ function SurvivorEvaluationDialog({
           </DialogContent>
           <DialogActions>
             <Button onClick={handleClose}>Cancelar</Button>
-            <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
+            <LoadingButton
+              type="submit"
+              variant="contained"
+              loading={isSubmitting}
+              disabled={disabled}
+            >
               Guardar Cambios
             </LoadingButton>
           </DialogActions>

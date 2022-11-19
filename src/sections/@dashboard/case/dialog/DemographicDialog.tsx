@@ -31,6 +31,7 @@ type Props = {
   handleClose: () => void;
   currentDemographicForm: DemographicForm;
   currentCase: NetworkCase;
+  disabled?: boolean;
 };
 
 const LabelStyle = styled(Typography)(({ theme }) => ({
@@ -39,7 +40,13 @@ const LabelStyle = styled(Typography)(({ theme }) => ({
   marginBottom: theme.spacing(1),
 }));
 
-function DemographicDialog({ open, handleClose, currentDemographicForm, currentCase }: Props) {
+function DemographicDialog({
+  open,
+  handleClose,
+  currentDemographicForm,
+  currentCase,
+  disabled = false,
+}: Props) {
   const { enqueueSnackbar } = useSnackbar();
   const { mutate } = useSWRConfig();
 
@@ -143,7 +150,12 @@ function DemographicDialog({ open, handleClose, currentDemographicForm, currentC
           </DialogContent>
           <DialogActions>
             <Button onClick={handleClose}>Cancelar</Button>
-            <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
+            <LoadingButton
+              type="submit"
+              variant="contained"
+              loading={isSubmitting}
+              disabled={disabled}
+            >
               Guardar Cambios
             </LoadingButton>
           </DialogActions>

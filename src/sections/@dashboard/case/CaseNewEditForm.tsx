@@ -47,7 +47,7 @@ import {
   VictimBody,
   VICTIM_BASE_URL,
 } from 'src/@types/victim';
-import { RHFRadioGroup, RHFSelect, RHFTextField } from 'src/components/hook-form';
+import { RHFCheckbox, RHFRadioGroup, RHFSelect, RHFTextField } from 'src/components/hook-form';
 import Iconify from 'src/components/Iconify';
 import useTabs from 'src/hooks/useTabs';
 import { PATH_DASHBOARD } from 'src/routes/paths';
@@ -89,6 +89,10 @@ export default function CaseNewEditForm({ isEdit, currentCase }: Props) {
   const NewSchema = Yup.object().shape({
     providerId: Yup.number().min(1, 'Selecciona un Proveedor').required('Campo obligatorio'),
     userInChargeId: Yup.number().min(1, 'Selecciona un usuario').required('Campo obligatorio'),
+    consentUserInChargeId: Yup.number()
+      .min(1, 'Selecciona un usuario')
+      .required('Campo obligatorio'),
+    code: Yup.string().required('Campo obligatorio'),
     followUpUserInChargeId: Yup.number(),
     victim: Yup.object({
       name: Yup.string().required('Campo obligatorio'),
@@ -126,8 +130,11 @@ export default function CaseNewEditForm({ isEdit, currentCase }: Props) {
       providerId: currentCase?.provider.id ?? 0,
       userInChargeId: currentCase?.userInCharge.id ?? 0,
       consent: currentCase?.consent ?? false,
+      completed: currentCase?.completed ?? false,
       followUpUserInChargeId: currentCase?.followUpUserInCharge.id ?? 0,
       victim: currentCase?.victim ?? EMPTY_VICTIM,
+      code: currentCase?.code ?? '',
+      consentUserInChargeId: currentCase?.consentUserInCharge?.id ?? 0,
       demographicForm: currentCase
         ? {
             ...currentCase.demographicForm,
@@ -182,16 +189,6 @@ export default function CaseNewEditForm({ isEdit, currentCase }: Props) {
   const { data: providerContacts = [] } = useSWR<UserManager[]>(
     providerSelected ? `${USER_BASE_URL}/provider/${providerSelected}` : null
   );
-
-  // useEffect(() => {
-  //   setValue('userInChargeId', 0);
-  //   setValue('initialSurvivorEvaluation.userInChargeId', 0);
-  //   setValue('finalSurvivorEvaluation.userInChargeId', 0);
-  //   setValue('postSurvivorEvaluation.userInChargeId', 0);
-  //   setValue('attentionProtocol.userInChargeId', 0);
-  //   setValue('demographicForm.userInChargeId', 0);
-  //   setValue('followUpUserInChargeId', 0);
-  // }, [providerSelected, setValue]);
 
   useEffect(() => {
     if (isEdit && currentCase) {
@@ -392,17 +389,34 @@ export default function CaseNewEditForm({ isEdit, currentCase }: Props) {
                     Información del Caso
                   </Typography>
                   <Box sx={{ mb: 3, mt: 3 }}>
-                    <RHFTextField name="description" label="Descripción del Caso" />
+                    <RHFTextField
+                      name="description"
+                      label="Descripción del Caso"
+                      disabled={currentCase?.inactive || currentCase?.completed}
+                    />
                   </Box>
                   <Box
                     sx={{
                       display: 'grid',
                       columnGap: 2,
                       rowGap: 3,
-                      gridTemplateColumns: { xs: 'repeat(1, 1fr)', sm: 'repeat(2, 1fr)' },
+                      gridTemplateColumns: { xs: 'repeat(1, 1fr)', md: 'repeat(3, 1fr)' },
                     }}
                   >
-                    <RHFSelect name="providerId" label="Nombre de organización a cargo del caso">
+                    <RHFTextField
+                      name="code"
+                      label="Código de Caso"
+                      disabled={currentCase?.inactive || currentCase?.completed}
+                    />
+                    <RHFSelect
+                      name="providerId"
+                      disabled={currentCase?.inactive || currentCase?.completed}
+                      label={`${
+                        isEdit
+                          ? 'Referir caso a otra organización:'
+                          : 'Nombre de organización a cargo del caso'
+                      }`}
+                    >
                       <option key={0} value={0} />
                       {providers.map((provider) => (
                         <option key={provider.id} value={provider.id}>
@@ -410,7 +424,11 @@ export default function CaseNewEditForm({ isEdit, currentCase }: Props) {
                         </option>
                       ))}
                     </RHFSelect>
-                    <RHFSelect name="userInChargeId" label="Nombre de contacto principal del caso">
+                    <RHFSelect
+                      name="userInChargeId"
+                      label="Nombre de contacto principal del caso"
+                      disabled={currentCase?.inactive || currentCase?.completed}
+                    >
                       <option key={0} value={0} />
                       {(providerContacts ?? []).map((user) => (
                         <option key={user.id} value={user.id}>
@@ -433,28 +451,84 @@ export default function CaseNewEditForm({ isEdit, currentCase }: Props) {
                       mt: 3,
                     }}
                   >
-                    <RHFTextField name="victim.id" label="Cédula" />
-                    <RHFTextField name="victim.name" label="Nombre (como se indica)" />
-                    <RHFTextField name="victim.otherName" label="Otros nombres usados" />
-                    <RHFTextField name="victim.email" label="Correo Electrónico" />
-                    <RHFTextField name="victim.age" label="Edad, indicado" type="number" />
+                    <RHFTextField
+                      name="victim.id"
+                      label="Cédula"
+                      disabled={currentCase?.inactive || currentCase?.completed}
+                    />
+                    <RHFTextField
+                      name="victim.name"
+                      label="Nombre (como se indica)"
+                      disabled={currentCase?.inactive || currentCase?.completed}
+                    />
+                    <RHFTextField
+                      name="victim.otherName"
+                      label="Otros nombres usados"
+                      disabled={currentCase?.inactive || currentCase?.completed}
+                    />
+                    <RHFTextField
+                      name="victim.email"
+                      label="Correo Electrónico"
+                      disabled={currentCase?.inactive || currentCase?.completed}
+                    />
+                    <RHFTextField
+                      name="victim.age"
+                      label="Edad, indicado"
+                      type="number"
+                      disabled={currentCase?.inactive || currentCase?.completed}
+                    />
                     <RHFTextField
                       name="victim.verifiedAge"
                       label="Edad, verificada"
                       type="number"
+                      disabled={currentCase?.inactive || currentCase?.completed}
                     />
                     <RHFTextField
                       name="victim.birthday"
                       label="Fecha de nacimiento (si es conocida)"
+                      disabled={currentCase?.inactive || currentCase?.completed}
                     />
-                    <RHFTextField name="victim.citizenship" label="Ciudadanía" />
-                    <RHFTextField name="victim.ethnicity" label="Etnicidad" />
-                    <RHFTextField name="victim.nationality" label="País/Providencia de origen" />
-                    <RHFTextField name="victim.originAddress" label="Dirección (de origen)" />
-                    <RHFTextField name="victim.currentAddress" label="Dirección (actual)" />
-                    <RHFTextField name="victim.phoneNumber" label="Número(s) de teléfono" />
-                    <RHFTextField name="victim.preferredLanguage" label="Idioma Preferido" />
-                    <RHFTextField name="victim.children" label="Cantidad de Hijos" type="number" />
+                    <RHFTextField
+                      name="victim.citizenship"
+                      label="Ciudadanía"
+                      disabled={currentCase?.inactive || currentCase?.completed}
+                    />
+                    <RHFTextField
+                      name="victim.ethnicity"
+                      label="Etnicidad"
+                      disabled={currentCase?.inactive || currentCase?.completed}
+                    />
+                    <RHFTextField
+                      name="victim.nationality"
+                      label="País/Providencia de origen"
+                      disabled={currentCase?.inactive || currentCase?.completed}
+                    />
+                    <RHFTextField
+                      name="victim.originAddress"
+                      label="Dirección (de origen)"
+                      disabled={currentCase?.inactive || currentCase?.completed}
+                    />
+                    <RHFTextField
+                      name="victim.currentAddress"
+                      label="Dirección (actual)"
+                      disabled={currentCase?.inactive || currentCase?.completed}
+                    />
+                    <RHFTextField
+                      name="victim.phoneNumber"
+                      label="Número(s) de teléfono"
+                      disabled={currentCase?.inactive || currentCase?.completed}
+                    />
+                    <RHFTextField
+                      name="victim.preferredLanguage"
+                      label="Idioma Preferido"
+                      disabled={currentCase?.inactive || currentCase?.completed}
+                    />
+                    <RHFTextField
+                      name="victim.children"
+                      label="Cantidad de Hijos"
+                      type="number"
+                      disabled={currentCase?.inactive || currentCase?.completed}
+                    />
                   </Box>
                   <Box sx={{ flexDirection: 'column', display: 'flex', gap: 2, mt: 3 }}>
                     <LabelStyle>Estado Civil</LabelStyle>
@@ -482,12 +556,24 @@ export default function CaseNewEditForm({ isEdit, currentCase }: Props) {
                     onFinalSurvivorEvaluationClick={() => setFinalSurvivorEvaluationOpen(true)}
                     onPostSurvivorEvaluationClick={() => setPostSurvivorEvaluationOpen(true)}
                     onAttentionProtocolClick={() => setAttentionProtocolOpen(true)}
+                    disabled={currentCase?.inactive || currentCase?.completed}
                   />
                 </Card>
               </Grid>
               <Grid item xs={12} md={12}>
                 <Stack alignItems="flex-end" sx={{ mt: 2 }}>
-                  <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
+                  <RHFCheckbox
+                    name="completed"
+                    label="Marcar caso como cerrado"
+                    sx={{ mt: 3 }}
+                    disabled={currentCase?.inactive || currentCase?.completed}
+                  />
+                  <LoadingButton
+                    type="submit"
+                    variant="contained"
+                    loading={isSubmitting}
+                    disabled={currentCase?.inactive || currentCase?.completed}
+                  >
                     {!isEdit ? 'Crear Caso' : 'Guardar Cambios'}
                   </LoadingButton>
                 </Stack>
@@ -504,30 +590,35 @@ export default function CaseNewEditForm({ isEdit, currentCase }: Props) {
             open={demographicOpen}
             handleClose={() => setDemographicOpen(false)}
             currentDemographicForm={currentCase.demographicForm}
+            disabled={currentCase?.inactive || currentCase?.completed}
           />
           <SurvivorEvaluationDialog
             currentCase={currentCase}
             open={initialSurvivorEvaluationOpen}
             handleClose={() => setInitialSurvivorEvaluationOpen(false)}
             currentSurvivorEvaluation={currentCase.initialSurvivorEvaluation}
+            disabled={currentCase?.inactive || currentCase?.completed}
           />
           <SurvivorEvaluationDialog
             currentCase={currentCase}
             open={finalSurvivorEvaluationOpen}
             handleClose={() => setFinalSurvivorEvaluationOpen(false)}
             currentSurvivorEvaluation={currentCase.finalSurvivorEvaluation}
+            disabled={currentCase?.inactive || currentCase?.completed}
           />
           <SurvivorEvaluationDialog
             currentCase={currentCase}
             open={postSurvivorEvaluationOpen}
             handleClose={() => setPostSurvivorEvaluationOpen(false)}
             currentSurvivorEvaluation={currentCase.postSurvivorEvaluation}
+            disabled={currentCase?.inactive || currentCase?.completed}
           />
           <AttentionProtocolDialog
             currentCase={currentCase}
             open={attentionProtocolOpen}
             handleClose={() => setAttentionProtocolOpen(false)}
             currentAttentionProtocol={currentCase.attentionProtocol}
+            disabled={currentCase?.inactive || currentCase?.completed}
           />
         </>
       )}

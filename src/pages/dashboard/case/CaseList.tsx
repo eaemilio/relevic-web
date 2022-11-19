@@ -3,41 +3,39 @@ import {
   Button,
   Card,
   Container,
-  IconButton,
+  Divider,
+  Tab,
   Table,
   TableBody,
   TableContainer,
   TablePagination,
-  Tooltip,
+  Tabs,
 } from '@mui/material';
+import { useState } from 'react';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
-import { CASE_BASE_URL, NetworkCase } from 'src/@types/case';
-import { Roles } from 'src/@types/role';
-import { CurrentUser } from 'src/@types/user';
+import { CASE_BASE_URL, CASE_STATUS, CurrentCase, NetworkCase } from 'src/@types/case';
 import HeaderBreadcrumbs from 'src/components/HeaderBreadcrumbs';
 import Iconify from 'src/components/Iconify';
 import Page from 'src/components/Page';
 import Scrollbar from 'src/components/Scrollbar';
-import {
-  TableEmptyRows,
-  TableHeadCustom,
-  TableNoData,
-  TableSelectedActions,
-} from 'src/components/table';
+import { TableEmptyRows, TableHeadCustom, TableNoData } from 'src/components/table';
 import useAuth from 'src/hooks/useAuth';
 import useSettings from 'src/hooks/useSettings';
-import useTable, { emptyRows } from 'src/hooks/useTable';
+import useTable, { emptyRows, getComparator } from 'src/hooks/useTable';
+import useTabs from 'src/hooks/useTabs';
 import { PATH_DASHBOARD } from 'src/routes/paths';
 import CaseTableRow from 'src/sections/@dashboard/case/list/CaseTableRow';
-import { removeAsync } from 'src/services/APIGateway';
+import CaseTableToolbar from 'src/sections/@dashboard/case/list/CaseTableToolbar';
+import { editAsync } from 'src/services/APIGateway';
 import useSWR from 'swr';
 
 const TABLE_HEAD = [
-  { id: 'id', label: 'ID', align: 'left' },
+  { id: 'id', label: 'Código de Caso', align: 'left' },
   { id: 'victim.id', label: 'Cédula de la Víctima', align: 'left' },
   { id: 'victim.name', label: 'Nombre de la Víctima', align: 'left' },
   { id: 'provider.id', label: 'Nombre de la Organización', align: 'left' },
   { id: 'userInCharge.id', label: 'Persona a Cargo', align: 'left' },
+  { id: 'status', label: 'Estado', align: 'left' },
   { id: '' },
 ];
 
@@ -51,11 +49,7 @@ export default function CaseList() {
     order,
     orderBy,
     rowsPerPage,
-    //
-    selected,
-    setSelected,
-    onSelectRow,
-    onSelectAllRows,
+    setPage,
     //
     onSort,
     onChangePage,
@@ -68,22 +62,41 @@ export default function CaseList() {
   const { data: tableData = [], mutate } = useSWR<NetworkCase[]>(
     isRootProvider ? BASE_URL : providerId ? `${CASE_BASE_URL}/provider/${providerId}` : null
   );
-  const isNotFound = !tableData.length;
   const navigate = useNavigate();
 
-  const handleDeleteRow = async (id: number) => {
-    await removeAsync(`${BASE_URL}/${id}`);
-    mutate(tableData.filter((d) => d.id !== id));
-    setSelected([]);
-  };
+  const { currentTab: filterStatus, onChangeTab: onChangeFilterStatus } = useTabs('Activos');
+  const [filterCode, setFilterCode] = useState('');
 
-  const handleDeleteRows = (selected: (number | string)[]) => {
-    // TODO: Handle rows delete
-    setSelected([]);
+  const dataFiltered = applySortFilter({
+    tableData,
+    comparator: getComparator(order, orderBy),
+    filterCode,
+    filterStatus,
+  });
+
+  const isNotFound =
+    (!dataFiltered.length && !!filterStatus) || (!dataFiltered.length && !!filterCode);
+
+  const handleDeleteRow = async (caseSelected: CurrentCase) => {
+    await editAsync<Partial<CurrentCase>, CurrentCase>(`${BASE_URL}/${caseSelected.id}`, {
+      inactive: true,
+    });
+    mutate([
+      ...tableData.filter((t) => t.id !== caseSelected.id),
+      {
+        ...caseSelected,
+        inactive: true,
+      },
+    ]);
   };
 
   const handleEditRow = (id: number) => {
     navigate(PATH_DASHBOARD.general.cases.edit(id));
+  };
+
+  const handleFilterCode = (c: string) => {
+    setFilterCode(c);
+    setPage(0);
   };
 
   return (
@@ -105,55 +118,41 @@ export default function CaseList() {
         />
 
         <Card>
+          <Tabs
+            allowScrollButtonsMobile
+            variant="scrollable"
+            scrollButtons="auto"
+            value={filterStatus}
+            onChange={onChangeFilterStatus}
+            sx={{ px: 2, bgcolor: 'background.neutral' }}
+          >
+            {CASE_STATUS.map((tab) => (
+              <Tab disableRipple key={tab} label={tab} value={tab} />
+            ))}
+          </Tabs>
+
+          <Divider />
+
+          <CaseTableToolbar filterCode={filterCode} onFilterCode={handleFilterCode} />
           <Scrollbar>
             <TableContainer sx={{ minWidth: 800, position: 'relative', pt: 1 }}>
-              {selected.length > 0 && (
-                <TableSelectedActions
-                  dense={dense}
-                  numSelected={selected.length}
-                  rowCount={tableData.length}
-                  onSelectAllRows={(checked) =>
-                    onSelectAllRows(
-                      checked,
-                      tableData.map((row) => row.id)
-                    )
-                  }
-                  actions={
-                    <Tooltip title="Delete">
-                      <IconButton color="primary" onClick={() => handleDeleteRows(selected)}>
-                        <Iconify icon={'eva:trash-2-outline'} />
-                      </IconButton>
-                    </Tooltip>
-                  }
-                />
-              )}
-
               <Table size={dense ? 'small' : 'medium'}>
                 <TableHeadCustom
                   order={order}
                   orderBy={orderBy}
                   headLabel={TABLE_HEAD}
                   rowCount={tableData.length}
-                  numSelected={selected.length}
                   onSort={onSort}
-                  onSelectAllRows={(checked) =>
-                    onSelectAllRows(
-                      checked,
-                      tableData.map((row) => row.id)
-                    )
-                  }
                 />
 
                 <TableBody>
-                  {(tableData ?? [])
+                  {(dataFiltered ?? [])
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                     .map((row) => (
                       <CaseTableRow
                         key={row.id}
                         row={row}
-                        selected={selected.includes(row.id)}
-                        onSelectRow={() => onSelectRow(row.id)}
-                        onDeleteRow={() => handleDeleteRow(row.id)}
+                        onDeleteRow={() => handleDeleteRow(row)}
                         onEditRow={() => handleEditRow(row.id)}
                       />
                     ))}
@@ -173,7 +172,7 @@ export default function CaseList() {
             <TablePagination
               rowsPerPageOptions={[5, 10, 25]}
               component="div"
-              count={tableData.length}
+              count={dataFiltered.length}
               rowsPerPage={rowsPerPage}
               page={page}
               onPageChange={onChangePage}
@@ -184,4 +183,46 @@ export default function CaseList() {
       </Container>
     </Page>
   );
+}
+
+function applySortFilter({
+  tableData,
+  comparator,
+  filterCode,
+  filterStatus,
+}: {
+  tableData: CurrentCase[];
+  comparator: (a: any, b: any) => number;
+  filterCode: string;
+  filterStatus: string;
+}) {
+  const stabilizedThis = tableData.map((el, index) => [el, index] as const);
+
+  stabilizedThis.sort((a, b) => {
+    const order = comparator(a[0], b[0]);
+    if (order !== 0) return order;
+    return a[1] - b[1];
+  });
+
+  tableData = stabilizedThis.map((el) => el[0]);
+
+  if (filterCode) {
+    tableData = tableData.filter(
+      (item) => (item.code ?? '').toLowerCase().indexOf(filterCode.toLowerCase()) !== -1
+    );
+  }
+
+  if (filterStatus !== 'Todos') {
+    if (filterStatus === 'Activos') {
+      tableData = tableData.filter((item) => item.inactive === false && item.completed === false);
+    }
+    if (filterStatus === 'Inactivos') {
+      tableData = tableData.filter((item) => item.inactive === true);
+    }
+    if (filterStatus === 'Cerrados') {
+      tableData = tableData.filter((item) => item.inactive === false && item.completed === true);
+    }
+  }
+
+  return tableData;
 }

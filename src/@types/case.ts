@@ -38,9 +38,13 @@ export interface CurrentCase {
   postSurvivorEvaluation: SurvivorEvaluation;
   attentionProtocol: AttentionProtocol;
   followUpUserInCharge: UserManager;
+  consentUserInCharge: UserManager;
   followUpNotes: FollowUpNote[];
   createdAt: string;
   comments: Comment[];
+  completed: boolean;
+  inactive: boolean;
+  code: string;
 }
 
 export interface NetworkCase {
@@ -56,9 +60,13 @@ export interface NetworkCase {
   postSurvivorEvaluation: SurvivorEvaluation;
   attentionProtocol: AttentionProtocol;
   followUpUserInCharge: UserManager;
+  consentUserInCharge: UserManager;
   followUpNotes: FollowUpNote[];
   createdAt: string;
   comments: Comment[];
+  completed: boolean;
+  inactive: boolean;
+  code: string;
 }
 
 export interface NetworkCaseBody {
@@ -73,7 +81,12 @@ export interface NetworkCaseBody {
   postSurvivorEvaluation: SurvivorEvaluationBody;
   attentionProtocol: AttentionProtocolBody;
   followUpUserInChargeId: number;
+  consentUserInChargeId: number;
+  completed: boolean;
+  code: string;
 }
 
 export const CASE_BASE_URL = '/case';
 export const COMMENT_BASE_URL = '/comment';
+
+export const CASE_STATUS = ['Activos', 'Inactivos', 'Cerrados', 'Todos'];

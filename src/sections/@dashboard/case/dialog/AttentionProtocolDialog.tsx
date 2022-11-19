@@ -37,6 +37,7 @@ type Props = {
   handleClose: () => void;
   currentAttentionProtocol: AttentionProtocol;
   currentCase: NetworkCase;
+  disabled?: boolean;
 };
 const LabelStyle = styled(Typography)(({ theme }) => ({
   ...theme.typography.subtitle2,
@@ -49,6 +50,7 @@ function AttentionProtocolDialog({
   handleClose,
   currentAttentionProtocol,
   currentCase,
+  disabled = false,
 }: Props) {
   const { enqueueSnackbar } = useSnackbar();
   const { mutate } = useSWRConfig();
@@ -208,7 +210,12 @@ function AttentionProtocolDialog({
           </DialogContent>
           <DialogActions>
             <Button onClick={onClose}>Cancelar</Button>
-            <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
+            <LoadingButton
+              type="submit"
+              variant="contained"
+              loading={isSubmitting}
+              disabled={disabled}
+            >
               Guardar Cambios
             </LoadingButton>
           </DialogActions>

@@ -1,29 +1,23 @@
-import { Checkbox, MenuItem, TableCell, TableRow } from '@mui/material';
+import { Checkbox, MenuItem, TableCell, TableRow, useTheme } from '@mui/material';
 import { useState } from 'react';
 import { NetworkCase } from 'src/@types/case';
 import { Roles } from 'src/@types/role';
 import { CurrentUser } from 'src/@types/user';
 import Iconify from 'src/components/Iconify';
+import Label from 'src/components/Label';
 import { TableMoreMenu } from 'src/components/table';
 import useAuth from 'src/hooks/useAuth';
 
 type Props = {
   row: NetworkCase;
-  selected: boolean;
   onEditRow: VoidFunction;
-  onSelectRow: VoidFunction;
   onDeleteRow: VoidFunction;
 };
 
-export default function CaseTableRow({
-  row,
-  selected,
-  onEditRow,
-  onSelectRow,
-  onDeleteRow,
-}: Props) {
-  const { victim, provider, id, userInCharge } = row;
+export default function CaseTableRow({ row, onEditRow, onDeleteRow }: Props) {
+  const { victim, provider, code, userInCharge, completed, inactive } = row;
   const { user } = useAuth();
+  const theme = useTheme();
   const isAgent = (user as CurrentUser | null)?.role.id === Roles.AGENTE;
 
   const [openMenu, setOpenMenuActions] = useState<HTMLElement | null>(null);
@@ -36,14 +30,16 @@ export default function CaseTableRow({
     setOpenMenuActions(null);
   };
 
-  return (
-    <TableRow hover selected={selected}>
-      <TableCell padding="checkbox">
-        <Checkbox checked={selected} onClick={onSelectRow} />
-      </TableCell>
+  const backgroundColor = inactive
+    ? theme.palette.error.main
+    : completed
+    ? theme.palette.background.neutral
+    : theme.palette.primary.main;
 
+  return (
+    <TableRow hover>
       <TableCell align="left" sx={{ textTransform: 'capitalize' }}>
-        {id}
+        {code}
       </TableCell>
 
       <TableCell align="left" sx={{ textTransform: 'capitalize' }}>
@@ -60,6 +56,18 @@ export default function CaseTableRow({
 
       <TableCell align="left" sx={{ textTransform: 'capitalize' }}>
         {userInCharge?.name}
+      </TableCell>
+
+      <TableCell align="left" sx={{ textTransform: 'capitalize' }}>
+        <Label
+          sx={{
+            textTransform: 'capitalize',
+            backgroundColor,
+            color: theme.palette.getContrastText(backgroundColor),
+          }}
+        >
+          {inactive ? 'Inactivo' : completed ? 'Cerrado' : 'Activo'}
+        </Label>
       </TableCell>
 
       <TableCell align="right">
