@@ -13,12 +13,14 @@ import {
   DialogContentText,
   DialogTitle,
   FormControlLabel,
+  Link,
   Radio,
   RadioGroup,
   styled,
   TextField,
   Typography,
 } from '@mui/material';
+import { PDFViewer, usePDF } from '@react-pdf/renderer';
 import { useSnackbar } from 'notistack';
 import { useEffect, useMemo } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
@@ -33,6 +35,7 @@ import {
   VIOLENCE_TYPES,
 } from 'src/@types/survivor-evaluation';
 import { RHFCheckbox, RHFRadioGroup, RHFSelect, RHFTextField } from 'src/components/hook-form';
+import SurvivorEvaluationDocument from 'src/components/pdf/SurvivorEvaluationDocument';
 import { editAsync } from 'src/services/APIGateway';
 import useSWR, { useSWRConfig } from 'swr';
 import * as Yup from 'yup';
@@ -60,6 +63,15 @@ function SurvivorEvaluationDialog({
 }: Props) {
   const { enqueueSnackbar } = useSnackbar();
   const { mutate } = useSWRConfig();
+
+  const [instance, updateInstance] = usePDF({
+    document: (
+      <SurvivorEvaluationDocument
+        currentCase={currentCase}
+        currentSurvivorEvaluation={currentSurvivorEvaluation}
+      />
+    ),
+  });
 
   const { data: provinces = [] } = useSWR<Province[]>(PROVINCE_BASE_URL);
 
@@ -159,6 +171,7 @@ function SurvivorEvaluationDialog({
 
   useEffect(() => {
     reset(defaultValues);
+    updateInstance();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -684,7 +697,17 @@ function SurvivorEvaluationDialog({
             </Typography>
             <RHFCheckbox name="completed" label="Marcar como completado" sx={{ mt: 3 }} />
           </DialogContent>
-          <DialogActions>
+          <DialogActions sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+            {instance.url && (
+              <Link
+                href={instance.url}
+                download={`Evaluación del sobreviviente - ${getPhase(
+                  currentSurvivorEvaluation.phase
+                )} - ${currentCase.victim.name}.pdf`}
+              >
+                Descargar Evaluación del Sobreviviente
+              </Link>
+            )}
             <Button onClick={handleClose}>Cancelar</Button>
             <LoadingButton
               type="submit"

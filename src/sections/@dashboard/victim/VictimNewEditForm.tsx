@@ -1,6 +1,6 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import { LoadingButton } from '@mui/lab';
-import { Box, Card, Grid, Stack, styled, TextField, Typography } from '@mui/material';
+import { Box, Card, Grid, Link, Stack, styled, TextField, Typography } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import { useEffect, useMemo } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
@@ -15,6 +15,8 @@ import * as Yup from 'yup';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
+import { PDFViewer, usePDF } from '@react-pdf/renderer';
+import DemographicDocument from 'src/components/pdf/DemographicDocument';
 
 type Props = {
   isEdit: boolean;
@@ -86,9 +88,14 @@ export default function VictimNewEditForm({ isEdit, currentVictim }: Props) {
 
   const watchBirthday = watch('birthday');
 
+  const [instance, updateInstance] = usePDF({
+    document: <DemographicDocument victim={currentVictim} />,
+  });
+
   useEffect(() => {
     if (isEdit && currentVictim) {
       reset(defaultValues);
+      updateInstance();
     }
     if (!isEdit) {
       reset(defaultValues);
@@ -193,6 +200,15 @@ export default function VictimNewEditForm({ isEdit, currentVictim }: Props) {
           </Grid>
           <Grid item xs={12} md={12}>
             <Stack alignItems="flex-end" sx={{ mt: 2 }}>
+              {instance.url && currentVictim && (
+                <Link
+                  sx={{ mb: 4 }}
+                  href={instance.url}
+                  download={`Ficha de Víctima - ${currentVictim.name}.pdf`}
+                >
+                  Descargar Ficha de Víctima
+                </Link>
+              )}
               <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
                 {!isEdit ? 'Crear Víctima' : 'Guardar Cambios'}
               </LoadingButton>
@@ -200,6 +216,9 @@ export default function VictimNewEditForm({ isEdit, currentVictim }: Props) {
           </Grid>
         </Grid>
       </form>
+      <PDFViewer style={{ width: 800, height: 1200 }}>
+        <DemographicDocument victim={currentVictim} />
+      </PDFViewer>
     </FormProvider>
   );
 }
