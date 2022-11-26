@@ -5,26 +5,33 @@ import ReactApexChart from 'react-apexcharts';
 import { Card, CardHeader, Box, TextField, CardProps } from '@mui/material';
 // components
 import { BaseOptionChart } from '../../../../components/chart';
+import useNetworkCaseChartData from 'src/hooks/useNetworkCaseChartData';
 
 // ----------------------------------------------------------------------
 
 interface Props extends CardProps {
   title?: string;
   subheader?: string;
-  chartLabels: string[];
-  chartData: {
-    name: string;
-    data: number[];
-  }[];
 }
 
-export default function AppAreaInstalled({
-  title,
-  subheader,
-  chartLabels,
-  chartData,
-  ...other
-}: Props) {
+export default function AppAreaInstalled({ title, subheader, ...other }: Props) {
+  const caseChartData = useNetworkCaseChartData();
+  const chartLabels = [
+    'Ene',
+    'Feb',
+    'Mar',
+    'Abr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dic',
+  ];
+  const chartData = [{ name: 'Nuevos Casos', data: caseChartData }];
+
   const chartOptions = merge(BaseOptionChart(), {
     xaxis: {
       categories: chartLabels,

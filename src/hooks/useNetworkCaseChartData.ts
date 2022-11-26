@@ -23,21 +23,19 @@ export default function useNetworkCaseChartData() {
       ? `${CASE_BASE_URL}/provider/${providerId}`
       : null
   );
-  const months = useMemo(() => [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], []);
-  const currentYear = dayjs().year();
 
   const [data, setData] = useState<number[]>([]);
 
   useEffect(() => {
-    // setData(
-    //   months.map(
-    //     (m) =>
-    //       cases.filter(
-    //         (c) => dayjs(c.createdAt).month() === m && currentYear === dayjs(c.createdAt).year()
-    //       ).length
-    //   )
-    // );
-  }, [cases, months, currentYear]);
+    setData(
+      [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map(
+        (m) =>
+          cases.filter(
+            (c) => dayjs(c.createdAt).month() === m && dayjs().year() === dayjs(c.createdAt).year()
+          ).length
+      )
+    );
+  }, [cases]);
 
   return data;
 }

@@ -63,8 +63,6 @@ REACT_APP_HOST_API_KEY=https://relevic-backend.herokuapp.com
 
 > **Nota Importante**: Los valores anteriores son únicamente a modo de ejemplo, deberás reemplazarlos con los valores correctos. 
 
-> **Nota Importante** Asegurarse que al reemplazar los archivos también está colocando las variables de entornos correctas, de lo contrario, la plataforma podría mostrar información de otro entorno.
-
 ## Estructura del Proyecto
 El código principal se encuentra en la carpeta `src`, la cual contiene los módulos utilizados en este proyecto. Todas las páginas principales se encuentran en la carpeta `pages`, para encontrar los demás componentes, la carpeta indicada se llama `components`.
 

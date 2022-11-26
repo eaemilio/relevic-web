@@ -15,15 +15,12 @@ import {
 } from '../../sections/@dashboard/general/app';
 // assets
 import { SeoIllustration } from '../../assets';
-import { _appInvoices } from 'src/_mock';
-import useNetworkCaseChartData from 'src/hooks/useNetworkCaseChartData';
 import useMyWork from 'src/hooks/useMyWork';
 
 // ----------------------------------------------------------------------
 
 export default function GeneralApp() {
   const { user } = useAuth();
-  const caseChartData = useNetworkCaseChartData();
   const myWork = useMyWork();
 
   const theme = useTheme();
@@ -54,8 +51,8 @@ export default function GeneralApp() {
             <AppCurrentDownload
               title="Resultados ESO"
               chartColors={[
-                theme.palette.primary.lighter,
-                theme.palette.primary.light,
+                theme.palette.error.main,
+                theme.palette.warning.main,
                 theme.palette.primary.main,
                 theme.palette.primary.dark,
               ]}
@@ -63,25 +60,7 @@ export default function GeneralApp() {
           </Grid>
 
           <Grid item xs={12} md={8} lg={8}>
-            <AppAreaInstalled
-              title="Casos Asignados"
-              subheader="Durante el año"
-              chartLabels={[
-                'Ene',
-                'Feb',
-                'Mar',
-                'Abr',
-                'May',
-                'Jun',
-                'Jul',
-                'Aug',
-                'Sep',
-                'Oct',
-                'Nov',
-                'Dic',
-              ]}
-              chartData={[{ name: 'Nuevos Casos', data: caseChartData }]}
-            />
+            <AppAreaInstalled title="Casos Asignados" subheader="Durante el año" />
           </Grid>
 
           <Grid item xs={12} lg={12}>

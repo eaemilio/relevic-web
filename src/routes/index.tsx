@@ -166,44 +166,6 @@ export default function Router() {
             { path: ':id', element: <EvaluationAreaCreate /> },
           ],
         },
-        {
-          path: 'invoice',
-          children: [
-            { element: <Navigate to="/dashboard/invoice/list" replace />, index: true },
-            { path: ':id', element: <InvoiceDetails /> },
-            { path: ':id/edit', element: <InvoiceEdit /> },
-            { path: 'new', element: <InvoiceCreate /> },
-          ],
-        },
-        {
-          path: 'blog',
-          children: [
-            { element: <Navigate to="/dashboard/blog/posts" replace />, index: true },
-            { path: 'posts', element: <BlogPosts /> },
-            { path: 'post/:title', element: <BlogPost /> },
-            { path: 'new', element: <BlogNewPost /> },
-          ],
-        },
-        {
-          path: 'mail',
-          children: [
-            { element: <Navigate to="/dashboard/mail/all" replace />, index: true },
-            { path: 'label/:customLabel', element: <Mail /> },
-            { path: 'label/:customLabel/:mailId', element: <Mail /> },
-            { path: ':systemLabel', element: <Mail /> },
-            { path: ':systemLabel/:mailId', element: <Mail /> },
-          ],
-        },
-        {
-          path: 'chat',
-          children: [
-            { element: <Chat />, index: true },
-            { path: 'new', element: <Chat /> },
-            { path: ':conversationKey', element: <Chat /> },
-          ],
-        },
-        { path: 'calendar', element: <Calendar /> },
-        { path: 'kanban', element: <Kanban /> },
         { path: 'permission-denied', element: <PermissionDenied /> },
       ],
     },
@@ -248,16 +210,6 @@ const CaseCreate = Loadable(lazy(() => import('../pages/dashboard/case/CaseCreat
 const VictimList = Loadable(lazy(() => import('../pages/dashboard/victim/VictimList')));
 const VictimCreate = Loadable(lazy(() => import('../pages/dashboard/victim/VictimCreate')));
 
-// INVOICE
-const InvoiceDetails = Loadable(lazy(() => import('../pages/dashboard/InvoiceDetails')));
-const InvoiceCreate = Loadable(lazy(() => import('../pages/dashboard/InvoiceCreate')));
-const InvoiceEdit = Loadable(lazy(() => import('../pages/dashboard/InvoiceEdit')));
-
-// BLOG
-const BlogPosts = Loadable(lazy(() => import('../pages/dashboard/BlogPosts')));
-const BlogPost = Loadable(lazy(() => import('../pages/dashboard/BlogPost')));
-const BlogNewPost = Loadable(lazy(() => import('../pages/dashboard/BlogNewPost')));
-
 // USER
 const UserProfile = Loadable(lazy(() => import('../pages/dashboard/UserProfile')));
 const UserCards = Loadable(lazy(() => import('../pages/dashboard/UserCards')));
@@ -297,12 +249,6 @@ const EvaluationAreaList = Loadable(
 const EvaluationAreaCreate = Loadable(
   lazy(() => import('../pages/dashboard/evaluation-area/EvaluationAreaCreate'))
 );
-
-// APP
-const Chat = Loadable(lazy(() => import('../pages/dashboard/Chat')));
-const Mail = Loadable(lazy(() => import('../pages/dashboard/Mail')));
-const Calendar = Loadable(lazy(() => import('../pages/dashboard/Calendar')));
-const Kanban = Loadable(lazy(() => import('../pages/dashboard/Kanban')));
 
 // TEST RENDER PAGE BY ROLE
 const PermissionDenied = Loadable(lazy(() => import('../pages/dashboard/PermissionDenied')));
