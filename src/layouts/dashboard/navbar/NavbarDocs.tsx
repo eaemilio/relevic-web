@@ -31,9 +31,7 @@ export default function NavbarDocs() {
         </Typography>
       </div>
 
-      <Button href={PATH_DOCS} target="_blank" rel="noopener" variant="contained">
-        Descarga los manuales
-      </Button>
+      <Button variant="contained">Descarga los manuales</Button>
     </Stack>
   );
 }
