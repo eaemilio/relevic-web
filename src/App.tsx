@@ -12,6 +12,31 @@ import MotionLazyContainer from './components/animate/MotionLazyContainer';
 import { SWRConfig } from 'swr';
 import SWRService from './services/SWRService';
 
+import updateLocale from 'dayjs/plugin/updateLocale';
+import dayjs from 'dayjs';
+import 'dayjs/locale/es';
+
+dayjs.extend(updateLocale);
+
+dayjs.updateLocale('es', {
+  months: [
+    'Junio',
+    'Febrero',
+    'Marzo',
+    'Abril',
+    'Mayo',
+    'Junio',
+    'Julio',
+    'Agosto',
+    'Septiembre',
+    'Octubre',
+    'Noviembre',
+    'Diciembre',
+  ],
+});
+
+dayjs.locale('es');
+
 // ----------------------------------------------------------------------
 
 export default function App() {

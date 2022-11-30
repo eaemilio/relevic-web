@@ -12138,6 +12138,11 @@ react-slick@^0.29.0:
     lodash.debounce "^4.0.8"
     resize-observer-polyfill "^1.5.0"
 
+react-table-pdf@^0.0.4:
+  version "0.0.4"
+  resolved "https://registry.yarnpkg.com/react-table-pdf/-/react-table-pdf-0.0.4.tgz#17b8405208924a336afe34cfb84ca433f0aa6623"
+  integrity sha512-ccZACa0M1FJiHXC/XsThAk/G+bi3TUeTkSZfkGrI7EbUvA1mzqGutj0ZZfIVHnWsYwCpzMknlHlCUy4JnBkDUw==
+
 react-transition-group@^4.4.2:
   version "4.4.2"
   resolved "https://registry.npmjs.org/react-transition-group/-/react-transition-group-4.4.2.tgz"

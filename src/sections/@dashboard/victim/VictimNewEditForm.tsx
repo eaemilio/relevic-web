@@ -216,9 +216,6 @@ export default function VictimNewEditForm({ isEdit, currentVictim }: Props) {
           </Grid>
         </Grid>
       </form>
-      <PDFViewer style={{ width: 800, height: 1200 }}>
-        <DemographicDocument victim={currentVictim} />
-      </PDFViewer>
     </FormProvider>
   );
 }
