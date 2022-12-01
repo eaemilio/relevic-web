@@ -26,9 +26,24 @@ export default function GeneralApp() {
   const theme = useTheme();
 
   const { themeStretch } = useSettings();
+  const download = () => {
+    const anchor = document.createElement('a');
+    anchor.href = '/assets/manual_web.pdf';
+    anchor.download =
+      'Manual Administrador y Usuario Aplicación Módulo Servicios Víctimas Versión Web.pdf';
+    document.body.appendChild(anchor);
+    anchor.click();
+    document.body.removeChild(anchor);
+    const anchor2 = document.createElement('a');
+    anchor2.href = '/assets/manual_mobile.pdf';
+    anchor2.download = 'Manual Usuario Aplicación Módulo Servicios Víctimas Versión Móvil.pdf';
+    document.body.appendChild(anchor2);
+    anchor2.click();
+    document.body.removeChild(anchor2);
+  };
 
   return (
-    <Page title="General: App">
+    <Page title="Dashboard">
       <Container maxWidth={themeStretch ? false : 'xl'}>
         <Grid container spacing={3}>
           <Grid item xs={12} md={12}>
@@ -44,7 +59,11 @@ export default function GeneralApp() {
                   }}
                 />
               }
-              action={<Button variant="contained">Descargar los Manuales</Button>}
+              action={
+                <Button variant="contained" onClick={download}>
+                  Descargar los Manuales
+                </Button>
+              }
             />
           </Grid>
           <Grid item xs={12} md={4} lg={4}>

@@ -15,6 +15,22 @@ export default function NavbarDocs() {
 
   const { translate } = useLocales();
 
+  const download = () => {
+    const anchor = document.createElement('a');
+    anchor.href = '/assets/manual_web.pdf';
+    anchor.download =
+      'Manual Administrador y Usuario Aplicación Módulo Servicios Víctimas Versión Web.pdf';
+    document.body.appendChild(anchor);
+    anchor.click();
+    document.body.removeChild(anchor);
+    const anchor2 = document.createElement('a');
+    anchor2.href = '/assets/manual_mobile.pdf';
+    anchor2.download = 'Manual Usuario Aplicación Módulo Servicios Víctimas Versión Móvil.pdf';
+    document.body.appendChild(anchor2);
+    anchor2.click();
+    document.body.removeChild(anchor2);
+  };
+
   return (
     <Stack
       spacing={3}
@@ -31,7 +47,9 @@ export default function NavbarDocs() {
         </Typography>
       </div>
 
-      <Button variant="contained">Descarga los manuales</Button>
+      <Button variant="contained" onClick={download}>
+        Descarga los manuales
+      </Button>
     </Stack>
   );
 }
