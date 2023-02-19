@@ -49,6 +49,7 @@ export default function UserNewEditForm({ isEdit, currentUser }: Props) {
       email: currentUser?.email || '',
       roleId: currentUser?.role.id ?? 0,
       providerId: currentUser?.provider?.id ?? 0,
+      userCode: currentUser?.userCode ?? '',
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [currentUser]
@@ -113,6 +114,7 @@ export default function UserNewEditForm({ isEdit, currentUser }: Props) {
             >
               <RHFTextField name="name" label="Nombre Completo" />
               <RHFTextField name="email" label="Correo Electrónico" />
+              <RHFTextField name="userCode" label="Código de Usuario (Cédula)" />
               <RHFSelect name="roleId" label="Rol" placeholder="Rol">
                 <option key={0} value={0} />
                 {roles.map((option) => (

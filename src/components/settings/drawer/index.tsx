@@ -162,9 +162,9 @@ export default function SettingsDrawer() {
                   {/* <Stack spacing={1.5}>
                     <Typography variant="subtitle2">Stretch</Typography>
                     <SettingStretch />
-                  </Stack>
+                  </Stack> */}
 
-                  <SettingFullscreen /> */}
+                  {/* <SettingFullscreen /> */}
                 </Stack>
               </Scrollbar>
             </RootStyle>

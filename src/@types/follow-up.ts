@@ -1,5 +1,19 @@
 import { CurrentUser } from './user';
 
+export interface FollowUp {
+  id: number;
+  date: string;
+  decisions: string;
+  lawyer: string;
+  tribunal: string;
+  nextAudienceDate?: string;
+  canceled: boolean;
+  cancelledReason?: string;
+  createdAt?: Date;
+  caseId: number;
+}
+
+export type FollowUpBody = Omit<FollowUp, 'id'>;
 export interface FollowUpNote {
   id: number;
   caseId: number;

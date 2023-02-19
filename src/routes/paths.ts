@@ -44,7 +44,7 @@ export const PATH_DASHBOARD = {
       list: path(ROOTS_DASHBOARD, '/case/list'),
       new: path(ROOTS_DASHBOARD, '/case/new'),
       edit: (id: number) => path(ROOTS_DASHBOARD, `/case/${id}`),
-      followUp: (id: number) => path(ROOTS_DASHBOARD, `/case/follow-up/${id}`),
+      followUp: (id: number) => path(ROOTS_DASHBOARD, `/case/follow-up-note/${id}`),
     },
 
     victims: {

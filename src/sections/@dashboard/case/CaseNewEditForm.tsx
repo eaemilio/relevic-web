@@ -1,9 +1,6 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import { LoadingButton } from '@mui/lab';
 import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
   Box,
   Card,
   Grid,
@@ -12,6 +9,8 @@ import {
   Tab,
   Tabs,
   Typography,
+  TextField,
+  Divider,
 } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -23,7 +22,7 @@ import {
   ATTENTION_PROTOCOL_BASE_URL,
   EMPTY_ATTENTION_PROTOCOL,
 } from 'src/@types/attention-protocol';
-import { CurrentCase, NetworkCase, NetworkCaseBody } from 'src/@types/case';
+import { NetworkCase, NetworkCaseBody } from 'src/@types/case';
 import {
   DemographicForm,
   DemographicFormBody,
@@ -42,7 +41,6 @@ import { UserManager, USER_BASE_URL } from 'src/@types/user';
 import {
   EMPTY_VICTIM,
   MARITAL_STATUES,
-  MOCK_VICTIM,
   Victim,
   VictimBody,
   VICTIM_BASE_URL,
@@ -52,14 +50,17 @@ import Iconify from 'src/components/Iconify';
 import useTabs from 'src/hooks/useTabs';
 import { PATH_DASHBOARD } from 'src/routes/paths';
 import { createAsync, editAsync, getAsync } from 'src/services/APIGateway';
-import { _userList } from 'src/_mock';
-import useSWR, { useSWRConfig } from 'swr';
+import useSWR from 'swr';
 import * as Yup from 'yup';
 import Comments from './Comments';
 import AttentionProtocolDialog from './dialog/AttentionProtocolDialog';
 import DemographicDialog from './dialog/DemographicDialog';
 import SurvivorEvaluationDialog from './dialog/SurvivorEvaluationDialog';
 import EvaluationCaseTable from './list/EvaluationCaseTable';
+import FollowUpList from 'src/pages/dashboard/case/follow-up/FollowUpList';
+import CaseService from 'src/services/CaseService';
+import VictimCasesDialog from './dialog/VictimCasesDialog';
+import useAuth from 'src/hooks/useAuth';
 
 type Props = {
   isEdit: boolean;
@@ -77,8 +78,8 @@ const LabelStyle = styled(Typography)(({ theme }) => ({
 export default function CaseNewEditForm({ isEdit, currentCase }: Props) {
   const { enqueueSnackbar } = useSnackbar();
   const navigate = useNavigate();
-  const { mutate } = useSWRConfig();
   const { currentTab, onChangeTab } = useTabs('general');
+  const { user } = useAuth();
 
   const [demographicOpen, setDemographicOpen] = useState(false);
   const [initialSurvivorEvaluationOpen, setInitialSurvivorEvaluationOpen] = useState(false);
@@ -126,9 +127,15 @@ export default function CaseNewEditForm({ isEdit, currentCase }: Props) {
 
   const defaultValues: NetworkCaseBody = useMemo(
     (): NetworkCaseBody => ({
+      userCode: currentCase?.userCode ?? user?.userCode ?? '',
       description: currentCase?.description ?? '',
       providerId: currentCase?.provider.id ?? 0,
       userInChargeId: currentCase?.userInCharge.id ?? 0,
+      jurisdiction: currentCase?.jurisdiction ?? '',
+      defendant: currentCase?.defendant ?? '',
+      defendantId: currentCase?.defendantId ?? '',
+      proceduralStage: currentCase?.proceduralStage ?? '',
+      legalScore: currentCase?.legalScore ?? '',
       consent: currentCase?.consent ?? false,
       completed: currentCase?.completed ?? false,
       followUpUserInChargeId: currentCase?.followUpUserInCharge.id ?? 0,
@@ -330,6 +337,9 @@ export default function CaseNewEditForm({ isEdit, currentCase }: Props) {
 
   const searchVictim = useCallback(async (): Promise<Victim | undefined> => {
     try {
+      if (!victimIdWatch) {
+        return;
+      }
       return await getAsync<Victim>(`${VICTIM_BASE_URL}/${victimIdWatch}`);
     } catch (error) {
       return undefined;
@@ -348,6 +358,70 @@ export default function CaseNewEditForm({ isEdit, currentCase }: Props) {
     }, 500);
     return () => clearTimeout(victimTimeout);
   }, [victimIdWatch, searchVictim, setValue]);
+
+  const [caseSearch, setCaseSearch] = useState('');
+  const [caseVictimSearch, setCaseVictimSearch] = useState('');
+  const [foundCases, setFoundCases] = useState<Partial<NetworkCase>[]>([]);
+
+  const handleCasesDialogClose = (selectedCase?: Partial<NetworkCase>) => {
+    setFoundCases([]);
+    if (!selectedCase) {
+      return;
+    }
+    handleCaseSelected(selectedCase);
+  };
+
+  const searchCaseByCode = async () => {
+    if (!caseSearch.trim().length) {
+      return;
+    }
+
+    const data = await CaseService.searchCaseByCode(caseSearch);
+
+    if (!data) {
+      enqueueSnackbar(`No se ha encontrado ningún caso con el código ${caseSearch}`, {
+        variant: 'info',
+      });
+      return;
+    }
+
+    handleCaseSelected(data);
+  };
+
+  const handleCaseSelected = (data: Partial<NetworkCase>) => {
+    if (!data.id) {
+      setValue('code', data.code ?? '');
+      setValue('jurisdiction', data.jurisdiction ?? '');
+      setValue('defendant', data.defendant ?? '');
+      setValue('defendantId', data.defendantId ?? '');
+      setValue('proceduralStage', data.proceduralStage ?? '');
+      setValue('legalScore', data.legalScore ?? '');
+      if (data.victim) {
+        setValue('victim', data.victim);
+      }
+      return;
+    }
+    window.location.href = `/dashboard/case/${data.id}`;
+  };
+
+  const searchCaseByVictim = async () => {
+    if (!caseVictimSearch.trim().length) {
+      return;
+    }
+
+    const data = await CaseService.searchCaseByVictim(caseSearch);
+
+    if (!data.length) {
+      enqueueSnackbar(
+        `No se ha encontrado ningún caso para la víctima con cédula ${caseVictimSearch}`,
+        {
+          variant: 'info',
+        }
+      );
+      return;
+    }
+    setFoundCases(data);
+  };
 
   return (
     <>
@@ -373,216 +447,313 @@ export default function CaseNewEditForm({ isEdit, currentCase }: Props) {
           icon={<Iconify icon={'ion:chatbubble'} width={20} height={20} />}
           value={'comments'}
         />
+        <Tab
+          disableRipple
+          disabled={!isEdit}
+          key={2}
+          label="Seguimiento de Caso"
+          icon={<Iconify icon={'uil:history'} width={20} height={20} />}
+          value={'tracing'}
+        />
       </Tabs>
       {currentTab === 'general' && (
-        <FormProvider {...methods}>
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <Grid container spacing={3}>
-              <Grid
-                item
-                xs={12}
-                md={12}
-                sx={{ mt: 2, display: 'flex', flexDirection: 'column', gap: 2 }}
+        <Grid container spacing={3} sx={{ mt: 2 }}>
+          {!isEdit && (
+            <Grid item xs={12} md={3}>
+              <Card
+                sx={{
+                  p: 3,
+                  flexDirection: 'column',
+                  display: 'flex',
+                  gap: 2,
+                  position: 'sticky',
+                  top: 75,
+                }}
               >
-                <Card sx={{ p: 3, flexDirection: 'column', display: 'flex' }}>
-                  <Typography variant="h5" noWrap>
-                    Información del Caso
-                  </Typography>
-                  <Box sx={{ mb: 3, mt: 3 }}>
-                    <RHFTextField
-                      name="description"
-                      label="Descripción del Caso"
-                      disabled={currentCase?.inactive || currentCase?.completed}
-                    />
-                  </Box>
-                  <Box
-                    sx={{
-                      display: 'grid',
-                      columnGap: 2,
-                      rowGap: 3,
-                      gridTemplateColumns: { xs: 'repeat(1, 1fr)', md: 'repeat(3, 1fr)' },
-                    }}
-                  >
-                    <RHFTextField
-                      name="code"
-                      label="Código de Caso"
-                      disabled={currentCase?.inactive || currentCase?.completed}
-                    />
-                    <RHFSelect
-                      name="providerId"
-                      disabled={currentCase?.inactive || currentCase?.completed}
-                      label={`${
-                        isEdit
-                          ? 'Referir caso a otra organización:'
-                          : 'Nombre de organización a cargo del caso'
-                      }`}
-                    >
-                      <option key={0} value={0} />
-                      {providers.map((provider) => (
-                        <option key={provider.id} value={provider.id}>
-                          {provider.name}
-                        </option>
-                      ))}
-                    </RHFSelect>
-                    <RHFSelect
-                      name="userInChargeId"
-                      label="Nombre de contacto principal del caso"
-                      disabled={currentCase?.inactive || currentCase?.completed}
-                    >
-                      <option key={0} value={0} />
-                      {(providerContacts ?? []).map((user) => (
-                        <option key={user.id} value={user.id}>
-                          {user.name}
-                        </option>
-                      ))}
-                    </RHFSelect>
-                  </Box>
-                </Card>
-                <Card sx={{ p: 3, flexDirection: 'column', display: 'flex' }}>
-                  <Typography variant="h5" noWrap>
-                    Información de la víctima
-                  </Typography>
-                  <Box
-                    sx={{
-                      display: 'grid',
-                      columnGap: 2,
-                      rowGap: 3,
-                      gridTemplateColumns: { xs: 'repeat(1, 1fr)', sm: 'repeat(3, 1fr)' },
-                      mt: 3,
-                    }}
-                  >
-                    <RHFTextField
-                      name="victim.id"
-                      label="Cédula"
-                      disabled={currentCase?.inactive || currentCase?.completed}
-                    />
-                    <RHFTextField
-                      name="victim.name"
-                      label="Nombre (como se indica)"
-                      disabled={currentCase?.inactive || currentCase?.completed}
-                    />
-                    <RHFTextField
-                      name="victim.otherName"
-                      label="Otros nombres usados"
-                      disabled={currentCase?.inactive || currentCase?.completed}
-                    />
-                    <RHFTextField
-                      name="victim.email"
-                      label="Correo Electrónico"
-                      disabled={currentCase?.inactive || currentCase?.completed}
-                    />
-                    <RHFTextField
-                      name="victim.age"
-                      label="Edad, indicado"
-                      type="number"
-                      disabled={currentCase?.inactive || currentCase?.completed}
-                    />
-                    <RHFTextField
-                      name="victim.verifiedAge"
-                      label="Edad, verificada"
-                      type="number"
-                      disabled={currentCase?.inactive || currentCase?.completed}
-                    />
-                    <RHFTextField
-                      name="victim.birthday"
-                      label="Fecha de nacimiento (si es conocida)"
-                      disabled={currentCase?.inactive || currentCase?.completed}
-                    />
-                    <RHFTextField
-                      name="victim.citizenship"
-                      label="Ciudadanía"
-                      disabled={currentCase?.inactive || currentCase?.completed}
-                    />
-                    <RHFTextField
-                      name="victim.ethnicity"
-                      label="Etnicidad"
-                      disabled={currentCase?.inactive || currentCase?.completed}
-                    />
-                    <RHFTextField
-                      name="victim.nationality"
-                      label="País/Providencia de origen"
-                      disabled={currentCase?.inactive || currentCase?.completed}
-                    />
-                    <RHFTextField
-                      name="victim.originAddress"
-                      label="Dirección (de origen)"
-                      disabled={currentCase?.inactive || currentCase?.completed}
-                    />
-                    <RHFTextField
-                      name="victim.currentAddress"
-                      label="Dirección (actual)"
-                      disabled={currentCase?.inactive || currentCase?.completed}
-                    />
-                    <RHFTextField
-                      name="victim.phoneNumber"
-                      label="Número(s) de teléfono"
-                      disabled={currentCase?.inactive || currentCase?.completed}
-                    />
-                    <RHFTextField
-                      name="victim.preferredLanguage"
-                      label="Idioma Preferido"
-                      disabled={currentCase?.inactive || currentCase?.completed}
-                    />
-                    <RHFTextField
-                      name="victim.children"
-                      label="Cantidad de Hijos"
-                      type="number"
-                      disabled={currentCase?.inactive || currentCase?.completed}
-                    />
-                  </Box>
-                  <Box sx={{ flexDirection: 'column', display: 'flex', gap: 2, mt: 3 }}>
-                    <LabelStyle>Estado Civil</LabelStyle>
-                    <RHFRadioGroup
-                      name="victim.maritalStatus"
-                      options={MARITAL_STATUES}
-                      sx={{
-                        '& .MuiFormControlLabel-root': { mr: 4 },
-                      }}
-                    />
-                  </Box>
-                </Card>
-                <Card sx={{ p: 3, flexDirection: 'column', display: 'flex' }}>
-                  <Typography variant="h5" noWrap>
-                    Proceso de Evaluación
-                  </Typography>
-                  <Typography variant="body2" noWrap sx={{ mb: 3 }}>
-                    Par ver el formulario, por favor hacer click en cualquier celda de evaluación.
-                  </Typography>
-                  <EvaluationCaseTable
-                    providerContacts={providerContacts}
-                    currentCase={currentCase}
-                    onDemographicClick={() => setDemographicOpen(true)}
-                    onInitialSurvivorEvaluationClick={() => setInitialSurvivorEvaluationOpen(true)}
-                    onFinalSurvivorEvaluationClick={() => setFinalSurvivorEvaluationOpen(true)}
-                    onPostSurvivorEvaluationClick={() => setPostSurvivorEvaluationOpen(true)}
-                    onAttentionProtocolClick={() => setAttentionProtocolOpen(true)}
-                    disabled={currentCase?.inactive || currentCase?.completed}
-                  />
-                </Card>
-              </Grid>
-              <Grid item xs={12} md={12}>
-                <Stack alignItems="flex-end" sx={{ mt: 2 }}>
-                  <RHFCheckbox
-                    name="completed"
-                    label="Marcar caso como cerrado"
-                    sx={{ mt: 3 }}
-                    disabled={currentCase?.inactive || currentCase?.completed}
-                  />
-                  <LoadingButton
-                    type="submit"
-                    variant="contained"
-                    loading={isSubmitting}
-                    disabled={currentCase?.inactive || currentCase?.completed}
-                  >
-                    {!isEdit ? 'Crear Caso' : 'Guardar Cambios'}
-                  </LoadingButton>
-                </Stack>
-              </Grid>
+                <Typography variant="h5" noWrap>
+                  Búsqueda de Caso MP
+                </Typography>
+                <TextField
+                  fullWidth
+                  value={caseSearch}
+                  onChange={(e) => setCaseSearch(e.target.value)}
+                  label="Buscar por Código de Caso"
+                  placeholder="Ingresa código de caso"
+                />
+                <LoadingButton
+                  variant="contained"
+                  color="secondary"
+                  disabled={currentCase?.inactive || currentCase?.completed}
+                  onClick={searchCaseByCode}
+                >
+                  Buscar por código de caso
+                </LoadingButton>
+                <Divider sx={{ my: 2 }} />
+                <TextField
+                  fullWidth
+                  value={caseVictimSearch}
+                  onChange={(e) => setCaseVictimSearch(e.target.value)}
+                  label="Buscar por Cédula de Víctima"
+                  placeholder="Ingresa la cédula de la víctima"
+                />
+                <LoadingButton
+                  variant="contained"
+                  color="secondary"
+                  disabled={currentCase?.inactive || currentCase?.completed}
+                  onClick={searchCaseByVictim}
+                >
+                  Buscar por cédula de Víctima
+                </LoadingButton>
+                <VictimCasesDialog
+                  cases={foundCases}
+                  open={foundCases.length > 0}
+                  handleClose={handleCasesDialogClose}
+                />
+              </Card>
             </Grid>
-          </form>
-        </FormProvider>
+          )}
+          <Grid item xs={12} md={isEdit ? 12 : 9}>
+            <FormProvider {...methods}>
+              <form onSubmit={handleSubmit(onSubmit)}>
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                  <Card sx={{ p: 3, flexDirection: 'column', display: 'flex' }}>
+                    <Typography variant="h5" noWrap>
+                      Información del Caso
+                    </Typography>
+                    <Box sx={{ mb: 3, mt: 3 }}>
+                      <RHFTextField
+                        name="description"
+                        label="Descripción del Caso"
+                        disabled={currentCase?.inactive || currentCase?.completed}
+                      />
+                    </Box>
+                    <Box
+                      sx={{
+                        display: 'grid',
+                        columnGap: 2,
+                        rowGap: 3,
+                        gridTemplateColumns: { xs: 'repeat(1, 1fr)', md: 'repeat(3, 1fr)' },
+                      }}
+                    >
+                      <RHFTextField
+                        name="code"
+                        label="Código de Caso"
+                        disabled={currentCase?.inactive || currentCase?.completed}
+                      />
+                      <RHFSelect
+                        name="providerId"
+                        disabled={currentCase?.inactive || currentCase?.completed}
+                        label={`${
+                          isEdit
+                            ? 'Referir caso a otra organización:'
+                            : 'Nombre de organización a cargo del caso'
+                        }`}
+                      >
+                        <option key={0} value={0} />
+                        {providers.map((provider) => (
+                          <option key={provider.id} value={provider.id}>
+                            {provider.name}
+                          </option>
+                        ))}
+                      </RHFSelect>
+                      <RHFSelect
+                        name="userInChargeId"
+                        label="Nombre de contacto principal del caso"
+                        disabled={currentCase?.inactive || currentCase?.completed}
+                      >
+                        <option key={0} value={0} />
+                        {(providerContacts ?? []).map((user) => (
+                          <option key={user.id} value={user.id}>
+                            {user.name}
+                          </option>
+                        ))}
+                      </RHFSelect>
+                    </Box>
+                    <Divider sx={{ my: 2 }} />
+                    <Box
+                      sx={{
+                        display: 'grid',
+                        columnGap: 2,
+                        rowGap: 3,
+                        gridTemplateColumns: { xs: 'repeat(1, 1fr)', md: 'repeat(3, 1fr)' },
+                      }}
+                    >
+                      <RHFTextField
+                        name="jurisdiction"
+                        label="Jurisdicción"
+                        disabled={currentCase?.inactive || currentCase?.completed}
+                      />
+                      <RHFTextField
+                        name="defendant"
+                        label="Imputado"
+                        disabled={currentCase?.inactive || currentCase?.completed}
+                      />
+                      <RHFTextField
+                        name="defendantId"
+                        label="Cédula de Imputado"
+                        disabled={currentCase?.inactive || currentCase?.completed}
+                      />
+                      <RHFTextField
+                        name="proceduralStage"
+                        label="Etapa Procesal"
+                        disabled={currentCase?.inactive || currentCase?.completed}
+                      />
+                      <RHFTextField
+                        name="legalScore"
+                        label="Calificación Jurídica"
+                        disabled={currentCase?.inactive || currentCase?.completed}
+                      />
+                    </Box>
+                  </Card>
+                  <Card sx={{ p: 3, flexDirection: 'column', display: 'flex' }}>
+                    <Typography variant="h5" noWrap>
+                      Información de la víctima
+                    </Typography>
+                    <Box
+                      sx={{
+                        display: 'grid',
+                        columnGap: 2,
+                        rowGap: 3,
+                        gridTemplateColumns: { xs: 'repeat(1, 1fr)', sm: 'repeat(3, 1fr)' },
+                        mt: 3,
+                      }}
+                    >
+                      <RHFTextField
+                        name="victim.id"
+                        label="Cédula"
+                        disabled={currentCase?.inactive || currentCase?.completed}
+                      />
+                      <RHFTextField
+                        name="victim.name"
+                        label="Nombre (como se indica)"
+                        disabled={currentCase?.inactive || currentCase?.completed}
+                      />
+                      <RHFTextField
+                        name="victim.otherName"
+                        label="Otros nombres usados"
+                        disabled={currentCase?.inactive || currentCase?.completed}
+                      />
+                      <RHFTextField
+                        name="victim.email"
+                        label="Correo Electrónico"
+                        disabled={currentCase?.inactive || currentCase?.completed}
+                      />
+                      <RHFTextField
+                        name="victim.age"
+                        label="Edad, indicado"
+                        type="number"
+                        disabled={currentCase?.inactive || currentCase?.completed}
+                      />
+                      <RHFTextField
+                        name="victim.verifiedAge"
+                        label="Edad, verificada"
+                        type="number"
+                        disabled={currentCase?.inactive || currentCase?.completed}
+                      />
+                      <RHFTextField
+                        name="victim.birthday"
+                        label="Fecha de nacimiento (si es conocida)"
+                        disabled={currentCase?.inactive || currentCase?.completed}
+                      />
+                      <RHFTextField
+                        name="victim.citizenship"
+                        label="Ciudadanía"
+                        disabled={currentCase?.inactive || currentCase?.completed}
+                      />
+                      <RHFTextField
+                        name="victim.ethnicity"
+                        label="Etnicidad"
+                        disabled={currentCase?.inactive || currentCase?.completed}
+                      />
+                      <RHFTextField
+                        name="victim.nationality"
+                        label="País/Providencia de origen"
+                        disabled={currentCase?.inactive || currentCase?.completed}
+                      />
+                      <RHFTextField
+                        name="victim.originAddress"
+                        label="Dirección (de origen)"
+                        disabled={currentCase?.inactive || currentCase?.completed}
+                      />
+                      <RHFTextField
+                        name="victim.currentAddress"
+                        label="Dirección (actual)"
+                        disabled={currentCase?.inactive || currentCase?.completed}
+                      />
+                      <RHFTextField
+                        name="victim.phoneNumber"
+                        label="Número(s) de teléfono"
+                        disabled={currentCase?.inactive || currentCase?.completed}
+                      />
+                      <RHFTextField
+                        name="victim.preferredLanguage"
+                        label="Idioma Preferido"
+                        disabled={currentCase?.inactive || currentCase?.completed}
+                      />
+                      <RHFTextField
+                        name="victim.children"
+                        label="Cantidad de Hijos"
+                        type="number"
+                        disabled={currentCase?.inactive || currentCase?.completed}
+                      />
+                    </Box>
+                    <Box sx={{ flexDirection: 'column', display: 'flex', gap: 2, mt: 3 }}>
+                      <LabelStyle>Estado Civil</LabelStyle>
+                      <RHFRadioGroup
+                        name="victim.maritalStatus"
+                        options={MARITAL_STATUES}
+                        sx={{
+                          '& .MuiFormControlLabel-root': { mr: 4 },
+                        }}
+                      />
+                    </Box>
+                  </Card>
+                  <Card sx={{ p: 3, flexDirection: 'column', display: 'flex' }}>
+                    <Typography variant="h5" noWrap>
+                      Proceso de Evaluación
+                    </Typography>
+                    <Typography variant="body2" noWrap sx={{ mb: 3 }}>
+                      Par ver el formulario, por favor hacer click en cualquier celda de evaluación.
+                    </Typography>
+                    <EvaluationCaseTable
+                      providerContacts={providerContacts}
+                      currentCase={currentCase}
+                      onDemographicClick={() => setDemographicOpen(true)}
+                      onInitialSurvivorEvaluationClick={() =>
+                        setInitialSurvivorEvaluationOpen(true)
+                      }
+                      onFinalSurvivorEvaluationClick={() => setFinalSurvivorEvaluationOpen(true)}
+                      onPostSurvivorEvaluationClick={() => setPostSurvivorEvaluationOpen(true)}
+                      onAttentionProtocolClick={() => setAttentionProtocolOpen(true)}
+                      disabled={currentCase?.inactive || currentCase?.completed}
+                    />
+                  </Card>
+                  <Grid item xs={12} md={12}>
+                    <Stack alignItems="flex-end" sx={{ mt: 2 }}>
+                      <RHFCheckbox
+                        name="completed"
+                        label="Marcar caso como cerrado"
+                        sx={{ mt: 3 }}
+                        disabled={currentCase?.inactive || currentCase?.completed}
+                      />
+                      <LoadingButton
+                        type="submit"
+                        variant="contained"
+                        loading={isSubmitting}
+                        disabled={currentCase?.inactive || currentCase?.completed}
+                      >
+                        {currentCase?.id ? 'Guardar Cambios' : 'Crear Caso'}
+                      </LoadingButton>
+                    </Stack>
+                  </Grid>
+                </Box>
+              </form>
+            </FormProvider>
+          </Grid>
+        </Grid>
       )}
       {currentTab === 'comments' && currentCase && <Comments currentCase={currentCase} />}
+      {currentTab === 'tracing' && currentCase && <FollowUpList />}
       {currentCase && (
         <>
           <DemographicDialog

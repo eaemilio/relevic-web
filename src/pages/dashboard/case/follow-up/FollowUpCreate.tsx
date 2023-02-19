@@ -6,17 +6,15 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  DialogContentText,
   DialogTitle,
   TextField,
-  Typography,
 } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import { useEffect, useMemo } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
-import { CASE_BASE_URL, CurrentCase, NetworkCase } from 'src/@types/case';
-import { FollowUpNote, FollowUpNoteBody, FOLLOW_UP_BASE_URL } from 'src/@types/follow-up';
-import { RHFCheckbox, RHFTextField } from 'src/components/hook-form';
+import { CASE_BASE_URL, NetworkCase } from 'src/@types/case';
+import { FollowUp, FollowUpBody } from 'src/@types/follow-up';
+import { RHFTextField } from 'src/components/hook-form';
 import { createAsync, editAsync } from 'src/services/APIGateway';
 import { useSWRConfig } from 'swr';
 import * as Yup from 'yup';
@@ -24,44 +22,41 @@ import dayjs from 'dayjs';
 
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateTimePicker, LocalizationProvider } from '@mui/x-date-pickers';
-import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
 
 type Props = {
   open: boolean;
   handleClose: () => void;
-  currentNote?: FollowUpNote;
+  currentFollowUp?: FollowUp;
   currentCase: NetworkCase;
 };
 
-function FollowUpCreate({ open, handleClose, currentNote, currentCase }: Props) {
+export default function FollowUpCreate({ open, handleClose, currentFollowUp, currentCase }: Props) {
   const { enqueueSnackbar } = useSnackbar();
   const { mutate } = useSWRConfig();
 
-  const NewSchema = Yup.object().shape({
-    dueDate: Yup.string().required('Campo obligatorio'),
-    description: Yup.string().required('Campo obligatorio'),
-  });
-
   const defaultValues = useMemo(
-    (): FollowUpNoteBody => ({
+    (): FollowUpBody => ({
+      date: currentFollowUp?.date ?? '',
+      decisions: currentFollowUp?.decisions ?? '',
+      lawyer: currentFollowUp?.lawyer ?? '',
+      tribunal: currentFollowUp?.tribunal ?? '',
+      nextAudienceDate: currentFollowUp?.nextAudienceDate ?? '',
+      canceled: currentFollowUp?.canceled ?? false,
+      cancelledReason: currentFollowUp?.cancelledReason ?? '',
       caseId: currentCase.id,
-      description: currentNote?.description ?? '',
-      victimThoughts: currentNote?.victimThoughts ?? '',
-      observations: currentNote?.observations ?? '',
-      topics: currentNote?.topics ?? '',
-      comprehension: currentNote?.comprehension ?? '',
-      needs: currentNote?.needs ?? '',
-      survivorPlan: currentNote?.survivorPlan ?? '',
-      evaluatorPlan: currentNote?.evaluatorPlan ?? '',
-      userInChargeId: currentCase.followUpUserInCharge.id,
-      dueDate: currentNote?.dueDate ?? new Date().toString(),
-      completed: currentNote?.completed ?? false,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [currentNote]
+    [currentFollowUp]
   );
 
-  const methods = useForm<FollowUpNoteBody>({
+  const NewSchema = Yup.object().shape({
+    date: Yup.string().required('Campo obligatorio'),
+    decisions: Yup.string().required('Campo obligatorio'),
+    lawyer: Yup.string().required('Campo obligatorio'),
+    tribunal: Yup.string().required('Campo obligatorio'),
+  });
+
+  const methods = useForm<Omit<FollowUp, 'id'>>({
     resolver: yupResolver(NewSchema),
     defaultValues,
   });
@@ -79,51 +74,55 @@ function FollowUpCreate({ open, handleClose, currentNote, currentCase }: Props) 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [defaultValues]);
 
-  const onSubmit = async (data: FollowUpNoteBody) => {
+  const onSubmit = async (data: FollowUpBody) => {
     try {
-      if (currentNote) {
-        const note = await editAsync<FollowUpNoteBody, FollowUpNote>(
-          `${FOLLOW_UP_BASE_URL}/${currentNote.id}`,
+      if (currentFollowUp) {
+        const updated = await editAsync<FollowUpBody, FollowUp>(
+          `/follow-up/${currentFollowUp.id}`,
           {
             ...data,
-            dueDate: dayjs(data.dueDate).toISOString(),
+            date: dayjs(data.date).toISOString(),
+            nextAudienceDate: data.nextAudienceDate
+              ? dayjs(data.nextAudienceDate).toISOString()
+              : undefined,
           }
         );
         mutate<NetworkCase>(`${CASE_BASE_URL}/${currentCase.id}`, {
           ...currentCase,
-          followUpNotes: [
-            ...currentCase.followUpNotes.filter((f) => f.id !== currentNote.id),
-            note,
-          ],
+          followUps: [...currentCase.followUps.filter((f) => f.id !== currentFollowUp.id), updated],
         });
         enqueueSnackbar('Formulario demográfico guardado.');
         handleClose();
       } else {
-        const note = await createAsync<FollowUpNoteBody, FollowUpNote>(FOLLOW_UP_BASE_URL, {
+        const followUp = await createAsync<FollowUpBody, FollowUp>('/follow-up', {
           ...data,
-          dueDate: dayjs(data.dueDate).toISOString(),
+          date: dayjs(data.date).toISOString(),
+          nextAudienceDate: data.nextAudienceDate
+            ? dayjs(data.nextAudienceDate).toISOString()
+            : undefined,
         });
         mutate<NetworkCase>(`${CASE_BASE_URL}/${currentCase.id}`, {
           ...currentCase,
-          followUpNotes: [...currentCase.followUpNotes, note],
+          followUps: [...(currentCase.followUps ?? []), followUp],
         });
-        enqueueSnackbar('Formulario demográfico creado.');
+        enqueueSnackbar('Datos guardados.');
         handleClose();
       }
     } catch (error) {
+      console.log(error);
       enqueueSnackbar('Ocurrió un error al guardar los datos, inténtalo de nuevo', {
         variant: 'error',
       });
     }
   };
 
-  const watchDueDate = watch('dueDate');
+  const watchDate = watch('date');
 
   return (
     <Dialog open={open} onClose={handleClose} fullWidth maxWidth="xl">
       <FormProvider {...methods}>
         <form onSubmit={handleSubmit(onSubmit)}>
-          <DialogTitle>Nota de Seguimiento</DialogTitle>
+          <DialogTitle>Audiencia</DialogTitle>
           <DialogContent>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
               <Box
@@ -135,94 +134,27 @@ function FollowUpCreate({ open, handleClose, currentNote, currentCase }: Props) 
                   mt: 3,
                 }}
               >
-                <TextField
-                  disabled
-                  label="Nombre del sobreviviente"
-                  value={currentCase?.victim?.name}
-                />
-                <TextField
-                  disabled
-                  label="Organización de la persona que tuvo contacto con sobreviviente"
-                  value={currentCase?.provider?.name}
-                />
-                <TextField
-                  disabled
-                  label="Nombre de persona que tuvo contacto con sobreviviente"
-                  value={currentCase.followUpUserInCharge?.name}
-                />
+                <RHFTextField name="tribunal" label="Tribunal" />
+                <RHFTextField name="lawyer" label="Abogado Actuante" />
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DateTimePicker
-                    label="Fecha para Seguimiento (Se notificará a la víctima)"
+                    label="Fecha"
                     inputFormat="DD/MM/YYYY HH:mm"
-                    value={watchDueDate}
-                    onChange={(e) => e && setValue('dueDate', e)}
+                    value={watchDate}
+                    onChange={(e) => e && setValue('date', e)}
                     renderInput={(params) => <TextField {...params} />}
                   />
                 </LocalizationProvider>
               </Box>
-              <Typography variant="h5" sx={{ mt: 2 }}>
-                Describir:{' '}
-              </Typography>
-              <RHFTextField
-                name="description"
-                label="Descripción general de la interacción. (Quién, cuándo, qué, dónde)"
-                multiline
-                rows={3}
-              />
-              {currentNote && (
-                <>
-                  <RHFTextField
-                    name="victimThoughts"
-                    label="¿Qué es lo que el/la sobreviviente le está diciendo? (Los pensamientos, sentimientos, observaciones, etc.)"
-                    multiline
-                    rows={3}
-                  />
-                  <RHFTextField
-                    name="observations"
-                    label="¿Qué observaciones tiene de el/la sobreviviente? (Sus pensamientos y observaciones sobre la Participante (sentimientos, apariencia, estado de ánimo, etc.)"
-                    multiline
-                    rows={3}
-                  />
-                  <RHFTextField
-                    name="topics"
-                    label="Temas revisados, cuestiones que surgieron."
-                    multiline
-                    rows={3}
-                  />
-                  <Typography variant="h5" sx={{ mt: 2 }}>
-                    Evaluar:
-                  </Typography>
-                  <RHFTextField
-                    name="comprehension"
-                    label="¿Cuál es su comprensión de lo que está sucediendo con el/la sobreviviente (cómo las cosas
-                  están/no están progresando)?"
-                    multiline
-                    rows={3}
-                  />
-                  <RHFTextField
-                    name="needs"
-                    label="¿Qué cree que es necesario para ayudar a el/la sobreviviente a progresar más?"
-                    multiline
-                    rows={3}
-                  />
-                  <Typography variant="h5" sx={{ mt: 2 }}>
-                    Plan:
-                  </Typography>
-                  <RHFTextField
-                    name="survivorPlan"
-                    label="¿Qué sucederá a continuación? ¿Qué hará el/la sobreviviente a continuación? ¿tiene tareas escolares?"
-                    multiline
-                    rows={3}
-                  />
-                  <RHFTextField
-                    name="evaluatorPlan"
-                    label="¿Qué va a hacer usted a continuación? ¿Hay llamadas que usted necesita hacer, personas con la que debe comunicarse, citas que debe organizar, etc.? ¿Cuándo será la próxima vez que usted verá a el/la sobreviviente?"
-                    multiline
-                    rows={3}
-                  />
-                  <RHFCheckbox name="completed" label="Marcar como completado" sx={{ mt: 3 }} />
-                </>
-              )}
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  mt: 3,
+                }}
+              >
+                <RHFTextField multiline rows={3} name="decisions" label="Decisiones" />
+              </Box>
             </Box>
           </DialogContent>
           <DialogActions>
@@ -236,5 +168,3 @@ function FollowUpCreate({ open, handleClose, currentNote, currentCase }: Props) 
     </Dialog>
   );
 }
-
-export default FollowUpCreate;

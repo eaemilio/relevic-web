@@ -73,6 +73,7 @@ export type UserBody = {
   roleId: number;
   providerId: number;
   password: string;
+  userCode: string;
 };
 
 export type CurrentUser = {
@@ -83,6 +84,7 @@ export type CurrentUser = {
   roleId: number;
   provider: ServiceProvider;
   role: RoleManager;
+  userCode?: string;
 };
 
 export type IUserData = {

@@ -1,9 +1,9 @@
 import { AttentionProtocol, AttentionProtocolBody } from './attention-protocol';
 import { DemographicForm, DemographicFormBody } from './demographic-form';
-import { FollowUpNote } from './follow-up';
+import { FollowUp, FollowUpNote } from './follow-up';
 import { ServiceProvider } from './provider';
 import { SurvivorEvaluation, SurvivorEvaluationBody } from './survivor-evaluation';
-import { CurrentUser, UserManager } from './user';
+import { UserManager } from './user';
 import { Victim, VictimBody } from './victim';
 
 export interface Case {
@@ -45,6 +45,13 @@ export interface CurrentCase {
   completed: boolean;
   inactive: boolean;
   code: string;
+  followUps: FollowUp[];
+  jurisdiction: string;
+  defendant: string;
+  defendantId: string;
+  proceduralStage: string;
+  legalScore: string;
+  userCode: string;
 }
 
 export interface NetworkCase {
@@ -67,6 +74,13 @@ export interface NetworkCase {
   completed: boolean;
   inactive: boolean;
   code: string;
+  followUps: FollowUp[];
+  jurisdiction: string;
+  defendant: string;
+  defendantId: string;
+  proceduralStage: string;
+  legalScore: string;
+  userCode: string;
 }
 
 export interface NetworkCaseBody {
@@ -84,6 +98,12 @@ export interface NetworkCaseBody {
   consentUserInChargeId: number;
   completed: boolean;
   code: string;
+  jurisdiction: string;
+  defendant: string;
+  defendantId: string;
+  proceduralStage: string;
+  legalScore: string;
+  userCode: string;
 }
 
 export const CASE_BASE_URL = '/case';

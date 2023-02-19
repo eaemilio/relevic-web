@@ -96,7 +96,7 @@ export default function Router() {
             { path: 'list', element: <CaseList /> },
             { path: 'new', element: <CaseCreate /> },
             { path: ':id', element: <CaseCreate /> },
-            { path: 'follow-up/:id', element: <FollowUpNoteList /> },
+            { path: 'follow-up-note/:id', element: <FollowUpNoteList /> },
           ],
         },
         {
@@ -227,7 +227,7 @@ const RoleCreate = Loadable(lazy(() => import('../pages/dashboard/role/RoleCreat
 
 // ROLE
 const FollowUpNoteList = Loadable(
-  lazy(() => import('../pages/dashboard/case/follow-up/FollowUpList'))
+  lazy(() => import('../pages/dashboard/case/follow-up-note/FollowUpNoteList'))
 );
 
 // SERVICE TYPE
