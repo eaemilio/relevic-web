@@ -19,6 +19,60 @@ Instala las dependencias del proyecto:
 yarn install
 ```
 
+Crear el build de producción:
+```sh
+npm run build
+```
+
+Instala Nginx:
+```sh
+apt-get install nginx python3-certbot-nginx -y
+```
+
+Crear directorio para aplicación:
+```sh
+mkdir /var/www/html/react
+```
+
+Copiar contenido al directorio
+```
+cp -r /root/reactapp/build/* /var/www/html/react/
+```
+
+Dar permisos a directorio
+```sh
+chown -R www-data:www-data /var/www/html/react
+```
+
+Crear archivo de configuración para host virtual
+```sh
+nano /etc/nginx/conf.d/react.conf
+```
+
+Agregar las siguientes lineas:
+```
+server {
+         listen 80;
+         listen [::]:80;
+         root /var/www/html/react/;
+         index index.html index.htm;
+         server_name react.ejemplo.com;
+         location / {
+              try_files $uri $uri/ =404;
+         }
+}
+```
+
+Validar configuración:
+```sh
+nginx -t
+```
+
+Reiniciar el servicio de nginx:
+```sh
+systemctl restart nginx
+```
+
 Yarn es un gestor dependencias de JavaScript, que está enfocado en la velocidad y la seguridad, y a diferencia de otros gestores como NPM, YARN es muy rápido y muy fácil de usar.
 ## Servidor de desarrollo
 
