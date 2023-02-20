@@ -16,7 +16,7 @@ cd relevic-web
 Instala las dependencias del proyecto:
 
 ```sh
-yarn install
+npm install
 ```
 
 Crear el build de producción:
