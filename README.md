@@ -73,7 +73,7 @@ Reiniciar el servicio de nginx:
 systemctl restart nginx
 ```
 
-Yarn es un gestor dependencias de JavaScript, que está enfocado en la velocidad y la seguridad, y a diferencia de otros gestores como NPM, YARN es muy rápido y muy fácil de usar.
+>  **Nota:** La información que la aplicación recibe depende del backend, por lo que se deberá setear las variables de entorno correctas para que la aplicación conozca la URL del backend, para más información ver sección **Variables de Entorno**
 ## Servidor de desarrollo
 
 Para crear y desplegar localmente una instancia del servidor de desarrollor ejecuta:
@@ -85,16 +85,6 @@ yarn start
 Luego, en tu navegador dirígete a `http://localhost:8080`
 
 >  **Nota:** La información que la aplicación recibe depende del backend, por lo que se deberá setear las variables de entorno correctas para que la aplicación conozca la URL del backend, para más información ver sección **Variables de Entorno**
-
-## Servidor de Producción
-
-Para obtener los artefactos necesarios para desplegar el sitio a producción, ejecuta:
-
-```sh
-yarn build
-```
-El comando anterior compilará el proyecto y generará todos los artefactos necesarios en la carpeta `/build`.
-
 
 ## Variables de Entorno
 
