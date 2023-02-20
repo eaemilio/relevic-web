@@ -1,8 +1,7 @@
 {
-  "name": "@minimal/material-kit-react",
-  "author": "minimals.cc",
+  "name": "@ijm/relevic",
+  "author": "ijm",
   "version": "3.5.0",
-  "description": "React Scripts & Typescript",
   "private": true,
   "scripts": {
     "start": "react-app-rewired start",
