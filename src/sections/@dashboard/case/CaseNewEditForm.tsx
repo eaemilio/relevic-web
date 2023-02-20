@@ -80,7 +80,6 @@ export default function CaseNewEditForm({ isEdit, currentCase }: Props) {
   const navigate = useNavigate();
   const { currentTab, onChangeTab } = useTabs('general');
   const { user } = useAuth();
-  console.log(user);
 
   const [demographicOpen, setDemographicOpen] = useState(false);
   const [initialSurvivorEvaluationOpen, setInitialSurvivorEvaluationOpen] = useState(false);
