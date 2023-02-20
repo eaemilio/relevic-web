@@ -13,6 +13,11 @@ git clone https://github.com/eaemilio/relevic-web
 cd relevic-web
 ```
 
+Otorga permisos para correr el script:
+```sh
+sudo chmod +x ~/relevic-web/install.sh
+```
+
 Instala las dependencias del proyecto:
 
 ```sh
