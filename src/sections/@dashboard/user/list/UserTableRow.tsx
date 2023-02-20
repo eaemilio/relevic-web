@@ -1,7 +1,15 @@
 import { useState } from 'react';
 // @mui
 import { useTheme } from '@mui/material/styles';
-import { Avatar, Checkbox, TableRow, TableCell, Typography, MenuItem } from '@mui/material';
+import {
+  Avatar,
+  Checkbox,
+  TableRow,
+  TableCell,
+  Typography,
+  MenuItem,
+  Tooltip,
+} from '@mui/material';
 // @types
 import { CurrentUser, UserManager } from '../../../../@types/user';
 // components
@@ -71,17 +79,23 @@ export default function UserTableRow({
         )}
       </TableCell>
 
-      <TableCell align="left">
-        <Label
-          sx={{
-            textTransform: 'capitalize',
-            backgroundColor:
-              provider && role ? theme.palette.background.neutral : theme.palette.primary.dark,
-          }}
-        >
-          {provider && role ? provider?.name : 'VÍCTIMA'}
-        </Label>
-      </TableCell>
+      <Tooltip title={provider && role ? provider?.name : 'VÍCTIMA'} placement="top-start">
+        <TableCell align="left">
+          <Label
+            sx={{
+              textTransform: 'capitalize',
+              backgroundColor: provider && role ? 'transparent' : theme.palette.primary.dark,
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+              maxWidth: 300,
+              justifyContent: 'flex-start',
+            }}
+          >
+            {provider && role ? provider?.name : 'VÍCTIMA'}
+          </Label>
+        </TableCell>
+      </Tooltip>
 
       <TableCell align="right">
         <TableMoreMenu

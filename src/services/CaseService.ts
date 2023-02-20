@@ -666,13 +666,15 @@ const VICTIM_DATA_MOCK: Partial<NetworkCase>[] = [
 ];
 
 export default class CaseService {
-  static searchCaseByCode = async (code: string) =>
-    // TODO: Replace with the correct path
-    // const { data } = await axiosInstance.get<NetworkCase>(`/path-to-search/code/${code}`);
-    VICTIM_DATA_MOCK[1];
+  static searchCaseByCode = async (code: string) => {
+    const { data = [] } = await axiosInstance.get<NetworkCase[]>(`case/search?caseNumber=${code}`);
+    return data[0];
+  };
 
-  static searchCaseByVictim = async (id: string) =>
-    // TODO: Replace with the correct path
-    // const { data = [] } = await axiosInstance.get<NetworkCase[]>(`/path-to-search/victim/${id}`);
-    VICTIM_DATA_MOCK;
+  static searchCaseByVictim = async (id: string) => {
+    const { data = [] } = await axiosInstance.get<NetworkCase[]>(
+      `case/search?userIdentification=${id}`
+    );
+    return data;
+  };
 }
