@@ -2,7 +2,7 @@
 echo "[1/4] - Installing Node and Nginx..."
 sudo apt update
 sudo apt install nodejs
-sudo apt install nodejs
+sudo apt install npm
 sudo apt-get install nginx python3-certbot-nginx -y
 echo "[2/4] - Installing dependencies..."
 npm install -f
