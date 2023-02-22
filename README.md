@@ -4,81 +4,37 @@ Puedes encontrar información más detallada acerca de cómo utilizar `Create Re
 
 ## Instalación
 
-Primero debes clonar el repositorio:
+1. Primero debes clonar el repositorio:
 ```sh
 git clone https://github.com/eaemilio/relevic-web
 ```
 
+2. Entra al directorio relevic-web
 ```sh
 cd relevic-web
 ```
 
-Otorga permisos para correr el script:
+3. Otorga permisos para correr el script:
 ```sh
-sudo chmod +x ~/relevic-web/install.sh
+sudo chmod +x serve.sh
 ```
 
-Instala las dependencias del proyecto:
-
+4. Crear variables de entorno:
 ```sh
-npm install
+nano .env
 ```
 
-Crear el build de producción:
+5. Pegar lo siguiente:
+```yaml
+REACT_APP_MAP_KEY=<YOUR GOOGLE MAPS KEY HERE>
+REACT_APP_HOST_API_KEY=http://localhost:1938
+```
+
+6. Ejecutar shell script:
 ```sh
-npm run build
+./serve.sh
 ```
 
-Instala Nginx:
-```sh
-apt-get install nginx python3-certbot-nginx -y
-```
-
-Crear directorio para aplicación:
-```sh
-mkdir /var/www/html/react
-```
-
-Copiar contenido al directorio
-```
-cp -r /root/reactapp/build/* /var/www/html/react/
-```
-
-Dar permisos a directorio
-```sh
-chown -R www-data:www-data /var/www/html/react
-```
-
-Crear archivo de configuración para host virtual
-```sh
-nano /etc/nginx/conf.d/react.conf
-```
-
-Agregar las siguientes lineas:
-```
-server {
-         listen 80;
-         listen [::]:80;
-         root /var/www/html/react/;
-         index index.html index.htm;
-         server_name react.ejemplo.com;
-         location / {
-              try_files $uri $uri/ =404;
-         }
-}
-```
-
-Validar configuración:
-```sh
-nginx -t
-```
-
-Reiniciar el servicio de nginx:
-```sh
-systemctl restart nginx
-```
-
->  **Nota:** La información que la aplicación recibe depende del backend, por lo que se deberá setear las variables de entorno correctas para que la aplicación conozca la URL del backend, para más información ver sección **Variables de Entorno**
 ## Servidor de desarrollo
 
 Para crear y desplegar localmente una instancia del servidor de desarrollor ejecuta:
