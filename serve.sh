@@ -6,7 +6,7 @@
 # echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
 # sudo apt update && sudo apt install yarn
 
-npm install
+npm install -f
 npm run build
 
 sudo npm install -g serve
