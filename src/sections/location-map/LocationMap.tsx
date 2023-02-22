@@ -71,7 +71,7 @@ function LocationMap({ zoom = DEFAULT_ZOOM, onLocationChanged, currentCoords }: 
     <Box sx={{ mt: 2, height: 500, position: 'relative' }}>
       {lng && lat && (
         <GoogleMapReact
-          bootstrapURLKeys={{ key: 'AIzaSyBTNIT54hV63Qw5kiWp_AGh5RaJqT79-RI' }}
+          bootstrapURLKeys={{ key: process.env.REACT_APP_MAP_KEY ?? '' }}
           center={{ lat, lng }}
           defaultZoom={zoom}
           onDragEnd={onDragEnd}
