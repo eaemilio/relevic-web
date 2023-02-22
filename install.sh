@@ -7,11 +7,13 @@ sudo apt-get install nginx python3-certbot-nginx -y
 echo "[2/4] - Installing dependencies..."
 npm install -f
 echo "[3/4] - Configurin Nginx..."
-sudo mkdir /var/www/html/react
-sudo cp -r /home/ubuntu/relevic-web/build/* /var/www/html/react
-sudo chown -R www-data:www-data /var/www/html/react
-sudo touch /etc/nginx/conf.d/react.conf
-echo "server {listen 80;listen [::]:80;root /var/www/html/react/;index index.html index.htm;server_name ec2-174-129-182-16.compute-1.amazonaws.com;location / {try_files $uri $uri/ =404;}}" | sudo tee /etc/nginx/conf.d/react.conf
+sudo mkdir /var/www/relevic/html
+sudo cp -r /home/ubuntu/relevic-web/build/* /var/www/relevic/html
+sudo chown -R www-data:www-data /var/www/relevic/html
+sudo touch /etc/nginx/sites-available/relevic
+echo "server {listen 80;listen [::]:80;root /var/www/relevic/html;index index.html index.htm index.nginx-debian.html;server_name <domain_name> www.<domain_name>;location / {try_files $uri $uri/ =404;}}" | sudo tee /etc/nginx/conf.d/react.conf
+sudo ln -s /etc/nginx/sites-available/relevic /etc/nginx/sites-enabled/
+sudo nano /etc/nginx/nginx.conf
 echo "####"
 echo "#### IMPORTANT: Replace server_name in /etc/nginx/conf.d/react.conf"
 echo "####"
