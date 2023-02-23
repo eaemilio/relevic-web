@@ -16,6 +16,16 @@ import updateLocale from 'dayjs/plugin/updateLocale';
 import dayjs from 'dayjs';
 import 'dayjs/locale/es';
 
+declare global {
+  namespace React {
+    interface DOMAttributes<T> {
+      onResize?: ReactEventHandler<T> | undefined;
+      onResizeCapture?: ReactEventHandler<T> | undefined;
+      nonce?: string | undefined;
+    }
+  }
+}
+
 dayjs.extend(updateLocale);
 
 dayjs.updateLocale('es', {

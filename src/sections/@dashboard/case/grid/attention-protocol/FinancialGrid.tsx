@@ -132,46 +132,41 @@ export default function FinancialGrid({ onGridChange, values }: GridProps) {
       headerName: 'Acciones',
       width: 100,
       cellClassName: 'actions',
-      getActions: ({ id }) => {
-        const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit;
-
-        if (isInEditMode) {
-          return [
-            <GridActionsCellItem
-              icon={<Iconify icon={'icon-park-twotone:save'} width={24} height={24} />}
-              label="Guardar"
-              onClick={handleSaveClick(id)}
-              key={id}
-            />,
-            <GridActionsCellItem
-              icon={<Iconify icon={'icon-park-twotone:close-one'} width={24} height={24} />}
-              label="Cancelar"
-              className="textPrimary"
-              onClick={handleCancelClick(id)}
-              color="inherit"
-              key={id}
-            />,
-          ];
-        }
-
-        return [
-          <GridActionsCellItem
-            icon={<Iconify icon={'icon-park-twotone:edit'} width={24} height={24} />}
-            label="Editar"
-            className="textPrimary"
-            onClick={handleEditClick(id)}
-            color="inherit"
-            key={id}
-          />,
-          <GridActionsCellItem
-            icon={<Iconify icon={'icon-park-twotone:delete'} width={24} height={24} />}
-            label="Eliminar"
-            onClick={handleDeleteClick(id)}
-            color="inherit"
-            key={id}
-          />,
-        ];
-      },
+      getActions: ({ id }) =>
+        rowModesModel[id]?.mode === GridRowModes.Edit
+          ? [
+              <GridActionsCellItem
+                key={id}
+                icon={<Iconify icon={'icon-park-twotone:save'} width={24} height={24} />}
+                label="Guardar"
+                onClick={handleSaveClick(id)}
+              />,
+              <GridActionsCellItem
+                key={id}
+                icon={<Iconify icon={'icon-park-twotone:close-one'} width={24} height={24} />}
+                label="Cancelar"
+                className="textPrimary"
+                onClick={handleCancelClick(id)}
+                color="inherit"
+              />,
+            ]
+          : [
+              <GridActionsCellItem
+                key={id}
+                icon={<Iconify icon={'icon-park-twotone:edit'} width={24} height={24} />}
+                label="Editar"
+                className="textPrimary"
+                onClick={handleEditClick(id)}
+                color="inherit"
+              />,
+              <GridActionsCellItem
+                key={id}
+                icon={<Iconify icon={'icon-park-twotone:delete'} width={24} height={24} />}
+                label="Eliminar"
+                onClick={handleDeleteClick(id)}
+                color="inherit"
+              />,
+            ],
     },
   ];
 

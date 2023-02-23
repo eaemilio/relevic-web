@@ -2626,7 +2626,7 @@
     "prop-types" "^15.8.1"
     "react-is" "^18.2.0"
 
-"@mui/x-data-grid-generator@^5.17.9":
+"@mui/x-data-grid-generator@^5.0.0":
   "integrity" "sha512-nVvNecWcPEMEs2qNkFJcnQzEM8IPopp48dVRmPGs0IB6lvHJyRANHCPwNNmJgE7wVbzIrzymd5D6H8HRiahVlA=="
   "resolved" "https://registry.npmjs.org/@mui/x-data-grid-generator/-/x-data-grid-generator-5.17.24.tgz"
   "version" "5.17.24"
@@ -2638,7 +2638,7 @@
     "clsx" "^1.2.1"
     "lru-cache" "^7.14.0"
 
-"@mui/x-data-grid-premium@^5.17.9", "@mui/x-data-grid-premium@5.17.24":
+"@mui/x-data-grid-premium@^5.0.0", "@mui/x-data-grid-premium@5.17.24":
   "integrity" "sha512-ffhgkQHTE/RlU6pU6APeEM+hw8DdxhzwVQDTIPCaxoZC5VWeLXdrxZsf6HYaBq0IXHnekWAc8pR3CySJwZ3CbQ=="
   "resolved" "https://registry.npmjs.org/@mui/x-data-grid-premium/-/x-data-grid-premium-5.17.24.tgz"
   "version" "5.17.24"
@@ -2668,7 +2668,7 @@
     "prop-types" "^15.8.1"
     "reselect" "^4.1.6"
 
-"@mui/x-data-grid@^5.12.3", "@mui/x-data-grid@5.17.24":
+"@mui/x-data-grid@^5.0.0", "@mui/x-data-grid@5.17.24":
   "integrity" "sha512-2QjHlc3tEcPKatTIqQnzEvEj1+rJ33xZyOCbUXcsptjzN61DWWlWoIxXe8BW7Lp41TjqchSeUW6kBCdkJfoh8w=="
   "resolved" "https://registry.npmjs.org/@mui/x-data-grid/-/x-data-grid-5.17.24.tgz"
   "version" "5.17.24"
