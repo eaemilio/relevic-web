@@ -4,8 +4,8 @@ const https = require('https');
 const fs = require('fs');
 const app = express();
 
-const key = fs.readFileSync(__dirname + '/ssl/private.pem');
-const cert = fs.readFileSync(__dirname + '/ssl/public.pem');
+const key = fs.readFileSync(__dirname + '/ssl/star_pgr_gob_do.key');
+const cert = fs.readFileSync(__dirname + '/ssl/ssl-bundle.crt');
 
 app.use(express.static(path.join(__dirname, 'build')));
 
